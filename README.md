@@ -1,5 +1,8 @@
 # EzRecipes
 
+[![Node.js CI](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/node.js.yml/badge.svg)](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/node.js.yml)
+[![CodeQL](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/codeql.yml/badge.svg)](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/codeql.yml)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.3.
 
 ## Development server
