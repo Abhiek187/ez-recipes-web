@@ -1,0 +1,55 @@
+<header>
+    <a [href]="recipe.url" target="_blank" rel="noopener noreferrer">
+        <h1>{{ recipe.label }}</h1>
+    </a>
+    <p>Source: {{ recipe.source }}</p>
+    <p>Share: {{ recipe.shareAs }}</p>
+</header>
+
+<!-- Nutritional information -->
+<aside>
+    <h2>Nutrition Facts</h2>
+    <h3>Diet Labels:</h3>
+    <ul>
+        <li *ngFor="let dietLabel of recipe.dietLabels">{{ dietLabel }}</li>
+    </ul>
+    <h3>Health Labels:</h3>
+    <ul>
+        <li *ngFor="let healthLabel of recipe.healthLabels">{{ healthLabel }}</li>
+    </ul>
+    <p>Cautions:</p>
+    <ul>
+        <li *ngFor="let caution of recipe.cautions">{{ caution }}</li>
+    </ul>
+    <p>{{ recipe.yield }} serving(s)</p>
+    <ul>
+        <li *ngFor="let nutrient of recipe.totalNutrients | keyvalue">
+            {{ nutrient.value.label }}: {{ nutrient.value.quantity }}{{ nutrient.value.unit }}
+        </li>
+    </ul>
+
+    <figure>
+        <img [src]="recipe.images.REGULAR.url" [alt]="recipe.label" width="recipe.images.REGULAR.width"
+            height="recipe.images.REGULAR.height">
+    </figure>
+
+    <button type="button">Save</button>
+    <button type="button">I Made This!</button>
+    <button type="button">Show Me Another Recipe!</button>
+</aside>
+
+<!-- Steps -->
+<main>
+    <p>Time: {{ recipe.totalTime }} minutes</p>
+    <h2>Ingredients</h2>
+    <ul>
+        <li *ngFor="let ingredient of recipe.ingredientLines">{{ ingredient }}</li>
+    </ul>
+    <h2>Steps</h2>
+    <ol></ol>
+</main>
+
+<!-- Edamam API attribution -->
+<footer>
+    <img src="assets/Edamam_Badge_Transparent.svg" alt="Powered by Edamam" width="200">
+</footer>

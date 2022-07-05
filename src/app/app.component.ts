@@ -16,6 +16,7 @@ export class AppComponent {
     // Show a random, low-effort recipe
     this.recipeService.getRandomRecipe().subscribe((recipe: Recipe) => {
       this.recipe = recipe;
+      console.log(recipe);
     });
   }
 }

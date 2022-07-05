@@ -1,2 +1,2 @@
-<button (click)="getRandomRecipe()">Find me a recipe!</button>
-<div>{{ recipe | json }}</div>
+<button type="button" (click)="getRandomRecipe()">Find me a recipe!</button>
+<app-recipe *ngIf="recipe !== undefined" [recipe]="recipe"></app-recipe>
