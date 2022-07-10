@@ -1,15 +1,17 @@
+<!-- Recipe header -->
 <header>
     <a [href]="recipe.url" target="_blank" rel="noopener noreferrer">
-        <h1>{{ recipe.label }}</h1>
+        <h1>{{ recipe.name }}</h1>
     </a>
-    <p>Source: {{ recipe.source }}</p>
-    <p>Share: {{ recipe.shareAs }}</p>
+    <p>Source: {{ recipe.credit }}</p>
+    <p>Share: {{ recipe.sourceUrl }}</p>
 </header>
 
-<!-- Nutritional information -->
 <aside>
+    <!-- Nutritional information -->
     <h2>Nutrition Facts</h2>
-    <h3>Diet Labels:</h3>
+    <p>Health Score: {{ recipe.healthScore }}%</p>
+    <!-- <h3>Diet Labels:</h3>
     <ul>
         <li *ngFor="let dietLabel of recipe.dietLabels">{{ dietLabel }}</li>
     </ul>
@@ -20,17 +22,23 @@
     <p>Cautions:</p>
     <ul>
         <li *ngFor="let caution of recipe.cautions">{{ caution }}</li>
-    </ul>
-    <p>{{ recipe.yield }} serving(s)</p>
+    </ul> -->
+    <p>{{ recipe.servings }} serving(s)</p>
     <ul>
-        <li *ngFor="let nutrient of recipe.totalNutrients | keyvalue">
-            {{ nutrient.value.label }}: {{ nutrient.value.quantity }}{{ nutrient.value.unit }}
+        <li *ngFor="let nutrient of recipe.nutrients | keyvalue">
+            {{ nutrient.value }}: {{ nutrient.value.amount }}{{ nutrient.value.unit }}
         </li>
     </ul>
 
+    <!-- Recipe image -->
     <figure>
-        <img [src]="recipe.images.REGULAR.url" [alt]="recipe.label" width="recipe.images.REGULAR.width"
+        <img [src]="recipe.image" [alt]="recipe.name" width="recipe.images.REGULAR.width"
             height="recipe.images.REGULAR.height">
+        <figcaption>
+            Image © <a [href]="recipe.sourceUrl" target="_blank" rel="noopener noreferrer">
+                {{ recipe.credit }}
+            </a>
+        </figcaption>
     </figure>
 
     <button type="button">Save</button>
@@ -38,18 +46,56 @@
     <button type="button">Show Me Another Recipe!</button>
 </aside>
 
-<!-- Steps -->
+<!-- Recipe summary, render HTML tags -->
+<section>{{ recipe.summary | unescape }}</section>
+
 <main>
-    <p>Time: {{ recipe.totalTime }} minutes</p>
+    <p>Time: {{ recipe.time }} minutes</p>
+    <!-- Ingredients -->
     <h2>Ingredients</h2>
     <ul>
-        <li *ngFor="let ingredient of recipe.ingredientLines">{{ ingredient }}</li>
+        <li *ngFor="let ingredient of recipe.ingredients">
+            {{ ingredient.amount }} {{ ingredient.unit }} of {{ ingredient.name }}
+        </li>
     </ul>
+    <!-- Steps -->
     <h2>Steps</h2>
-    <ol></ol>
+    <ul>
+        <li *ngFor="let instruction of recipe.instructions">
+            <!-- Instruction section -->
+            <h3>{{ instruction.name }}</h3>
+            <ol>
+                <li *ngFor="let step of instruction.steps">
+                    <p>{{ step.number }}. {{ step.step }}</p>
+                    <!-- Ingredients per step -->
+                    <h4>Ingredients:</h4>
+                    <ul>
+                        <li *ngFor="let ingredient of step.ingredients">
+                            <p>{{ ingredient.name }}</p>
+                            <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
+                            <img [src]="'https://spoonacular.com/cdn/ingredients_100x100/' + ingredient.image"
+                                [alt]="ingredient.name">
+                        </li>
+                    </ul>
+                    <!-- Equipment per step -->
+                    <h4>Equipment:</h4>
+                    <ul>
+                        <li *ngFor="let equipment of step.equipment">
+                            <p>{{ equipment.name }}</p>
+                            <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
+                            <img [src]="'https://spoonacular.com/cdn/equipment_100x100/' + equipment.image"
+                                [alt]="equipment.name">
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </li>
+    </ul>
 </main>
 
-<!-- Edamam API attribution -->
+<!-- spoonacular API attribution -->
 <footer>
-    <img src="assets/Edamam_Badge_Transparent.svg" alt="Powered by Edamam" width="200">
+    Powered by <a href="https://spoonacular.com/food-api" target="_blank" rel="noopener noreferrer">
+        spoonacular
+    </a>
 </footer>

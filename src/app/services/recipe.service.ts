@@ -1,7 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-// TODO: Version the server and update package.json to fetch from #tag
-import { Recipe } from 'ez-recipes-server/models/Recipe';
+import { Recipe } from '../models/recipe.model';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
