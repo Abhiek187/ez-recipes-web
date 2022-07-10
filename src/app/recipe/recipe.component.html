@@ -3,8 +3,7 @@
     <a [href]="recipe.url" target="_blank" rel="noopener noreferrer">
         <h1>{{ recipe.name }}</h1>
     </a>
-    <p>Source: {{ recipe.credit }}</p>
-    <p>Share: {{ recipe.sourceUrl }}</p>
+    <button type="button">Share</button>
 </header>
 
 <aside>
@@ -25,8 +24,8 @@
     </ul> -->
     <p>{{ recipe.servings }} serving(s)</p>
     <ul>
-        <li *ngFor="let nutrient of recipe.nutrients | keyvalue">
-            {{ nutrient.value }}: {{ nutrient.value.amount }}{{ nutrient.value.unit }}
+        <li *ngFor="let nutrient of recipe.nutrients">
+            {{ nutrient.name }}: {{ nutrient.amount }} {{ nutrient.unit }}
         </li>
     </ul>
 
@@ -47,7 +46,7 @@
 </aside>
 
 <!-- Recipe summary, render HTML tags -->
-<section>{{ recipe.summary | unescape }}</section>
+<section [innerHtml]="recipe.summary"></section>
 
 <main>
     <p>Time: {{ recipe.time }} minutes</p>
@@ -68,25 +67,29 @@
                 <li *ngFor="let step of instruction.steps">
                     <p>{{ step.number }}. {{ step.step }}</p>
                     <!-- Ingredients per step -->
-                    <h4>Ingredients:</h4>
-                    <ul>
-                        <li *ngFor="let ingredient of step.ingredients">
-                            <p>{{ ingredient.name }}</p>
-                            <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
-                            <img [src]="'https://spoonacular.com/cdn/ingredients_100x100/' + ingredient.image"
-                                [alt]="ingredient.name">
-                        </li>
-                    </ul>
+                    <div *ngIf="step.ingredients.length > 0">
+                        <h4>Ingredients:</h4>
+                        <ul>
+                            <li *ngFor="let ingredient of step.ingredients">
+                                <p>{{ ingredient.name }}</p>
+                                <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
+                                <img [src]="'https://spoonacular.com/cdn/ingredients_100x100/' + ingredient.image"
+                                    [alt]="ingredient.name">
+                            </li>
+                        </ul>
+                    </div>
                     <!-- Equipment per step -->
-                    <h4>Equipment:</h4>
-                    <ul>
-                        <li *ngFor="let equipment of step.equipment">
-                            <p>{{ equipment.name }}</p>
-                            <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
-                            <img [src]="'https://spoonacular.com/cdn/equipment_100x100/' + equipment.image"
-                                [alt]="equipment.name">
-                        </li>
-                    </ul>
+                    <div *ngIf="step.equipment.length > 0">
+                        <h4>Equipment:</h4>
+                        <ul>
+                            <li *ngFor="let equipment of step.equipment">
+                                <p>{{ equipment.name }}</p>
+                                <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
+                                <img [src]="'https://spoonacular.com/cdn/equipment_100x100/' + equipment.image"
+                                    [alt]="equipment.name">
+                            </li>
+                        </ul>
+                    </div>
                 </li>
             </ol>
         </li>
