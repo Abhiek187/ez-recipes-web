@@ -28,7 +28,6 @@
     "@angular/compiler-cli": "^14.0.0",
     "@types/jasmine": "~4.0.0",
     "jasmine-core": "~4.1.0",
-    "ez-recipes-server": "Abhiek187/ez-recipes-server#8d3d5060af8b72d9e54099bbad60f203e91ccef3",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
