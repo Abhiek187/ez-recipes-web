@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Recipe } from '../models/recipe.model';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { mockRecipe } from '../models/recipe.mock';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,14 @@ export class RecipeService {
     return this.http
       .get<Recipe>(environment.recipeApiUrl)
       .pipe(catchError(this.handleError));
+  }
+
+  // Load a sample recipe to avoid hitting the API while testing the UI
+  getMockRecipe(): Observable<Recipe> {
+    return new Observable((subscriber) => {
+      subscriber.next(mockRecipe);
+      subscriber.complete();
+    });
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

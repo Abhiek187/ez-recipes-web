@@ -14,7 +14,8 @@ export class AppComponent {
 
   getRandomRecipe() {
     // Show a random, low-effort recipe
-    this.recipeService.getRandomRecipe().subscribe((recipe: Recipe) => {
+    // TODO: replace the mock call with the API call in prod
+    this.recipeService.getMockRecipe().subscribe((recipe: Recipe) => {
       this.recipe = recipe;
       console.log(recipe);
     });
