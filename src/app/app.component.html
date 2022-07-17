@@ -1,4 +1,4 @@
-<h1>EZ Recipe</h1>
+<app-navbar></app-navbar>
 <!-- Hide the find recipe button once a recipe is fetched -->
 <button type="button" *ngIf="recipe === undefined" (click)="getRandomRecipe()">Find me a recipe!</button>
 <app-recipe *ngIf="recipe !== undefined" [recipe]="recipe"></app-recipe>
