@@ -13,7 +13,11 @@
         <mat-card-header>
             <mat-card-title>Nutrition Facts</mat-card-title>
             <mat-card-subtitle>Health Score: {{ recipe.healthScore }}%</mat-card-subtitle>
-            <mat-card-subtitle>{{ recipe.servings }} serving(s) </mat-card-subtitle>
+            <!-- Change the output based on whether there is more than 1 serving -->
+            <mat-card-subtitle [ngPlural]="recipe.servings">
+                <ng-template ngPluralCase="1">{{ recipe.servings }} serving</ng-template>
+                <ng-template ngPluralCase="other">{{ recipe.servings }} servings</ng-template>
+            </mat-card-subtitle>
         </mat-card-header>
         <!-- inset dividers don't extend the full width -->
         <mat-divider inset></mat-divider>
