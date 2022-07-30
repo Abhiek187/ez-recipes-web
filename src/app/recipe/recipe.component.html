@@ -1,38 +1,38 @@
 <!-- Recipe header -->
-<header>
-    <a [href]="recipe.url" target="_blank" rel="noopener noreferrer">
-        <h1>{{ recipe.name }}</h1>
+<header class="recipe-header">
+    <!-- Show the recipe name and a link to its source next to it -->
+    <h1>{{ recipe.name }}</h1>
+    <a mat-icon-button [href]="recipe.url" target="_blank" rel="noopener noreferrer" aria-label="Open recipe source">
+        <mat-icon>link</mat-icon>
     </a>
-    <button type="button">Share</button>
 </header>
 
-<aside>
+<aside class="recipe-aside">
     <!-- Nutritional information -->
-    <h2>Nutrition Facts</h2>
-    <p>Health Score: {{ recipe.healthScore }}%</p>
-    <!-- <h3>Diet Labels:</h3>
-    <ul>
-        <li *ngFor="let dietLabel of recipe.dietLabels">{{ dietLabel }}</li>
-    </ul>
-    <h3>Health Labels:</h3>
-    <ul>
-        <li *ngFor="let healthLabel of recipe.healthLabels">{{ healthLabel }}</li>
-    </ul>
-    <p>Cautions:</p>
-    <ul>
-        <li *ngFor="let caution of recipe.cautions">{{ caution }}</li>
-    </ul> -->
-    <p>{{ recipe.servings }} serving(s)</p>
-    <ul>
-        <li *ngFor="let nutrient of recipe.nutrients">
-            {{ nutrient.name }}: {{ nutrient.amount }} {{ nutrient.unit }}
-        </li>
-    </ul>
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Nutrition Facts</mat-card-title>
+            <mat-card-subtitle>Health Score: {{ recipe.healthScore }}%</mat-card-subtitle>
+            <mat-card-subtitle>{{ recipe.servings }} serving(s) </mat-card-subtitle>
+        </mat-card-header>
+        <!-- inset dividers don't extend the full width -->
+        <mat-divider inset></mat-divider>
+        <mat-card-content>
+            <mat-list dense>
+                <mat-list-item class="nutrient" *ngFor="let nutrient of recipe.nutrients">
+                    <span class="nutrient-name"
+                        [ngClass]="{'nutrient-heading': nutrientHeadings.includes(nutrient.name)}">
+                        {{ nutrient.name }}
+                    </span>
+                    <span class="nutrient-amount">{{ nutrient.amount }} {{ nutrient.unit }}</span>
+                </mat-list-item>
+            </mat-list>
+        </mat-card-content>
+    </mat-card>
 
     <!-- Recipe image -->
     <figure>
-        <img [src]="recipe.image" [alt]="recipe.name" width="recipe.images.REGULAR.width"
-            height="recipe.images.REGULAR.height">
+        <img [src]="recipe.image" [alt]="recipe.name" width="312" height="231">
         <figcaption>
             Image © <a [href]="recipe.sourceUrl" target="_blank" rel="noopener noreferrer">
                 {{ recipe.credit }}
@@ -40,9 +40,10 @@
         </figcaption>
     </figure>
 
-    <button type="button">Save</button>
-    <button type="button">I Made This!</button>
-    <button type="button">Show Me Another Recipe!</button>
+    <div class="share-button-container">
+        <button mat-raised-button color="warn">I Made This!</button>
+        <button mat-raised-button color="accent">Show Me Another Recipe!</button>
+    </div>
 </aside>
 
 <!-- Recipe summary, render HTML tags -->
