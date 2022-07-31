@@ -56,7 +56,12 @@
 </aside>
 
 <!-- Recipe summary, render HTML tags -->
-<section [innerHtml]="recipe.summary"></section>
+<section>
+    <mat-card class="recipe-summary-card">
+        <mat-icon fontIcon="lightbulb"></mat-icon>
+        <mat-card-content [innerHtml]="recipe.summary"></mat-card-content>
+    </mat-card>
+</section>
 
 <main>
     <!-- Ingredients -->

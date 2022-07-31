@@ -10,38 +10,46 @@
   justify-content: space-around;
   margin-left: 10px;
   margin-right: 10px;
+
+  .nutrient-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 10px !important;
+
+    .nutrient-name {
+      text-align: start;
+    }
+
+    .nutrient-heading {
+      font-weight: bold;
+    }
+
+    .nutrient-amount {
+      text-align: end;
+    }
+  }
+
+  /* Center image */
+  .recipe-image {
+    display: block;
+    margin: 0 auto 5px auto; /* top right bottom left */
+  }
+
+  .recipe-time {
+    text-align: center;
+  }
+
+  .share-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
 }
 
-.nutrient-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  margin-top: 10px !important;
-}
+/* Material design color tool: https://material.io/resources/color */
+$yellow-300: #fff176;
 
-.nutrient-name {
-  text-align: start;
-}
-
-.nutrient-amount {
-  text-align: end;
-}
-
-.nutrient-heading {
-  font-weight: bold;
-}
-
-/* Center image */
-.recipe-image {
-  display: block;
-  margin: 0 auto 5px auto; /* top right bottom left */
-}
-
-.recipe-time {
-  text-align: center;
-}
-
-.share-button-container {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+.recipe-summary-card {
+  background-color: $yellow-300;
+  margin: 10px;
 }
