@@ -58,7 +58,10 @@
 <!-- Recipe summary, render HTML tags -->
 <section>
     <mat-card class="recipe-summary-card">
-        <mat-icon fontIcon="lightbulb"></mat-icon>
+        <mat-card-header class="recipe-summary-card-header">
+            <mat-card-title>Summary</mat-card-title>
+            <mat-icon class="lightbulb-icon">tips_and_updates</mat-icon>
+        </mat-card-header>
         <mat-card-content [innerHtml]="recipe.summary"></mat-card-content>
     </mat-card>
 </section>

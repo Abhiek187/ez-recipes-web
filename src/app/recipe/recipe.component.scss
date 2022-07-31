@@ -52,4 +52,15 @@ $yellow-300: #fff176;
 .recipe-summary-card {
   background-color: $yellow-300;
   margin: 10px;
+
+  .recipe-summary-card-header {
+    justify-content: center;
+  }
+
+  /* Position the lightbulb icon at the top right of the card */
+  .lightbulb-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
 }
