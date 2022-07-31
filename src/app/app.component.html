@@ -1,2 +1,8 @@
-<button type="button" (click)="getRandomRecipe()">Find me a recipe!</button>
+<app-navbar></app-navbar>
+<!-- Hide the find recipe button once a recipe is fetched -->
+<div class="find-recipe-button-container" *ngIf="recipe === undefined">
+    <button mat-raised-button color="accent" class="find-recipe-button" (click)="getRandomRecipe()">
+        Find me a recipe!
+    </button>
+</div>
 <app-recipe *ngIf="recipe !== undefined" [recipe]="recipe"></app-recipe>
