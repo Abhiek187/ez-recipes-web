@@ -55,25 +55,35 @@
     </div>
 </aside>
 
-<!-- Recipe summary, render HTML tags -->
-<section>
+<section class="recipe-section">
+    <!-- Recipe summary -->
     <mat-card class="recipe-summary-card">
-        <mat-card-header class="recipe-summary-card-header">
+        <mat-card-header class="recipe-summary-header">
             <mat-card-title>Summary</mat-card-title>
             <mat-icon class="lightbulb-icon">tips_and_updates</mat-icon>
         </mat-card-header>
+        <!-- Render HTML tags -->
         <mat-card-content [innerHtml]="recipe.summary"></mat-card-content>
+    </mat-card>
+
+    <!-- Ingredients -->
+    <mat-card class="recipe-ingredients-card">
+        <mat-card-header class="recipe-ingredients-header">
+            <mat-card-title>Ingredients</mat-card-title>
+        </mat-card-header>
+        <mat-divider inset></mat-divider>
+        <mat-card-content>
+            <div class="ingredient-grid">
+                <ng-container *ngFor="let ingredient of recipe.ingredients">
+                    <p class="ingredient-amount">{{ ingredient.amount }} {{ ingredient.unit }}</p>
+                    <p class="ingredient-name">{{ ingredient.name }}</p>
+                </ng-container>
+            </div>
+        </mat-card-content>
     </mat-card>
 </section>
 
 <main>
-    <!-- Ingredients -->
-    <h2>Ingredients</h2>
-    <ul>
-        <li *ngFor="let ingredient of recipe.ingredients">
-            {{ ingredient.amount }} {{ ingredient.unit }} of {{ ingredient.name }}
-        </li>
-    </ul>
     <!-- Steps -->
     <h2>Steps</h2>
     <ul>
