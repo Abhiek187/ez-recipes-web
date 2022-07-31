@@ -8,19 +8,40 @@
 .recipe-aside {
   display: flex;
   justify-content: space-around;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
-.nutrient {
-  display: flex;
-  justify-content: space-between;
+.nutrient-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 10px !important;
+}
+
+.nutrient-name {
+  text-align: start;
+}
+
+.nutrient-amount {
+  text-align: end;
 }
 
 .nutrient-heading {
   font-weight: bold;
 }
 
+/* Center image */
+.recipe-image {
+  display: block;
+  margin: 0 auto 5px auto; /* top right bottom left */
+}
+
+.recipe-time {
+  text-align: center;
+}
+
 .share-button-container {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   gap: 10px;
 }

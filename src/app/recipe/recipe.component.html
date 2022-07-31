@@ -22,31 +22,36 @@
         <!-- inset dividers don't extend the full width -->
         <mat-divider inset></mat-divider>
         <mat-card-content>
-            <mat-list dense>
-                <mat-list-item class="nutrient" *ngFor="let nutrient of recipe.nutrients">
-                    <span class="nutrient-name"
-                        [ngClass]="{'nutrient-heading': nutrientHeadings.includes(nutrient.name)}">
+            <div class="nutrient-grid">
+                <ng-container *ngFor="let nutrient of recipe.nutrients">
+                    <p class="nutrient-name" [ngClass]="{'nutrient-heading': nutrientHeadings.includes(nutrient.name)}">
                         {{ nutrient.name }}
-                    </span>
-                    <span class="nutrient-amount">{{ nutrient.amount }} {{ nutrient.unit }}</span>
-                </mat-list-item>
-            </mat-list>
+                    </p>
+                    <p class="nutrient-amount">{{ nutrient.amount }} {{ nutrient.unit }}</p>
+                </ng-container>
+            </div>
         </mat-card-content>
     </mat-card>
 
-    <!-- Recipe image -->
-    <figure>
-        <img [src]="recipe.image" [alt]="recipe.name" width="312" height="231">
-        <figcaption>
-            Image © <a [href]="recipe.sourceUrl" target="_blank" rel="noopener noreferrer">
-                {{ recipe.credit }}
-            </a>
-        </figcaption>
-    </figure>
+    <div class="recipe-image-buttons-container">
+        <!-- Recipe image -->
+        <figure>
+            <img class="recipe-image" [src]="recipe.image" [alt]="recipe.name" width="312" height="231">
+            <figcaption class="mat-caption">
+                Image © <a [href]="recipe.sourceUrl" target="_blank" rel="noopener noreferrer">
+                    {{ recipe.credit }}
+                </a>
+            </figcaption>
+        </figure>
 
-    <div class="share-button-container">
-        <button mat-raised-button color="warn">I Made This!</button>
-        <button mat-raised-button color="accent">Show Me Another Recipe!</button>
+        <h3 class="recipe-time">
+            <b>Time:</b> {{ recipe.time }} minutes
+        </h3>
+
+        <div class="share-button-container">
+            <button mat-raised-button color="warn">I Made This!</button>
+            <button mat-raised-button color="accent">Show Me Another Recipe!</button>
+        </div>
     </div>
 </aside>
 
@@ -54,7 +59,6 @@
 <section [innerHtml]="recipe.summary"></section>
 
 <main>
-    <p>Time: {{ recipe.time }} minutes</p>
     <!-- Ingredients -->
     <h2>Ingredients</h2>
     <ul>
