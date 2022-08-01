@@ -113,6 +113,10 @@
     margin: 10px auto; /* top right bottom left */
     width: 45%;
 
+    @media screen and (max-width: 800px) {
+      width: 100%;
+    }
+
     .step-container,
     .step-ingredients-container,
     .step-equipment-container {
@@ -147,7 +151,7 @@
       .step-equipment-list-item {
         display: flex;
         flex-direction: column;
-        justify-content: end;
+        justify-content: flex-end;
         align-items: center;
         gap: 5px;
       }
