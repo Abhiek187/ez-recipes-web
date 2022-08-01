@@ -85,42 +85,48 @@
 
 <main>
     <!-- Steps -->
-    <h2>Steps</h2>
-    <ul>
-        <li *ngFor="let instruction of recipe.instructions">
-            <!-- Instruction section -->
-            <h3>{{ instruction.name }}</h3>
-            <ol>
-                <li *ngFor="let step of instruction.steps">
-                    <p>{{ step.number }}. {{ step.step }}</p>
-                    <!-- Ingredients per step -->
-                    <div *ngIf="step.ingredients.length > 0">
-                        <h4>Ingredients:</h4>
-                        <ul>
-                            <li *ngFor="let ingredient of step.ingredients">
-                                <p>{{ ingredient.name }}</p>
-                                <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
-                                <img [src]="'https://spoonacular.com/cdn/ingredients_100x100/' + ingredient.image"
-                                    [alt]="ingredient.name">
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- Equipment per step -->
-                    <div *ngIf="step.equipment.length > 0">
-                        <h4>Equipment:</h4>
-                        <ul>
-                            <li *ngFor="let equipment of step.equipment">
-                                <p>{{ equipment.name }}</p>
-                                <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
-                                <img [src]="'https://spoonacular.com/cdn/equipment_100x100/' + equipment.image"
-                                    [alt]="equipment.name">
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            </ol>
-        </li>
-    </ul>
+    <h2 class="steps-header">Steps</h2>
+    <!-- If applicable, split each instruction into separate sections -->
+    <div class="instructions-container" *ngFor="let instruction of recipe.instructions">
+        <h3 class="instruction-header">{{ instruction.name }}</h3>
+        <!-- Display each step in a grid -->
+        <mat-card class="step-card" *ngFor="let step of instruction.steps">
+            <mat-card-content>
+                <!-- Step number & directions -->
+                <div class="step-container">
+                    <h4 class="step-number">{{ step.number }}</h4>
+                    <p>{{ step.step }}</p>
+                </div>
+                <mat-divider></mat-divider>
+
+                <!-- Ingredients per step -->
+                <div class="step-ingredients-container" *ngIf="step.ingredients.length > 0">
+                    <h4 class="step-ingredients-header">Ingredients</h4>
+                    <ul class="step-ingredients-list">
+                        <li class="step-ingredients-list-item" *ngFor="let ingredient of step.ingredients">
+                            <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
+                            <img [src]="'https://spoonacular.com/cdn/ingredients_100x100/' + ingredient.image"
+                                [alt]="ingredient.name">
+                            <p>{{ ingredient.name }}</p>
+                        </li>
+                    </ul>
+                </div>
+                <mat-divider *ngIf="step.equipment.length > 0"></mat-divider>
+
+                <!-- Equipment per step -->
+                <div class="step-equipment-container" *ngIf="step.equipment.length > 0">
+                    <h4 class="step-equipment-header">Equipment</h4>
+                    <ul class="step-equipment-list">
+                        <li class="step-equipment-list-item" *ngFor="let equipment of step.equipment">
+                            <img [src]="'https://spoonacular.com/cdn/equipment_100x100/' + equipment.image"
+                                [alt]="equipment.name">
+                            <p>{{ equipment.name }}</p>
+                        </li>
+                    </ul>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
 </main>
 
 <mat-divider></mat-divider>
