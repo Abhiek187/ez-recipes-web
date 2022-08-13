@@ -11,10 +11,44 @@
 }
 
 .recipe-aside {
-  display: flex;
-  justify-content: space-around;
   margin-left: 10px;
   margin-right: 10px;
+
+  /* Display recipe information side-by-side if the screen is large enough */
+  @media screen and (min-width: 700px) {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .recipe-image-buttons-container {
+    padding-bottom: 16px;
+
+    .recipe-figure {
+      /* Center image */
+      margin-left: auto;
+      margin-right: auto;
+
+      .recipe-image {
+        display: block;
+        margin: 0 auto 5px auto; /* top right bottom left */
+      }
+
+      .recipe-caption {
+        text-align: center;
+      }
+    }
+
+    .recipe-time {
+      text-align: center;
+      font-weight: normal;
+    }
+
+    .share-button-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+  }
 
   .nutrient-grid {
     display: grid;
@@ -33,30 +67,16 @@
       text-align: end;
     }
   }
-
-  /* Center image */
-  .recipe-image {
-    display: block;
-    margin: 0 auto 5px auto; /* top right bottom left */
-  }
-
-  .recipe-time {
-    text-align: center;
-    font-weight: normal;
-  }
-
-  .share-button-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
 }
 
 .recipe-section {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-start;
-  gap: 10px;
+  @media screen and (min-width: 700px) {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
   margin: 10px;
 
   > * {
@@ -68,6 +88,7 @@
 
   .recipe-summary-card {
     background-color: $yellow-300;
+    margin-bottom: 16px;
 
     .recipe-summary-header {
       justify-content: center;
