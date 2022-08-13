@@ -1,3 +1,6 @@
+$side-width-breakpoint: 700px;
+$step-breakpoint: 800px;
+
 .recipe-header {
   display: flex;
   justify-content: center;
@@ -15,7 +18,7 @@
   margin-right: 10px;
 
   /* Display recipe information side-by-side if the screen is large enough */
-  @media screen and (min-width: 700px) {
+  @media screen and (min-width: $side-width-breakpoint) {
     display: flex;
     justify-content: space-around;
   }
@@ -50,27 +53,36 @@
     }
   }
 
-  .nutrient-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    margin-top: 10px !important;
-
-    .nutrient-name {
-      text-align: start;
+  .nutrition-card {
+    @media screen and (max-width: $side-width-breakpoint) {
+      /* Make the nutrition label smaller on small screens */
+      width: 200px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .nutrient-heading {
-      font-weight: bold;
-    }
+    .nutrient-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: 10px !important;
 
-    .nutrient-amount {
-      text-align: end;
+      .nutrient-name {
+        text-align: start;
+      }
+
+      .nutrient-heading {
+        font-weight: bold;
+      }
+
+      .nutrient-amount {
+        text-align: end;
+      }
     }
   }
 }
 
 .recipe-section {
-  @media screen and (min-width: 700px) {
+  @media screen and (min-width: $side-width-breakpoint) {
     display: flex;
     justify-content: space-around;
     align-items: flex-start;
@@ -79,16 +91,13 @@
 
   margin: 10px;
 
-  > * {
-    flex: 1;
-  }
-
   /* Material design color tool: https://material.io/resources/color */
   $yellow-300: #fff176;
 
   .recipe-summary-card {
     background-color: $yellow-300;
     margin-bottom: 16px;
+    flex-basis: 50%; /* take up 50% of the flexbox */
 
     .recipe-summary-header {
       justify-content: center;
@@ -102,18 +111,30 @@
     }
   }
 
-  .recipe-ingredients-header {
-    justify-content: center;
-  }
+  .recipe-ingredients-card {
+    flex-basis: 300px;
+    margin-left: auto;
+    margin-right: auto;
 
-  .ingredient-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    margin-top: 10px !important;
+    @media screen and (max-width: $side-width-breakpoint) {
+      /* Make the ingredients label smaller on small screens */
+      width: 300px;
+    }
 
-    .ingredient-amount,
-    .ingredient-name {
-      text-align: center;
+    .recipe-ingredients-header {
+      justify-content: center;
+    }
+
+    .ingredient-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: 10px !important;
+      row-gap: 5px; /* space out each ingredient to improve readability */
+
+      .ingredient-amount,
+      .ingredient-name {
+        text-align: center;
+      }
     }
   }
 }
@@ -135,7 +156,7 @@
     margin: 10px auto; /* top right bottom left */
     width: 45%;
 
-    @media screen and (max-width: 800px) {
+    @media screen and (max-width: $step-breakpoint) {
       width: 100%;
     }
 
