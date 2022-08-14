@@ -50,6 +50,14 @@ $step-breakpoint: 800px;
       display: flex;
       justify-content: center;
       gap: 10px;
+
+      .made-container,
+      .show-recipe-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+      }
     }
   }
 

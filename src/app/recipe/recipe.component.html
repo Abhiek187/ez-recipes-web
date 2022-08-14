@@ -24,8 +24,18 @@
         </h2>
 
         <div class="share-button-container">
-            <button mat-raised-button color="warn">I Made This!</button>
-            <button mat-raised-button color="accent">Show Me Another Recipe!</button>
+            <div class="made-container">
+                <button mat-mini-fab color="warn" aria-label="I made this">
+                    <mat-icon>restaurant</mat-icon>
+                </button>
+                <p>I Made This!</p>
+            </div>
+            <div class="show-recipe-container">
+                <button mat-mini-fab color="accent" aria-label="Show another recipe">
+                    <mat-icon>receipt_long</mat-icon>
+                </button>
+                <p>Show Me Another Recipe!</p>
+            </div>
         </div>
     </div>
 
