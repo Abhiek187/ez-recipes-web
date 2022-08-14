@@ -1,3 +1,6 @@
+$side-width-breakpoint: 700px;
+$step-breakpoint: 800px;
+
 .recipe-header {
   display: flex;
   justify-content: center;
@@ -11,63 +14,98 @@
 }
 
 .recipe-aside {
-  display: flex;
-  justify-content: space-around;
   margin-left: 10px;
   margin-right: 10px;
 
-  .nutrient-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    margin-top: 10px !important;
-
-    .nutrient-name {
-      text-align: start;
-    }
-
-    .nutrient-heading {
-      font-weight: bold;
-    }
-
-    .nutrient-amount {
-      text-align: end;
-    }
-  }
-
-  /* Center image */
-  .recipe-image {
-    display: block;
-    margin: 0 auto 5px auto; /* top right bottom left */
-  }
-
-  .recipe-time {
-    text-align: center;
-    font-weight: normal;
-  }
-
-  .share-button-container {
+  /* Display recipe information side-by-side if the screen is large enough */
+  @media screen and (min-width: $side-width-breakpoint) {
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    justify-content: space-around;
+  }
+
+  .recipe-image-buttons-container {
+    padding-bottom: 16px;
+
+    .recipe-figure {
+      /* Center image */
+      margin-left: auto;
+      margin-right: auto;
+
+      .recipe-image {
+        display: block;
+        margin: 0 auto 5px auto; /* top right bottom left */
+      }
+
+      .recipe-caption {
+        text-align: center;
+      }
+    }
+
+    .recipe-time {
+      text-align: center;
+      font-weight: normal;
+    }
+
+    .share-button-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+
+      .made-container,
+      .show-recipe-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+      }
+    }
+  }
+
+  .nutrition-card {
+    @media screen and (max-width: $side-width-breakpoint) {
+      /* Make the nutrition label smaller on small screens */
+      width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .nutrient-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: 10px !important;
+
+      .nutrient-name {
+        text-align: start;
+      }
+
+      .nutrient-heading {
+        font-weight: bold;
+      }
+
+      .nutrient-amount {
+        text-align: end;
+      }
+    }
   }
 }
 
 .recipe-section {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-start;
-  gap: 10px;
-  margin: 10px;
-
-  > * {
-    flex: 1;
+  @media screen and (min-width: $side-width-breakpoint) {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 10px;
   }
+
+  margin: 10px;
 
   /* Material design color tool: https://material.io/resources/color */
   $yellow-300: #fff176;
 
   .recipe-summary-card {
     background-color: $yellow-300;
+    margin-bottom: 16px;
+    flex-basis: 50%; /* take up 50% of the flexbox */
 
     .recipe-summary-header {
       justify-content: center;
@@ -81,18 +119,30 @@
     }
   }
 
-  .recipe-ingredients-header {
-    justify-content: center;
-  }
+  .recipe-ingredients-card {
+    flex-basis: 300px;
+    margin-left: auto;
+    margin-right: auto;
 
-  .ingredient-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    margin-top: 10px !important;
+    @media screen and (max-width: $side-width-breakpoint) {
+      /* Make the ingredients label smaller on small screens */
+      width: 300px;
+    }
 
-    .ingredient-amount,
-    .ingredient-name {
-      text-align: center;
+    .recipe-ingredients-header {
+      justify-content: center;
+    }
+
+    .ingredient-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: 10px !important;
+      row-gap: 5px; /* space out each ingredient to improve readability */
+
+      .ingredient-amount,
+      .ingredient-name {
+        text-align: center;
+      }
     }
   }
 }
@@ -114,7 +164,7 @@
     margin: 10px auto; /* top right bottom left */
     width: 45%;
 
-    @media screen and (max-width: 800px) {
+    @media screen and (max-width: $step-breakpoint) {
       width: 100%;
     }
 

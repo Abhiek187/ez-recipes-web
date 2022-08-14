@@ -8,8 +8,39 @@
 </header>
 
 <aside class="recipe-aside">
+    <div class="recipe-image-buttons-container">
+        <!-- Recipe image -->
+        <figure class="recipe-figure">
+            <img class="recipe-image" [src]="recipe.image" [alt]="recipe.name" width="312" height="231">
+            <figcaption class="recipe-caption mat-caption">
+                Image © <a [href]="recipe.sourceUrl" target="_blank" rel="noopener noreferrer">
+                    {{ recipe.credit }}
+                </a>
+            </figcaption>
+        </figure>
+
+        <h2 class="recipe-time">
+            <b>Time:</b> {{ recipe.time }} minutes
+        </h2>
+
+        <div class="share-button-container">
+            <div class="made-container">
+                <button mat-mini-fab color="warn" aria-label="I made this">
+                    <mat-icon>restaurant</mat-icon>
+                </button>
+                <p>I Made This!</p>
+            </div>
+            <div class="show-recipe-container">
+                <button mat-mini-fab color="accent" aria-label="Show another recipe">
+                    <mat-icon>receipt_long</mat-icon>
+                </button>
+                <p>Show Me Another Recipe!</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Nutritional information -->
-    <mat-card>
+    <mat-card class="nutrition-card">
         <mat-card-header>
             <mat-card-title>Nutrition Facts</mat-card-title>
             <mat-card-subtitle>Health Score: {{ recipe.healthScore }}%</mat-card-subtitle>
@@ -27,32 +58,14 @@
                     <p class="nutrient-name" [ngClass]="{'nutrient-heading': nutrientHeadings.includes(nutrient.name)}">
                         {{ nutrient.name }}
                     </p>
-                    <p class="nutrient-amount">{{ nutrient.amount }} {{ nutrient.unit }}</p>
+                    <!-- Round the nutritional information to whole numbers -->
+                    <p class="nutrient-amount">
+                        {{ nutrient.amount | number: '1.0-0' }} {{ nutrient.unit }}
+                    </p>
                 </ng-container>
             </div>
         </mat-card-content>
     </mat-card>
-
-    <div class="recipe-image-buttons-container">
-        <!-- Recipe image -->
-        <figure>
-            <img class="recipe-image" [src]="recipe.image" [alt]="recipe.name" width="312" height="231">
-            <figcaption class="mat-caption">
-                Image © <a [href]="recipe.sourceUrl" target="_blank" rel="noopener noreferrer">
-                    {{ recipe.credit }}
-                </a>
-            </figcaption>
-        </figure>
-
-        <h2 class="recipe-time">
-            <b>Time:</b> {{ recipe.time }} minutes
-        </h2>
-
-        <div class="share-button-container">
-            <button mat-raised-button color="warn">I Made This!</button>
-            <button mat-raised-button color="accent">Show Me Another Recipe!</button>
-        </div>
-    </div>
 </aside>
 
 <section class="recipe-section">
@@ -76,7 +89,8 @@
             <div class="ingredient-grid">
                 <ng-container *ngFor="let ingredient of recipe.ingredients">
                     <p class="ingredient-amount">{{ ingredient.amount }} {{ ingredient.unit }}</p>
-                    <p class="ingredient-name">{{ ingredient.name }}</p>
+                    <!-- Capitalize the ingredient names -->
+                    <p class="ingredient-name">{{ ingredient.name | titlecase }}</p>
                 </ng-container>
             </div>
         </mat-card-content>
