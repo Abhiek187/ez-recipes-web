@@ -3,7 +3,7 @@ export type Recipe = {
   name: string;
   url: string;
   image: string;
-  credit: string;
+  credit: string | null;
   sourceUrl: string;
   healthScore: number;
   time: number;
