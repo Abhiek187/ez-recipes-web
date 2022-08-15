@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Recipe } from '../models/recipe.model';
 
 @Component({
@@ -8,6 +8,7 @@ import { Recipe } from '../models/recipe.model';
 })
 export class RecipeComponent implements OnInit {
   @Input() recipe!: Recipe;
+  @Output() loadRecipe = new EventEmitter();
 
   // Nutrients that should be bold on the nutrition label
   nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
@@ -15,4 +16,9 @@ export class RecipeComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
+
+  onShowAnotherRecipe() {
+    // Notify the app component to load another recipe
+    this.loadRecipe.emit();
+  }
 }
