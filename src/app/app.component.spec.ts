@@ -1,8 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -11,8 +15,11 @@ describe('AppComponent', () => {
         RouterTestingModule,
         HttpClientTestingModule,
         MatSnackBarModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
       ],
-      declarations: [AppComponent],
+      declarations: [AppComponent, NavbarComponent],
     }).compileComponents();
   });
 

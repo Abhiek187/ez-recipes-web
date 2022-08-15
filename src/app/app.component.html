@@ -6,4 +6,4 @@
     </button>
 </div>
 <mat-spinner diameter="50" class="progress-spinner" *ngIf="isLoading"></mat-spinner>
-<app-recipe *ngIf="recipe !== undefined" [recipe]="recipe"></app-recipe>
+<app-recipe *ngIf="recipe !== undefined" [recipe]="recipe" (loadRecipe)="getRandomRecipe()"></app-recipe>
