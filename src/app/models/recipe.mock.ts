@@ -1,7 +1,7 @@
 import { Recipe } from './recipe.model';
 
 // Normal
-const mockRecipeGrilledFish: Recipe = {
+const grilledFish: Recipe = {
   id: 645710,
   name: 'Grilled Fish Sandwiches',
   url: 'https://spoonacular.com/grilled-fish-sandwiches-645710',
@@ -298,7 +298,7 @@ const mockRecipeGrilledFish: Recipe = {
 };
 
 // Lots of steps, missing ingredient image
-const mockREcipeGingerbread: Recipe = {
+const gingerbread: Recipe = {
   id: 64694,
   name: 'Gingerbread',
   url: 'https://spoonacular.com/gingerbread-64694',
@@ -582,7 +582,7 @@ const mockREcipeGingerbread: Recipe = {
 };
 
 // Missing image credit
-const mockRecipeJambalayaStew: Recipe = {
+const jambalayaStew: Recipe = {
   id: 648432,
   name: 'Jambalaya Stew',
   url: 'https://spoonacular.com/jambalaya-stew-648432',
@@ -817,7 +817,7 @@ const mockRecipeJambalayaStew: Recipe = {
 };
 
 // Contains instruction name
-const mockRecipeChocolateCupcake: Recipe = {
+const chocolateCupcake: Recipe = {
   id: 644783,
   name: 'Gluten And Dairy Free Chocolate Cupcakes',
   url: 'https://spoonacular.com/gluten-and-dairy-free-chocolate-cupcakes-644783',
@@ -1251,4 +1251,4 @@ const mockRecipeChocolateCupcake: Recipe = {
   ],
 };
 
-export const mockRecipe = mockRecipeChocolateCupcake;
+export const mockRecipe = grilledFish;
