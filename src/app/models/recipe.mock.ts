@@ -1263,4 +1263,4 @@ abstract class MockRecipes {
   };
 }
 
-export const mockRecipe = MockRecipes.grilledFish;
+export const mockRecipe = MockRecipes.chocolateCupcake;
