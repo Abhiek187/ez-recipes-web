@@ -25,15 +25,14 @@ export class AppComponent {
     // TODO: replace the mock call with the API call in prod
     this.recipeService.getMockRecipe().subscribe({
       next: (recipe: Recipe) => {
+        this.isLoading = false;
         this.recipe = recipe;
         console.log(recipe);
       },
-      error: (error: string) => {
+      error: (error: Error) => {
         // Show a snackbar explaining that an error occurred
-        this.snackBar.open(error, 'Dismiss');
-      },
-      complete: () => {
         this.isLoading = false;
+        this.snackBar.open(error.message, 'Dismiss');
       },
     });
   }
