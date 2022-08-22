@@ -5,13 +5,10 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { AppModule } from './app.module';
 import { mockRecipe } from './models/recipe.mock';
 import { NavbarComponent } from './navbar/navbar.component';
 import { RecipeComponent } from './recipe/recipe.component';
@@ -24,15 +21,7 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     // Import all the necessary modules and components to test the app component
     await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
-        MatSnackBarModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatButtonModule,
-      ],
-      declarations: [AppComponent, NavbarComponent],
+      imports: [AppModule, RouterTestingModule, HttpClientTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
