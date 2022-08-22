@@ -77,6 +77,7 @@ describe('RecipeService', () => {
   });
 
   it('should return a mock recipe', () => {
+    // Check that getMockRecipe returns a mock recipe
     recipeService.getMockRecipe().subscribe((data) => {
       expect(data).toBe(mockRecipe);
     });
