@@ -2,7 +2,8 @@
 <header class="recipe-header">
     <!-- Show the recipe name and a link to its source next to it -->
     <h1 class="recipe-name">{{ recipe.name }}</h1>
-    <a mat-icon-button [href]="recipe.url" target="_blank" rel="noopener noreferrer" aria-label="Open recipe source">
+    <a mat-icon-button class="recipe-link" [href]="recipe.url" target="_blank" rel="noopener noreferrer"
+        aria-label="Open recipe source">
         <mat-icon>link</mat-icon>
     </a>
 </header>
@@ -31,7 +32,8 @@
                 <p>I Made This!</p>
             </div>
             <div class="show-recipe-container">
-                <button mat-mini-fab color="accent" aria-label="Show another recipe" (click)="onShowAnotherRecipe()">
+                <button mat-mini-fab color="accent" class="show-recipe-button" aria-label="Show another recipe"
+                    (click)="onShowAnotherRecipe()">
                     <mat-icon>receipt_long</mat-icon>
                 </button>
                 <p>Show Me Another Recipe!</p>
