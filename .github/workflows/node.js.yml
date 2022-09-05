@@ -20,14 +20,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-      # Allow npm to fetch a GitHub dependency
-      # Source: https://github.com/actions/setup-node/issues/214#issuecomment-810829250
-      - name: Reconfigure git to use HTTP authentication
-        run: >
-          git config --global url."https://github.com/".insteadOf
-          ssh://git@github.com/
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
