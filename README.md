@@ -28,3 +28,11 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Docker
+
+1. Build the Docker image: `docker build . -t TAG_NAME`
+2. Run the image in a container: `docker run --rm -p 4200:4200 -d TAG_NAME`
+3. Open `localhost:4200`
+
+Run `docker kill <container id>` to shut down the image when done. The container ID can be found using `docker ps`.
