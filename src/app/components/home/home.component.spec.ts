@@ -52,9 +52,6 @@ describe('HomeComponent', () => {
     // The spinner should be hidden
     expect(homeComponent.isLoading).toBeFalse();
     expect(rootElement.querySelector('.progress-spinner')).toBeNull();
-
-    // No recipe should appear
-    expect(homeComponent.recipe).toBeUndefined();
   });
 
   it('should load a random recipe after clicking the find recipe button', fakeAsync(() => {
@@ -76,15 +73,5 @@ describe('HomeComponent', () => {
     homeComponent.isLoading = true;
     fixture.detectChanges();
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
-  });
-
-  it('should show the recipe component if recipe is defined', () => {
-    // Check that the app recipe component appears after loading a recipe
-    homeComponent.recipe = mockRecipe;
-    fixture.detectChanges();
-    // debugElement allows for more Angular-specific queries
-    expect(
-      fixture.debugElement.query(By.directive(RecipeComponent))
-    ).toBeDefined();
   });
 });
