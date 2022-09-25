@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -23,7 +24,8 @@ export class RecipeComponent implements OnInit, OnDestroy {
     private recipeService: RecipeService,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private titleService: Title
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +41,10 @@ export class RecipeComponent implements OnInit, OnDestroy {
       .onRecipeChange()
       .subscribe((recipe: Recipe | null) => {
         this.recipe = recipe;
+        const prefix = 'EZ Recipes | ';
+        this.titleService.setTitle(
+          prefix + (this.recipe?.name ?? 'Recipe Not Found')
+        );
 
         /* If the ID of the recipe passed in doesn't match the recipe ID in the URL, get the recipe
          * from the URL param. (This shouldn't happen normally.)
