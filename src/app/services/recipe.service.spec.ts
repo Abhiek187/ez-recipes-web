@@ -82,4 +82,23 @@ describe('RecipeService', () => {
       expect(data).toBe(mockRecipe);
     });
   });
+
+  it('should set a recipe', () => {
+    // Check that the setRecipe method sets the recipe variable to the passed in recipe
+    recipeService.setRecipe(mockRecipe);
+
+    recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
+      expect(recipe).toBe(mockRecipe);
+    });
+  });
+
+  it('should reset a recipe', () => {
+    // Check that the resetRecipe method sets the recipe variable to null
+    recipeService.setRecipe(mockRecipe);
+    recipeService.resetRecipe();
+
+    recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
+      expect(recipe).toBeNull();
+    });
+  });
 });

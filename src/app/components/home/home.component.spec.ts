@@ -9,9 +9,7 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppModule } from 'src/app/app.module';
-import { mockRecipe } from 'src/app/models/recipe.mock';
 import { NavbarComponent } from '../navbar/navbar.component';
-import { RecipeComponent } from '../recipe/recipe.component';
 import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
