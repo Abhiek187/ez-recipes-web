@@ -43,7 +43,9 @@ export class RecipeComponent implements OnInit, OnDestroy {
         this.recipe = recipe;
         const prefix = 'EZ Recipes | ';
         this.titleService.setTitle(
-          prefix + (this.recipe?.name ?? 'Recipe Not Found')
+          prefix +
+            (this.recipe?.name ??
+              (this.isLoading ? 'Loading...' : 'Recipe Not Found'))
         );
 
         /* If the ID of the recipe passed in doesn't match the recipe ID in the URL, get the recipe
