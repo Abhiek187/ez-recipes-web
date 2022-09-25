@@ -1,0 +1,16 @@
+<!-- Hide the find recipe button once a recipe is fetched -->
+<div class="find-recipe-button-container">
+  <button
+    mat-raised-button
+    color="accent"
+    class="find-recipe-button"
+    (click)="getRandomRecipe()"
+  >
+    Find me a recipe!
+  </button>
+</div>
+<mat-spinner
+  diameter="50"
+  class="progress-spinner"
+  *ngIf="isLoading"
+></mat-spinner>

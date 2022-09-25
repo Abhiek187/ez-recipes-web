@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { mockRecipe } from '../models/recipe.mock';
+import { mockRecipe } from '../../models/recipe.mock';
 
 import { RecipeComponent } from './recipe.component';
 
@@ -48,11 +48,11 @@ describe('RecipeComponent', () => {
     // The heading should show the recipe name and URL
     const recipeName =
       rootElement.querySelector<HTMLHeadingElement>('.recipe-name');
-    expect(recipeName?.textContent).toBe(recipeComponent.recipe.name);
+    expect(recipeName?.textContent).toBe(recipeComponent.recipe!.name);
     const recipeLink =
       rootElement.querySelector<HTMLAnchorElement>('.recipe-link');
     expect(recipeLink).not.toBeNull();
-    expect(recipeLink?.href).toBe(recipeComponent.recipe.url);
+    expect(recipeLink?.href).toBe(recipeComponent.recipe!.url);
     expectLinkToOpenInNewTab(recipeLink!);
   });
 
@@ -61,21 +61,23 @@ describe('RecipeComponent', () => {
     // Check the recipe image and caption
     const recipeImage =
       rootElement.querySelector<HTMLImageElement>('.recipe-image');
-    expect(recipeImage?.src).toBe(recipeComponent.recipe.image);
-    expect(recipeImage?.alt).toBe(recipeComponent.recipe.name);
+    expect(recipeImage?.src).toBe(recipeComponent.recipe!.image);
+    expect(recipeImage?.alt).toBe(recipeComponent.recipe!.name);
     const recipeCaption =
       rootElement.querySelector<HTMLElement>('.recipe-caption');
-    expect(recipeCaption?.textContent).toContain(recipeComponent.recipe.credit);
+    expect(recipeCaption?.textContent).toContain(
+      recipeComponent.recipe!.credit
+    );
     const recipeCaptionLink =
       recipeCaption?.firstElementChild as HTMLAnchorElement;
-    expect(recipeCaptionLink.href).toBe(recipeComponent.recipe.sourceUrl);
+    expect(recipeCaptionLink.href).toBe(recipeComponent.recipe!.sourceUrl);
     expectLinkToOpenInNewTab(recipeCaptionLink);
 
     // The recipe time should be in minutes
     const recipeTime =
       rootElement.querySelector<HTMLHeadingElement>('.recipe-time');
     expect(recipeTime?.textContent).toContain(
-      `${recipeComponent.recipe.time} minutes`
+      `${recipeComponent.recipe!.time} minutes`
     );
 
     // The "I Made This!" and "Show Me Another Recipe!" buttons should be present
@@ -94,17 +96,17 @@ describe('RecipeComponent', () => {
       rootElement.querySelector<HTMLElement>('.nutrition-card');
     expect(nutritionCard?.textContent).toContain('Nutrition Facts');
     expect(nutritionCard?.textContent).toContain(
-      recipeComponent.recipe.healthScore
+      recipeComponent.recipe!.healthScore
     );
     // Servings should be plural if > 1
     expect(nutritionCard?.textContent).toContain(
-      `${recipeComponent.recipe.servings} servings`
+      `${recipeComponent.recipe!.servings} servings`
     );
 
     // Each nutrient should be displayed
     const nutritionGrid =
       nutritionCard?.querySelector<HTMLDivElement>('.nutrient-grid');
-    for (const nutrient of recipeComponent.recipe.nutrients) {
+    for (const nutrient of recipeComponent.recipe!.nutrients) {
       expect(nutritionGrid?.textContent).toContain(nutrient.name);
       // The nutrient amount should be rounded to the nearest whole number
       const roundedAmount = Math.round(nutrient.amount);
@@ -120,7 +122,7 @@ describe('RecipeComponent', () => {
     );
     expect(recipeSummaryCard?.textContent).toContain('Summary');
     expect(recipeSummaryCard?.innerHTML).toContain(
-      recipeComponent.recipe.summary
+      recipeComponent.recipe!.summary
     );
 
     // All ingredients should appear
@@ -131,7 +133,7 @@ describe('RecipeComponent', () => {
 
     const ingredientGrid =
       ingredientsCard?.querySelector<HTMLDivElement>('.ingredient-grid');
-    for (const ingredient of recipeComponent.recipe.ingredients) {
+    for (const ingredient of recipeComponent.recipe!.ingredients) {
       // The ingredient name should be in capitalized
       const capitalizedName = ingredient.name.replace(/\b\w/g, (letter) =>
         letter.toUpperCase()
@@ -151,7 +153,7 @@ describe('RecipeComponent', () => {
     for (const [
       instructionIndex,
       instruction,
-    ] of recipeComponent.recipe.instructions.entries()) {
+    ] of recipeComponent.recipe!.instructions.entries()) {
       const instructionsContainer =
         rootElement.querySelectorAll<HTMLDivElement>('.instructions-container')[
           instructionIndex
@@ -221,7 +223,7 @@ describe('RecipeComponent', () => {
 
   it('should load another recipe after pressing the button', fakeAsync(() => {
     // Check that the "Show Me Another Recipe!" button loads another recipe
-    spyOn(recipeComponent, 'onShowAnotherRecipe');
+    spyOn(recipeComponent, 'getRandomRecipe');
 
     const showRecipeButton = rootElement.querySelector<HTMLButtonElement>(
       '.show-recipe-button'
@@ -230,6 +232,6 @@ describe('RecipeComponent', () => {
     showRecipeButton?.click();
     tick(); // wait for the async tasks to complete
 
-    expect(recipeComponent.onShowAnotherRecipe).toHaveBeenCalled();
+    expect(recipeComponent.getRandomRecipe).toHaveBeenCalled();
   }));
 });

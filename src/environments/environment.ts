@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  recipeApiUrl: 'http://localhost:5000/api/recipes/random',
+  recipeBaseUrl: 'http://localhost:5000/api/recipes',
 };
 
 /*

@@ -1,6 +1,10 @@
 $side-width-breakpoint: 700px;
 $step-breakpoint: 800px;
 
+.progress-spinner {
+  margin: 10px auto;
+}
+
 .recipe-header {
   display: flex;
   justify-content: center;

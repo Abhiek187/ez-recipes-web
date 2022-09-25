@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
+
 import { Recipe } from '../models/recipe.model';
-import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { mockRecipe } from '../models/recipe.mock';
 
@@ -9,11 +10,32 @@ import { mockRecipe } from '../models/recipe.mock';
   providedIn: 'root',
 })
 export class RecipeService {
+  // Store the recipe object in the service so other components can reference it and observe changes
+  private recipe = new BehaviorSubject<Recipe | null>(null);
+
   constructor(private http: HttpClient) {}
+
+  onRecipeChange(): Observable<Recipe | null> {
+    return this.recipe.asObservable();
+  }
+
+  setRecipe(nextRecipe: Recipe) {
+    this.recipe.next(nextRecipe);
+  }
+
+  resetRecipe() {
+    this.recipe.next(null);
+  }
 
   getRandomRecipe(): Observable<Recipe> {
     return this.http
-      .get<Recipe>(environment.recipeApiUrl)
+      .get<Recipe>(`${environment.recipeBaseUrl}/random`)
+      .pipe(catchError(this.handleError));
+  }
+
+  getRecipeById(id: string): Observable<Recipe> {
+    return this.http
+      .get<Recipe>(`${environment.recipeBaseUrl}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
