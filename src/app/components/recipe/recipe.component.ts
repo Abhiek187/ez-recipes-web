@@ -74,7 +74,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
     // Get a recipe by ID
     this.isLoading = true;
 
-    this.recipeService.getMockRecipe().subscribe({
+    this.recipeService.getRecipeById(id).subscribe({
       next: (recipe: Recipe) => {
         this.isLoading = false;
         this.recipeService.setRecipe(recipe);
@@ -93,7 +93,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
 
     // Show a random, low-effort recipe
     // TODO: replace the mock call with the API call in prod
-    this.recipeService.getMockRecipe().subscribe({
+    this.recipeService.getRandomRecipe().subscribe({
       next: (recipe: Recipe) => {
         this.isLoading = false;
         this.recipeService.setRecipe(recipe);
