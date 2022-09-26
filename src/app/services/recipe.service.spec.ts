@@ -4,9 +4,9 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { mockRecipe } from '../models/recipe.mock';
-import { Recipe } from '../models/recipe.model';
 
+import { mockRecipe } from '../models/recipe.mock';
+import Recipe from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 
 describe('RecipeService', () => {
@@ -80,6 +80,25 @@ describe('RecipeService', () => {
     // Check that getMockRecipe returns a mock recipe
     recipeService.getMockRecipe().subscribe((data) => {
       expect(data).toBe(mockRecipe);
+    });
+  });
+
+  it('should set a recipe', () => {
+    // Check that the setRecipe method sets the recipe variable to the passed in recipe
+    recipeService.setRecipe(mockRecipe);
+
+    recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
+      expect(recipe).toBe(mockRecipe);
+    });
+  });
+
+  it('should reset a recipe', () => {
+    // Check that the resetRecipe method sets the recipe variable to null
+    recipeService.setRecipe(mockRecipe);
+    recipeService.resetRecipe();
+
+    recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
+      expect(recipe).toBeNull();
     });
   });
 });

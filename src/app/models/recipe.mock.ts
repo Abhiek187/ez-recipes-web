@@ -1,4 +1,4 @@
-import { Recipe } from './recipe.model';
+import Recipe from './recipe.model';
 
 // Abstract classes can hold static properties to group the mock recipes together
 abstract class MockRecipes {

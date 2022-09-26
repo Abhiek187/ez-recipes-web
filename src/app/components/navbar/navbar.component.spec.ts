@@ -27,7 +27,6 @@ describe('NavbarComponent', () => {
     // Check that the navbar contains the app name
     expect(navbarComponent).toBeTruthy();
 
-    const titleService = TestBed.inject(Title);
-    expect(rootElement.textContent).toContain(titleService.getTitle());
+    expect(rootElement.textContent).toContain('EZ Recipes');
   });
 });
