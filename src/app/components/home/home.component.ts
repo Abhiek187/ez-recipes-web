@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
-import { Recipe } from 'src/app/models/recipe.model';
+import Recipe from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
 
 @Component({

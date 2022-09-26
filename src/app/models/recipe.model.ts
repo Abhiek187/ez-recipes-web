@@ -1,4 +1,4 @@
-export type Recipe = {
+type Recipe = {
   id: number;
   name: string;
   url: string;
@@ -38,3 +38,5 @@ export type Recipe = {
     }[];
   }[];
 };
+
+export default Recipe;

@@ -2,9 +2,10 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
 
-import { Recipe } from '../models/recipe.model';
+import Recipe from '../models/recipe.model';
 import { environment } from 'src/environments/environment';
 import { mockRecipe } from '../models/recipe.mock';
+import RecipeError from '../models/recipe-error.model';
 
 @Injectable({
   providedIn: 'root',
@@ -48,18 +49,20 @@ export class RecipeService {
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
+    console.error(error);
+    let errorMessage = '';
+
     if (error.status === 0) {
       // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error);
+      errorMessage =
+        'An unexpected error occurred. The server may be down or there may be network issues. Please try again later.';
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong.
-      console.error(
-        `Backend returned code ${error.status}, body was: `,
-        error.error
-      );
+      const errorResponse = error.error as RecipeError;
+      errorMessage = errorResponse.error; // error.error.error (lol)
     }
     // Return an observable with a user-facing error message.
-    return throwError(() => new Error(error.message));
+    return throwError(() => new Error(errorMessage));
   }
 }
