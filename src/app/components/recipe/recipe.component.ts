@@ -35,18 +35,11 @@ export class RecipeComponent implements OnInit, OnDestroy {
      *
      * This allows the URL to remain constant, for ease of shareability.
      */
-    const recipeId = this.route.snapshot.paramMap.get('id');
-
     this.recipeChangeSubscription = this.recipeService
       .onRecipeChange()
       .subscribe((recipe: Recipe | null) => {
-        this.recipe = recipe;
-        const prefix = 'EZ Recipes | ';
-        this.titleService.setTitle(
-          prefix +
-            (this.recipe?.name ??
-              (this.isLoading ? 'Loading...' : 'Recipe Not Found'))
-        );
+        this.updateRecipe(recipe);
+        const recipeId = this.route.snapshot.paramMap.get('id');
 
         /* If the ID of the recipe passed in doesn't match the recipe ID in the URL, get the recipe
          * from the URL param. (This shouldn't happen normally.)
@@ -68,6 +61,17 @@ export class RecipeComponent implements OnInit, OnDestroy {
      */
     this.recipeChangeSubscription?.unsubscribe();
     this.recipeService.resetRecipe();
+  }
+
+  updateRecipe(recipe: Recipe | null) {
+    // Helper method to perform common actions after updating the recipe property
+    this.recipe = recipe;
+    const prefix = 'EZ Recipes | ';
+    this.titleService.setTitle(
+      prefix +
+        (this.recipe?.name ??
+          (this.isLoading ? 'Loading...' : 'Recipe Not Found'))
+    );
   }
 
   getRecipe(id: string) {
@@ -96,8 +100,9 @@ export class RecipeComponent implements OnInit, OnDestroy {
     this.recipeService.getRandomRecipe().subscribe({
       next: (recipe: Recipe) => {
         this.isLoading = false;
-        this.recipeService.setRecipe(recipe);
+        this.updateRecipe(recipe);
         console.log(recipe);
+        // Change the URL without reloading the component
         this.router.navigate([`/recipe/${recipe.id}`]);
       },
       error: (error: Error) => {
