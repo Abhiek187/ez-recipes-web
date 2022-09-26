@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import Recipe from '../../models/recipe.model';
@@ -16,6 +16,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
   recipe: Recipe | null = null;
   isLoading = false;
   recipeChangeSubscription?: Subscription;
+  routerSubscription?: Subscription;
 
   // Nutrients that should be bold on the nutrition label
   nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
@@ -52,6 +53,20 @@ export class RecipeComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+    // Respond to navigating forward and backward by loading the correct recipe
+    this.routerSubscription = this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationStart &&
+        event.navigationTrigger === 'popstate'
+      ) {
+        // Ignore if not navigating to a recipe URL
+        if (/^\/recipe\/\d+$/.test(event.url)) {
+          const [recipeId] = event.url.split('/').slice(-1);
+          this.getRecipe(recipeId);
+        }
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -60,6 +75,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
      * correct recipe.
      */
     this.recipeChangeSubscription?.unsubscribe();
+    this.routerSubscription?.unsubscribe();
     this.recipeService.resetRecipe();
   }
 
