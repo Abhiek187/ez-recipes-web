@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {
   ComponentFixture,
   fakeAsync,
@@ -8,8 +9,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { mockRecipe } from '../../models/recipe.mock';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterTestingModule } from '@angular/router/testing';
 
+import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
 
 describe('RecipeComponent', () => {
@@ -25,10 +29,15 @@ describe('RecipeComponent', () => {
         MatButtonModule,
         MatCardModule,
         MatDividerModule,
+        MatSnackBarModule,
+        MatProgressSpinnerModule,
+        HttpClientTestingModule,
+        RouterTestingModule,
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RecipeComponent);
+    fixture.detectChanges();
     recipeComponent = fixture.componentInstance;
     recipeComponent.recipe = mockRecipe;
     rootElement = fixture.nativeElement;
@@ -219,6 +228,13 @@ describe('RecipeComponent', () => {
     expect(apiLink.textContent).toContain('spoonacular');
     expect(apiLink.href).toBe('https://spoonacular.com/food-api');
     expectLinkToOpenInNewTab(apiLink);
+  });
+
+  it('should show a spinner while loading', () => {
+    // Check that the material spinner shows when isLoading is true
+    recipeComponent.isLoading = true;
+    fixture.detectChanges();
+    expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
   });
 
   it('should load another recipe after pressing the button', fakeAsync(() => {
