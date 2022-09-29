@@ -51,7 +51,12 @@
 
       <div class="share-button-container">
         <div class="made-container">
-          <button mat-mini-fab color="warn" aria-label="I made this">
+          <button
+            mat-mini-fab
+            color="warn"
+            aria-label="I made this"
+            (click)="addPreparation()"
+          >
             <mat-icon>restaurant</mat-icon>
           </button>
           <p>I Made This!</p>
