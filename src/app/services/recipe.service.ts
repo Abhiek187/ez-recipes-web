@@ -29,12 +29,21 @@ export class RecipeService {
   }
 
   getRandomRecipe(): Observable<Recipe> {
+    // Mock the network calls for easier debugging & no quotas
+    if (!environment.production && environment.mock) {
+      return this.getMockRecipe();
+    }
+
     return this.http
       .get<Recipe>(`${environment.recipeBaseUrl}/random`)
       .pipe(catchError(this.handleError));
   }
 
   getRecipeById(id: string): Observable<Recipe> {
+    if (!environment.production && environment.mock) {
+      return this.getMockRecipe();
+    }
+
     return this.http
       .get<Recipe>(`${environment.recipeBaseUrl}/${id}`)
       .pipe(catchError(this.handleError));

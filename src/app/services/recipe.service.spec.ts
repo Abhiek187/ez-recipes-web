@@ -5,6 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
+import { environment } from 'src/environments/environment';
 import { mockRecipe } from '../models/recipe.mock';
 import Recipe from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
@@ -34,6 +35,11 @@ describe('RecipeService', () => {
 
   it('should be created', () => {
     expect(recipeService).toBeTruthy();
+  });
+
+  it('should not be mocked', () => {
+    // Make sure network calls aren't mocked in production
+    expect(environment.mock).toBeFalse();
   });
 
   it('should fetch a random recipe', () => {

@@ -26,7 +26,6 @@ export class HomeComponent implements OnInit {
     this.isLoading = true;
 
     // Show a random, low-effort recipe
-    // TODO: replace the mock call with the API call in prod
     this.recipeService.getRandomRecipe().subscribe({
       next: (recipe: Recipe) => {
         this.isLoading = false;
