@@ -29,4 +29,13 @@ describe('NavbarComponent', () => {
 
     expect(rootElement.textContent).toContain('EZ Recipes');
   });
+
+  it('should show the correct heart icon', () => {
+    // Check that the heart icon is filled when favoriting and isn't filled when unfavoriting
+    navbarComponent.isFavorite = true;
+    expect(navbarComponent.heartIcon).toBe('favorite');
+
+    navbarComponent.isFavorite = false;
+    expect(navbarComponent.heartIcon).toBe('favorite_border');
+  });
 });
