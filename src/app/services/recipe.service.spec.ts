@@ -39,7 +39,7 @@ describe('RecipeService', () => {
 
   it('should not be mocked', () => {
     // Make sure network calls aren't mocked in production
-    expect(environment.mock).toBeFalse();
+    expect(environment.mock).withContext('Turn off debug mode!').toBeFalse();
   });
 
   it('should fetch a random recipe', () => {
