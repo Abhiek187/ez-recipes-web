@@ -14,7 +14,9 @@
   <button
     mat-icon-button
     class="favorite-icon"
-    aria-label="Favorite this recipe"
+    [attr.aria-label]="
+      (isFavorite ? 'Unfavorite' : 'Favorite') + ' this recipe'
+    "
     (click)="toggleFavoriteRecipe()"
   >
     <mat-icon>{{ isFavorite ? "favorite" : "favorite_border" }}</mat-icon>
