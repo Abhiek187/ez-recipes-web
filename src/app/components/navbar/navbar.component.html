@@ -13,6 +13,7 @@
   <!-- Update the material icon to match the corresponding boolean value -->
   <button
     mat-icon-button
+    *ngIf="isRecipePage"
     class="favorite-icon"
     [attr.aria-label]="
       (isFavorite ? 'Unfavorite' : 'Favorite') + ' this recipe'
@@ -21,7 +22,12 @@
   >
     <mat-icon>{{ isFavorite ? "favorite" : "favorite_border" }}</mat-icon>
   </button>
-  <button mat-icon-button class="share-icon" aria-label="Share this recipe">
+  <button
+    mat-icon-button
+    *ngIf="isRecipePage"
+    class="share-icon"
+    aria-label="Share this recipe"
+  >
     <mat-icon>share</mat-icon>
   </button>
 </mat-toolbar>
@@ -48,6 +54,6 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
-    <router-outlet></router-outlet>
+    <router-outlet (activate)="onRouterOutletActivate($event)"></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
