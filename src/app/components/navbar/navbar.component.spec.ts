@@ -40,14 +40,27 @@ describe('NavbarComponent', () => {
     expect(rootElement.textContent).toContain('EZ Recipes');
   });
 
+  it('should toggle isFavorite', () => {
+    // Check that the toggleFavoriteRecipe method toggles the isFavorite property
+    const oldIsFavorite = navbarComponent.isFavorite;
+    navbarComponent.toggleFavoriteRecipe();
+
+    const newIsFavorite = navbarComponent.isFavorite;
+    expect(newIsFavorite).not.toBe(oldIsFavorite);
+  });
+
   it('should show the correct heart icon', () => {
     // Check that the heart icon is filled when favoriting and isn't filled when unfavoriting
-    const heartIcon = rootElement.querySelector('.favorite-icon');
+    const favoriteIcon =
+      rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
+    expect(favoriteIcon).not.toBeNull();
+    // Recipe shouldn't be liked by default
+    expect(favoriteIcon?.textContent).toBe('favorite_border');
 
-    navbarComponent.isFavorite = true;
-    expect(heartIcon?.textContent).toBe('favorite');
+    favoriteIcon?.click();
+    expect(favoriteIcon?.textContent).toBe('favorite');
 
-    navbarComponent.isFavorite = false;
-    expect(heartIcon?.textContent).toBe('favorite_border');
+    favoriteIcon?.click();
+    expect(favoriteIcon?.textContent).toBe('favorite_border');
   });
 });
