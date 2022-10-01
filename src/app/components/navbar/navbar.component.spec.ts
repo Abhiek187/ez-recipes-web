@@ -56,11 +56,14 @@ describe('NavbarComponent', () => {
     expect(favoriteIcon).not.toBeNull();
     // Recipe shouldn't be liked by default
     expect(favoriteIcon?.textContent).toBe('favorite_border');
+    expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
 
     favoriteIcon?.click();
     expect(favoriteIcon?.textContent).toBe('favorite');
+    expect(favoriteIcon?.ariaLabel).toBe('Unfavorite this recipe');
 
     favoriteIcon?.click();
     expect(favoriteIcon?.textContent).toBe('favorite_border');
+    expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
   });
 });
