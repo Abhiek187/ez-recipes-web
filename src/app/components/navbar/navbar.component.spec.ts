@@ -37,16 +37,17 @@ describe('NavbarComponent', () => {
   it('should display the navbar correctly', () => {
     // Check that the navbar contains the app name
     expect(navbarComponent).toBeTruthy();
-
     expect(rootElement.textContent).toContain('EZ Recipes');
   });
 
   it('should show the correct heart icon', () => {
     // Check that the heart icon is filled when favoriting and isn't filled when unfavoriting
+    const heartIcon = rootElement.querySelector('.favorite-icon');
+
     navbarComponent.isFavorite = true;
-    expect(navbarComponent.heartIcon).toBe('favorite');
+    expect(heartIcon?.textContent).toBe('favorite');
 
     navbarComponent.isFavorite = false;
-    expect(navbarComponent.heartIcon).toBe('favorite_border');
+    expect(heartIcon?.textContent).toBe('favorite_border');
   });
 });

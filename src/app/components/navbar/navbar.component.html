@@ -10,13 +10,14 @@
   </button>
   <span>EZ Recipes</span>
   <span class="spacer"></span>
+  <!-- Update the material icon to match the corresponding boolean value -->
   <button
     mat-icon-button
     class="favorite-icon"
     aria-label="Favorite this recipe"
     (click)="toggleFavoriteRecipe()"
   >
-    <mat-icon>{{ heartIcon }}</mat-icon>
+    <mat-icon>{{ isFavorite ? "favorite" : "favorite_border" }}</mat-icon>
   </button>
   <button mat-icon-button class="share-icon" aria-label="Share this recipe">
     <mat-icon>share</mat-icon>

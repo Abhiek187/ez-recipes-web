@@ -8,22 +8,10 @@ import { Router, Routes } from '@angular/router';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
-  private _isFavorite = false;
-  heartIcon = 'favorite_border';
-
+  isFavorite = false;
   isSmallScreen: boolean;
   navItems: string[] = ['Home'];
   routerConfig: Routes;
-
-  get isFavorite(): boolean {
-    return this._isFavorite;
-  }
-
-  set isFavorite(value: boolean) {
-    // Update the material icon to match the corresponding boolean value
-    this._isFavorite = value;
-    this.heartIcon = this._isFavorite ? 'favorite' : 'favorite_border';
-  }
 
   constructor(
     private breakpointObserver: BreakpointObserver,
