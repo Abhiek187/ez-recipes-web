@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -23,6 +24,7 @@ describe('NavbarComponent', () => {
         MatButtonModule,
         MatSidenavModule,
         MatListModule,
+        MatSnackBarModule,
         BrowserAnimationsModule,
         RouterTestingModule,
       ],
@@ -103,5 +105,19 @@ describe('NavbarComponent', () => {
     fixture.detectChanges();
     expect(favoriteIcon?.textContent).toBe('favorite_border');
     expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
+  });
+
+  it('should call shareRecipe after clicking the share button', () => {
+    // Check that shareRecipe is called after clicking the share button
+    spyOn(navbarComponent, 'shareRecipe');
+    navbarComponent.isRecipePage = true;
+    fixture.detectChanges();
+
+    const shareIcon =
+      rootElement.querySelector<HTMLButtonElement>('.share-icon');
+    shareIcon?.click();
+
+    fixture.detectChanges();
+    expect(navbarComponent.shareRecipe).toHaveBeenCalled();
   });
 });
