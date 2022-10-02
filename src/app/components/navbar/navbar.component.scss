@@ -1,3 +1,30 @@
-.example-spacer {
+:host {
+  // Required, otherwise the toolbar will stop being sticky after scrolling down far enough
+  display: block;
+}
+
+.toolbar {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+}
+
+.spacer {
   flex: 1 1 auto;
+}
+
+// Pre-defined in Angular Material
+$toolbar-height-sm: 56px;
+$toolbar-height-lg: 64px;
+$toolbar-breakpoint: 599px;
+
+.sidenav-content {
+  // Fill the height of the container with the remaining screen space
+  height: calc(100vh - $toolbar-height-lg);
+}
+
+@media screen and (max-width: $toolbar-breakpoint) {
+  .sidenav-content {
+    height: calc(100vh - $toolbar-height-sm);
+  }
 }

@@ -107,6 +107,13 @@ export class RecipeComponent implements OnInit, OnDestroy {
     });
   }
 
+  addPreparation() {
+    // Placeholder for the "I Made This!" button
+    this.snackBar.open('Nice! Hope it was tasty!', undefined, {
+      duration: 2000, // automatically dismiss after 2 seconds
+    });
+  }
+
   getRandomRecipe() {
     // Show the progress spinner while the recipe is loading
     this.isLoading = true;

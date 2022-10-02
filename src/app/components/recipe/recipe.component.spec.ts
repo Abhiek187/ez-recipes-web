@@ -62,6 +62,7 @@ describe('RecipeComponent', () => {
       rootElement.querySelector<HTMLAnchorElement>('.recipe-link');
     expect(recipeLink).not.toBeNull();
     expect(recipeLink?.href).toBe(recipeComponent.recipe!.url);
+    expect(recipeLink?.ariaLabel).toBe('Open recipe source');
     expectLinkToOpenInNewTab(recipeLink!);
   });
 
