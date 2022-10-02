@@ -35,9 +35,42 @@ describe('NavbarComponent', () => {
   });
 
   it('should display the navbar correctly', () => {
-    // Check that the navbar contains the app name
+    // Check that the navbar contains the app name and a hamburger icon
     expect(navbarComponent).toBeTruthy();
     expect(rootElement.textContent).toContain('EZ Recipes');
+
+    const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
+    expect(menuIcon).not.toBeNull();
+
+    // The favorite and share buttons should be hidden by default on the home page
+    const favoriteIcon =
+      rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
+    const shareIcon =
+      rootElement.querySelector<HTMLButtonElement>('.share-icon');
+
+    expect(navbarComponent.isRecipePage).toBeFalse();
+    expect(favoriteIcon).toBeNull();
+    expect(shareIcon).toBeNull();
+  });
+
+  it('should toggle the sidenav when clicking the hamburger icon', () => {
+    // Check that the sidenav appears and disappears when clicking the hamburger icon
+    const sidenav = rootElement.querySelector<HTMLDivElement>('.sidenav');
+    expect(sidenav).not.toBeNull();
+    expect(sidenav?.classList).not.toContain('mat-drawer-opened');
+
+    const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
+    menuIcon?.click();
+    fixture.detectChanges();
+    expect(sidenav?.classList).toContain('mat-drawer-opened');
+
+    for (const navItem of navbarComponent.navItems) {
+      expect(sidenav?.textContent).toContain(navItem);
+    }
+
+    menuIcon?.click();
+    fixture.detectChanges();
+    expect(sidenav?.classList).not.toContain('mat-drawer-opened');
   });
 
   it('should toggle isFavorite', () => {
@@ -51,6 +84,9 @@ describe('NavbarComponent', () => {
 
   it('should show the correct heart icon', () => {
     // Check that the heart icon is filled when favoriting and isn't filled when unfavoriting
+    navbarComponent.isRecipePage = true;
+    fixture.detectChanges();
+
     const favoriteIcon =
       rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
     expect(favoriteIcon).not.toBeNull();
@@ -59,10 +95,12 @@ describe('NavbarComponent', () => {
     expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
 
     favoriteIcon?.click();
+    fixture.detectChanges();
     expect(favoriteIcon?.textContent).toBe('favorite');
     expect(favoriteIcon?.ariaLabel).toBe('Unfavorite this recipe');
 
     favoriteIcon?.click();
+    fixture.detectChanges();
     expect(favoriteIcon?.textContent).toBe('favorite_border');
     expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
   });
