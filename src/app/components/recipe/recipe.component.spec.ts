@@ -57,7 +57,12 @@ describe('RecipeComponent', () => {
     // The heading should show the recipe name and URL
     const recipeName =
       rootElement.querySelector<HTMLHeadingElement>('.recipe-name');
-    expect(recipeName?.textContent).toBe(recipeComponent.recipe!.name);
+    // The recipe name should be capitalized
+    const capitalizedName = recipeComponent.recipe!.name.replace(
+      /\b\w/g,
+      (letter) => letter.toUpperCase()
+    );
+    expect(recipeName?.textContent).toBe(capitalizedName);
     const recipeLink =
       rootElement.querySelector<HTMLAnchorElement>('.recipe-link');
     expect(recipeLink).not.toBeNull();
@@ -144,7 +149,7 @@ describe('RecipeComponent', () => {
     const ingredientGrid =
       ingredientsCard?.querySelector<HTMLDivElement>('.ingredient-grid');
     for (const ingredient of recipeComponent.recipe!.ingredients) {
-      // The ingredient name should be in capitalized
+      // The ingredient name should be capitalized
       const capitalizedName = ingredient.name.replace(/\b\w/g, (letter) =>
         letter.toUpperCase()
       );
