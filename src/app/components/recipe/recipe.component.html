@@ -8,7 +8,7 @@
   <!-- Recipe header -->
   <header class="recipe-header">
     <!-- Show the recipe name and a link to its source next to it -->
-    <h1 class="recipe-name">{{ recipe!.name }}</h1>
+    <h1 class="recipe-name">{{ recipe!.name | titlecase }}</h1>
     <a
       mat-icon-button
       class="recipe-link"
