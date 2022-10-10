@@ -4,9 +4,9 @@
 [![CodeQL](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/codeql.yml/badge.svg)](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/codeql.yml)
 
 <div>
-    <img src="screenshots/img-1.png" alt="Home screen" width="300">
-    <img src="screenshots/img-2.png" alt="Baked Ratatouille, recipe heading" width="300">
-    <img src="screenshots/img-3.png" alt="Baked Ratatouille, instructions" width="300">
+    <img src="screenshots/img-1.png" alt="Home screen" width="600">
+    <img src="screenshots/img-2.png" alt="Baked Ratatouille, recipe heading" width="600">
+    <img src="screenshots/img-3.png" alt="Baked Ratatouille, instructions" width="600">
 </div>
 
 ## Overview
