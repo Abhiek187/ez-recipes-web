@@ -31,8 +31,16 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Docker
 
+### Development
+
 1. Build the Docker image: `docker build . -t TAG_NAME`
 2. Run the image in a container: `docker run --rm -p 4200:4200 -d TAG_NAME`
+3. Open `localhost:4200`
+
+### Production
+
+1. Build the Docker image: `docker build . -t TAG_NAME -f Dockerfile.prod`
+2. Run the image in a container: `docker run --rm -p 4200:80 -d TAG_NAME`
 3. Open `localhost:4200`
 
 Run `docker kill <container id>` to shut down the image when done. The container ID can be found using `docker ps`.
