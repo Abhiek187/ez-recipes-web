@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 # The Angular CLI is a dev dependency that needs to be installed
-RUN npm ci --production && npm ci @angular/cli
+RUN npm ci --omit=dev && npm ci @angular/cli
 
 COPY . .
 # The build will be located in dist/project-name
