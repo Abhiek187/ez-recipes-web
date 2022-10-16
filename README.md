@@ -15,6 +15,8 @@ Cooking food at home is an essential skill for anyone looking to save money and 
 
 Introducing EZ Recipes, an app that lets chefs find low-effort recipes that can be made in under an hour, use common kitchen ingredients, and can produce multiple servings. On one page, chefs can view what the recipe looks like, its nutritional qualities, the total cooking time, all the ingredients needed, and step-by-step instructions showing what ingredients and equipment are required per step. Each recipe can be shared so other chefs can learn how to make the same recipes.
 
+The site can be visited at https://ez-recipes-web.onrender.com/.
+
 ## Features
 
 - Single-Page Web Application created using Angular
