@@ -1,0 +1,30 @@
+# Temporary fix to group Angular dependency updates together until dependabot supports group updates
+# Inspired from: https://github.com/dependabot/dependabot-core/issues/1296#issuecomment-657438154
+name: Bump Angular
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # midnight on Mondays
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      # Update all the Angular libraries at once
+      - run: |
+          npm ci
+          ng update @angular/cli @angular/core
+
+      # Create a pull request if there are any changes
+      - uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Bump Angular
+          title: "[AUTO] Bump Angular"
+          labels: dependencies,javascript
+          branch: "abhibot/angular"
