@@ -4,7 +4,7 @@ name: Bump Angular
 
 on:
   schedule:
-    - cron: "0 0 * * 1" # midnight on Mondays
+    - cron: "0 1 * * 1" # midnight on Mondays
 
 jobs:
   bump:
@@ -18,7 +18,7 @@ jobs:
       # Update all the Angular libraries at once
       - run: |
           npm ci
-          ng update @angular/cli @angular/core
+          ./node_modules/.bin/ng update @angular/cli @angular/core
 
       # Create a pull request if there are any changes
       - uses: peter-evans/create-pull-request@v4
