@@ -24,7 +24,9 @@ jobs:
       # Create a pull request if there are any changes
       - uses: peter-evans/create-pull-request@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # A PAT must be used instead of GITHUB_TOKEN to prevent recursive workflow runs
+          # See https://stackoverflow.com/a/72451611
+          token: ${{ secrets.PAT }}
           commit-message: Bump Angular
           title: "[AUTO] Bump Angular"
           labels: dependencies,javascript
