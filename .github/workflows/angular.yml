@@ -5,7 +5,7 @@ name: Bump Angular
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * 1" # midnight on Mondays
+    - cron: "0 0 * * 2" # midnight on Tuesdays
 
 jobs:
   bump:
