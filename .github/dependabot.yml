@@ -12,6 +12,7 @@ updates:
     # Check the npm registry for updates every week (on Mondays)
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
@@ -19,9 +20,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "tuesday"
