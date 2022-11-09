@@ -44,6 +44,8 @@ jobs:
           server_address: imap.mail.yahoo.com
           # Server port, default 25:
           server_port: 587
+          # Optional whether this connection use TLS (default is true if server_port is 465)
+          secure: true
           # Optional (recommended): mail server username:
           username: ${{ secrets.MAIL_USERNAME }}
           # Optional (recommended) mail server password:
