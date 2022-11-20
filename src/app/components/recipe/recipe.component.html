@@ -47,7 +47,15 @@
         </figcaption>
       </figure>
 
-      <h2 class="recipe-time"><b>Time:</b> {{ recipe!.time }} minutes</h2>
+      <h2 class="recipe-time" [ngPlural]="recipe!.time">
+        <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
+        <ng-template ngPluralCase="1">
+          <b>Time:</b> {{ recipe!.time }} minute
+        </ng-template>
+        <ng-template ngPluralCase="other">
+          <b>Time:</b> {{ recipe!.time }} minutes
+        </ng-template>
+      </h2>
 
       <div class="share-button-container">
         <div class="made-container">
