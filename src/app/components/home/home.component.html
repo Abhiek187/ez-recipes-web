@@ -5,6 +5,7 @@
     color="accent"
     class="find-recipe-button"
     (click)="getRandomRecipe()"
+    [disabled]="isLoading"
   >
     Find me a recipe!
   </button>

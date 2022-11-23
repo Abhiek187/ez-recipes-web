@@ -71,5 +71,10 @@ describe('HomeComponent', () => {
     homeComponent.isLoading = true;
     fixture.detectChanges();
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
+    // The find recipe button should be disabled
+    expect(
+      rootElement.querySelector<HTMLButtonElement>('.find-recipe-button')
+        ?.disabled
+    ).toBeTrue();
   });
 });

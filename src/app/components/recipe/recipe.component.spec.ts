@@ -241,6 +241,11 @@ describe('RecipeComponent', () => {
     recipeComponent.isLoading = true;
     fixture.detectChanges();
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
+    // The show recipe button should be disabled
+    expect(
+      rootElement.querySelector<HTMLButtonElement>('.show-recipe-button')
+        ?.disabled
+    ).toBeTrue();
   });
 
   it('should load another recipe after pressing the button', fakeAsync(() => {
