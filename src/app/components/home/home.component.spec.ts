@@ -35,12 +35,12 @@ describe('HomeComponent', () => {
   });
 
   it(`shouldn't show a recipe initially`, () => {
-    // Check that the page initially shows the "Find me a recipe!" button
+    // Check that the page initially shows the "Find Me a Recipe!" button
     const findRecipeButton = rootElement.querySelector<HTMLButtonElement>(
       '.find-recipe-button'
     );
     expect(findRecipeButton).not.toBeNull();
-    expect(findRecipeButton?.textContent).toContain('Find me a recipe!');
+    expect(findRecipeButton?.textContent).toContain('Find Me a Recipe!');
 
     // The navbar should be visible
     expect(
