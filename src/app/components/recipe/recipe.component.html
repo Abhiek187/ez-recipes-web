@@ -116,8 +116,13 @@
               {{ nutrient.name }}
             </p>
             <!-- Round the nutritional information to whole numbers -->
-            <p class="nutrient-amount">
-              {{ nutrient.amount | number: "1.0-0" }} {{ nutrient.unit }}
+            <p
+              class="nutrient-amount"
+              [ngClass]="{
+                'nutrient-heading': nutrientHeadings.includes(nutrient.name)
+              }"
+            >
+              {{ nutrient.amount | number : "1.0-0" }} {{ nutrient.unit }}
             </p>
           </ng-container>
         </div>
