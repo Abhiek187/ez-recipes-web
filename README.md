@@ -28,6 +28,42 @@ The site can be visited at https://ez-recipes-web.onrender.com/.
 - Automated testing and deployment using CI/CD pipelines in GitHub Actions
 - Containerized development and production environments using Docker
 
+## Pipeline Diagrams
+
+### NPM CI
+
+```mermaid
+flowchart LR
+
+A(Checkout repository) -->|14.x, 16.x, 18.x| B(Install Node.js)
+B --> C(Install dependencies:\nnpm ci)
+C --> D(Run Angular tests:\nnpm test)
+```
+
+### CodeQL
+
+```mermaid
+flowchart LR
+
+A(Checkout repository) -->|JavaScript| B(Initialize CodeQL)
+B --> C(Build code)
+C --> D(Perform CodeQL analysis)
+```
+
+### Bump Angular
+
+```mermaid
+flowchart LR
+
+A(Checkout repository) --> B(Install Node.js)
+B --> C(Install dependencies:\nnpm ci)
+C --> D("Update Angular CLI & Core:\nng update @angular/cli @angular/core")
+D --> E{Update available?}
+E -->|Yes| F(Create pull request)
+E -->|No| G(End)
+F --> H(Send email)
+```
+
 ## Installing Locally
 
 1. [Clone](https://github.com/Abhiek187/ez-recipes-web.git) this repo.
