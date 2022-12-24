@@ -179,7 +179,7 @@
               <h4 class="step-number">{{ step.number }}</h4>
               <p>{{ step.step }}</p>
             </div>
-            <mat-divider></mat-divider>
+            <mat-divider *ngIf="step.ingredients.length > 0"></mat-divider>
 
             <!-- Ingredients per step -->
             <div
