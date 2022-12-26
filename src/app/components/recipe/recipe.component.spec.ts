@@ -140,6 +140,10 @@ describe('RecipeComponent', () => {
       recipeComponent.recipe!.summary
     );
 
+    const lightBulbIcon =
+      rootElement.querySelector<HTMLElement>('.lightbulb-icon');
+    expect(lightBulbIcon?.ariaHidden).toBe('true'); // not boolean true
+
     // All ingredients should appear
     const ingredientsCard = rootElement.querySelector<HTMLElement>(
       '.recipe-ingredients-card'
