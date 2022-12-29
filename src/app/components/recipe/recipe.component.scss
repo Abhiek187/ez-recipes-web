@@ -73,6 +73,11 @@ $step-breakpoint: 800px;
       margin-right: auto;
     }
 
+    .nutrition-card-header {
+      justify-content: center;
+      text-align: center;
+    }
+
     .nutrient-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -113,6 +118,7 @@ $step-breakpoint: 800px;
 
     .recipe-summary-header {
       justify-content: center;
+      text-align: center;
     }
 
     /* Position the lightbulb icon at the top right of the card */
