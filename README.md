@@ -64,6 +64,14 @@ E -->|No| G(End)
 F --> H(Send email)
 ```
 
+### Deployment
+
+```mermaid
+flowchart LR
+
+A(Merge PR to main) --> B(Auto-Deploy to Render)
+```
+
 ## Installing Locally
 
 1. [Clone](https://github.com/Abhiek187/ez-recipes-web.git) this repo.
