@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.abhiek.ezrecipes",
+      "sha256_cert_fingerprints": [
+        "F1:99:EE:D8:6E:DB:E5:2B:08:6E:82:10:D1:F5:5B:2B:C6:68:7E:4F:45:EB:F5:BC:35:78:4A:A8:76:7C:DE:E9"
+      ]
+    }
+  }
+]
