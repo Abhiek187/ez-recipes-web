@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "UF6E5BVT98.com.abhiek.EZ-Recipes"
+        ],
+        "components": [
+          {
+            "/": "/recipe/*",
+            "comment": "Maps the recipe pages on the web app to the recipe views on the iOS app"
+          }
+        ]
+      }
+    ]
+  }
+}
