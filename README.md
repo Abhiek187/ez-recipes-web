@@ -75,7 +75,7 @@ A(Merge PR to main) --> B(Auto-Deploy to Render)
 
 subgraph B [Auto-Deploy to Render]
 direction TB
-C(Install dependencies) --> D(Build web app)
+C(Install dependencies:\nnpm install) --> D(Build web app:\nnpm run build)
 D --> E(Use Brotli compression)
 E --> F(Serve website over HTTPS on a global CDN)
 F --> G(Invalidate CDN cache)
