@@ -72,7 +72,17 @@ F --> H(Send email)
 flowchart LR
 
 A(Merge PR to main) --> B(Auto-Deploy to Render)
+
+subgraph B [Auto-Deploy to Render]
+direction TB
+C(Install dependencies) --> D(Build web app)
+D --> E(Use Brotli compression)
+E --> F(Serve website over HTTPS on a global CDN)
+F --> G(Invalidate CDN cache)
+end
 ```
+
+Source: [Render](https://render.com/docs/static-sites)
 
 ## Installing Locally
 
