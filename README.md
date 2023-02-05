@@ -124,7 +124,6 @@ Run `docker kill <container id>` to shut down the image when done. The container
 
 EZ Recipes is currently in an MVP state. Chefs can view random recipes and browse recipes by their ID. But more features will come in the future to enhance the cooking experience, including (but not limited to):
 
-- An [iOS](https://github.com/Abhiek187/ez-recipes-ios) and [Android](https://github.com/Abhiek187/ez-recipes-android) app to go alongside the web app. A hybrid app was considered to speed up the development process, but native apps were preferred to improve the UX across all platforms and reduce the risk of compatibility issues as the app grows and more 3rd party libraries are incorporated.
 - The ability to save recipes locally and remotely in a database
 - Accounts so chefs can sync their favorite recipes across all their devices
 - The ability to favorite, rate, and view the popularity of recipes
@@ -132,3 +131,9 @@ EZ Recipes is currently in an MVP state. Chefs can view random recipes and brows
 - Showing additional recipe information, such as potential allergies
 - Filtering recipes by name or various metrics, such as whether they're healthy, vegetarian, or spicy
 - Helpful tooltips showing the definition of certain cooking terms, to better assist newer chefs in learning how to cook or prep certain ingredients and how to use certain kitchen tools. Think [How to Stock](https://github.com/Abhiek187/how-to-stock), but for cooking food instead of managing finances.
+
+## Related Repos
+
+- [iOS app](https://github.com/Abhiek187/ez-recipes-ios)
+- [Android app](https://github.com/Abhiek187/ez-recipes-android)
+- [Server](https://github.com/Abhiek187/ez-recipes-server)
