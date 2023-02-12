@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.abhiek.ezrecipes",
       "sha256_cert_fingerprints": [
-        "F1:99:EE:D8:6E:DB:E5:2B:08:6E:82:10:D1:F5:5B:2B:C6:68:7E:4F:45:EB:F5:BC:35:78:4A:A8:76:7C:DE:E9"
+        "F1:99:EE:D8:6E:DB:E5:2B:08:6E:82:10:D1:F5:5B:2B:C6:68:7E:4F:45:EB:F5:BC:35:78:4A:A8:76:7C:DE:E9",
+        "66:E1:DD:94:BF:CF:2E:24:AB:5E:CD:CB:30:2A:78:B4:29:88:9A:99:18:B9:03:89:5D:C5:FE:B0:CB:1A:DE:88"
       ]
     }
   }
