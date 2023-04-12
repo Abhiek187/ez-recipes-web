@@ -25,7 +25,7 @@ jobs:
       # Create a pull request if there are any changes
       - name: Create pull request
         id: cpr
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
           # A PAT must be used instead of GITHUB_TOKEN to prevent recursive workflow runs
           # See https://stackoverflow.com/a/72451611
@@ -34,6 +34,7 @@ jobs:
           title: "[AUTO] Bump Angular"
           labels: dependencies,javascript
           branch: "abhibot/angular"
+          delete-branch: true
 
       # Send an email if a PR was created (since there's no notification if the author is yourself)
       - name: Send email
