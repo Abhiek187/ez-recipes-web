@@ -34,6 +34,7 @@ jobs:
           title: "[AUTO] Bump Angular"
           labels: dependencies,javascript
           branch: "abhibot/angular"
+          delete-branch: true
 
       # Send an email if a PR was created (since there's no notification if the author is yourself)
       - name: Send email
