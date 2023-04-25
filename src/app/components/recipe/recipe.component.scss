@@ -68,7 +68,7 @@ $step-breakpoint: 800px;
   .nutrition-card {
     @media screen and (max-width: $side-width-breakpoint) {
       /* Make the nutrition label smaller on small screens */
-      width: 200px;
+      width: 232px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -76,6 +76,13 @@ $step-breakpoint: 800px;
     .nutrition-card-header {
       justify-content: center;
       text-align: center;
+      padding-bottom: 16px;
+    }
+
+    .nutrient-divider {
+      /* Simulate the old inset behavior */
+      margin-left: 16px;
+      margin-right: 16px;
     }
 
     .nutrient-grid {
@@ -119,6 +126,7 @@ $step-breakpoint: 800px;
     .recipe-summary-header {
       justify-content: center;
       text-align: center;
+      padding-bottom: 16px;
     }
 
     /* Position the lightbulb icon at the top right of the card */
@@ -141,6 +149,12 @@ $step-breakpoint: 800px;
 
     .recipe-ingredients-header {
       justify-content: center;
+      padding-bottom: 16px;
+    }
+
+    .ingredient-divider {
+      margin-left: 16px;
+      margin-right: 16px;
     }
 
     .ingredient-grid {
