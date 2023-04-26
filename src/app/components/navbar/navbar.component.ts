@@ -1,4 +1,4 @@
-import { BreakpointObserver } from '@angular/cdk/layout';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
@@ -26,8 +26,7 @@ export class NavbarComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {
     // Detect breakpoint changes so the template can respond
-    this.isSmallScreen =
-      this.breakpointObserver.isMatched('(max-width: 599px)');
+    this.isSmallScreen = this.breakpointObserver.isMatched(Breakpoints.XSmall);
     this.routerConfig = this.router.config;
   }
 

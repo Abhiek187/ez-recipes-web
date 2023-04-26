@@ -102,8 +102,7 @@
           >
         </mat-card-subtitle>
       </mat-card-header>
-      <!-- inset dividers don't extend the full width -->
-      <mat-divider inset></mat-divider>
+      <mat-divider class="nutrient-divider"></mat-divider>
       <mat-card-content>
         <div class="nutrient-grid">
           <ng-container *ngFor="let nutrient of recipe!.nutrients">
@@ -148,7 +147,7 @@
       <mat-card-header class="recipe-ingredients-header">
         <mat-card-title>Ingredients</mat-card-title>
       </mat-card-header>
-      <mat-divider inset></mat-divider>
+      <mat-divider class="ingredient-divider"></mat-divider>
       <mat-card-content>
         <div class="ingredient-grid">
           <ng-container *ngFor="let ingredient of recipe!.ingredients">

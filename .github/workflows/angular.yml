@@ -20,7 +20,7 @@ jobs:
       - name: Update Angular
         run: |
           npm ci
-          ./node_modules/.bin/ng update @angular/cli @angular/core
+          ./node_modules/.bin/ng update @angular/cli @angular/core @angular/material
 
       # Create a pull request if there are any changes
       - name: Create pull request
