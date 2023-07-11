@@ -52,20 +52,6 @@ B --> C(Build code)
 C --> D(Perform CodeQL analysis)
 ```
 
-### Bump Angular
-
-```mermaid
-flowchart LR
-
-A(Checkout repository) --> B(Install Node.js)
-B --> C(Install dependencies:\nnpm ci)
-C --> D("Update Angular CLI & Core:\nng update @angular/cli @angular/core")
-D --> E{Update available?}
-E -->|Yes| F(Create pull request)
-E -->|No| G(End)
-F --> H(Send email)
-```
-
 ### Deployment
 
 ```mermaid

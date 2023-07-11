@@ -13,6 +13,11 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    # Group all Angular updates together (Hooray! 🎉)
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
