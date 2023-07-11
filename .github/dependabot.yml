@@ -17,7 +17,7 @@ updates:
     groups:
       angular:
         patterns:
-          - "@angular/*"
+          - "@angular*"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
