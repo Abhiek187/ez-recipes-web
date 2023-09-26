@@ -39,7 +39,8 @@ flowchart LR
 
 A(Checkout repository) -->|18.x, 20.x| B(Install Node.js)
 B --> C(Install dependencies:\nnpm ci)
-C --> D(Run Angular tests:\nnpm test)
+C --> D(Build app:\nnpm run build --if-present)
+D --> E(Run Angular tests:\nnpm test)
 ```
 
 ### CodeQL
