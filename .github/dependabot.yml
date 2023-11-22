@@ -19,7 +19,6 @@ updates:
         patterns:
           - "@angular*"
           - "zone.js"
-          - "typescript"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
