@@ -138,13 +138,12 @@ $step-breakpoint: 800px;
   }
 
   .recipe-ingredients-card {
-    flex-basis: 300px;
     margin-left: auto;
     margin-right: auto;
 
     @media screen and (max-width: $side-width-breakpoint) {
-      /* Make the ingredients label smaller on small screens */
-      width: 300px;
+      /* Make the ingredients label smaller on small screens, without overflowing */
+      width: min(calc(100vw - 24px), 300px);
     }
 
     .recipe-ingredients-header {
