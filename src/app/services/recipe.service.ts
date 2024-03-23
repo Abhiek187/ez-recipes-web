@@ -13,6 +13,9 @@ import RecipeError from '../models/recipe-error.model';
 export class RecipeService {
   // Store the recipe object in the service so other components can reference it and observe changes
   private recipe = new BehaviorSubject<Recipe | null>(null);
+  // Turn on to test loading & error messages
+  private mockLoading = false;
+  private mockError = false;
 
   constructor(private http: HttpClient) {}
 
@@ -55,8 +58,15 @@ export class RecipeService {
   // Load a sample recipe to avoid hitting the API while testing the UI
   getMockRecipe(): Observable<Recipe> {
     return new Observable((subscriber) => {
-      subscriber.next(mockRecipe);
-      subscriber.complete();
+      setTimeout(
+        () => {
+          this.mockError
+            ? subscriber.error(Error('A mock error occurred.'))
+            : subscriber.next(mockRecipe);
+          subscriber.complete();
+        },
+        this.mockLoading ? 10_000 : 0
+      );
     });
   }
 
