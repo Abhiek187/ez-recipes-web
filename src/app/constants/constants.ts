@@ -15,6 +15,10 @@ abstract class Constants {
     'Mixing things up... 🥘',
     'Shaking things up... 🍲',
   ];
+
+  // APIs
+  static readonly recipesPath = '/api/recipes';
+  static readonly termsPath = '/api/terms';
 }
 
 export default Constants;

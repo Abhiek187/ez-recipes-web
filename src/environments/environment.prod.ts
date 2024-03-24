@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  recipeBaseUrl: 'https://ez-recipes-server.onrender.com/api/recipes',
+  serverBaseUrl: 'https://ez-recipes-server.onrender.com',
   mock: false,
 };

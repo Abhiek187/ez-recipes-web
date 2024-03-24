@@ -25,7 +25,7 @@ The site can be visited at https://ez-recipes-web.onrender.com/.
 - Responsive and accessible web design
 - Best practices for Progressive Web Apps
 - Search Engine Optimization (SEO)
-- REST APIs to a custom [server](https://github.com/Abhiek187/ez-recipes-server), which fetches recipe information from [spoonacular](https://spoonacular.com/food-api)
+- REST APIs to a custom [server](https://github.com/Abhiek187/ez-recipes-server), which fetches recipe information from [spoonacular](https://spoonacular.com/food-api) and MongoDB
 - Automated testing and deployment using CI/CD pipelines in GitHub Actions
 - Containerized development and production environments using Docker
 - Mermaid to write diagrams as code

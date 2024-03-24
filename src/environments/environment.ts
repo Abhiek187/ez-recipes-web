@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  recipeBaseUrl: 'http://localhost:5000/api/recipes',
-  mock: false, // only enable for debugging, tests will fail if this is left on
+  serverBaseUrl: 'http://localhost:5000',
+  mock: true, // only enable for debugging, tests will fail if this is left on
 };
 
 /*

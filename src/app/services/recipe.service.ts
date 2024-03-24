@@ -6,6 +6,7 @@ import Recipe from '../models/recipe.model';
 import { environment } from 'src/environments/environment';
 import { mockRecipe } from '../models/recipe.mock';
 import RecipeError from '../models/recipe-error.model';
+import Constants from '../constants/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +40,9 @@ export class RecipeService {
 
     return (
       this.http
-        .get<Recipe>(`${environment.recipeBaseUrl}/random`)
+        .get<Recipe>(
+          `${environment.serverBaseUrl}${Constants.recipesPath}/random`
+        )
         // Need to bind "this" so "this" in handleError points to RecipeService, instead of undefined
         .pipe(catchError(this.handleError.bind(this)))
     );
@@ -51,7 +54,7 @@ export class RecipeService {
     }
 
     return this.http
-      .get<Recipe>(`${environment.recipeBaseUrl}/${id}`)
+      .get<Recipe>(`${environment.serverBaseUrl}${Constants.recipesPath}/${id}`)
       .pipe(catchError(this.handleError.bind(this)));
   }
 

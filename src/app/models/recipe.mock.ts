@@ -607,7 +607,7 @@ abstract class MockRecipes {
   };
 
   /**
-   * Missing image credit
+   * Gluten-free, lots of types & cultures
    */
   static readonly jambalayaStew: Recipe = {
     id: 648432,
@@ -1299,4 +1299,4 @@ abstract class MockRecipes {
   };
 }
 
-export const mockRecipe = MockRecipes.chocolateCupcake;
+export const mockRecipe = MockRecipes.jambalayaStew;
