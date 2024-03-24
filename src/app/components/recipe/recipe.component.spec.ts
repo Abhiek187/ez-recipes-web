@@ -7,14 +7,15 @@ import {
 } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterModule } from '@angular/router';
 
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
-import { RouterModule } from '@angular/router';
 
 describe('RecipeComponent', () => {
   let recipeComponent: RecipeComponent;
@@ -28,6 +29,7 @@ describe('RecipeComponent', () => {
         MatIconModule,
         MatButtonModule,
         MatCardModule,
+        MatChipsModule,
         MatDividerModule,
         MatSnackBarModule,
         MatProgressSpinnerModule,

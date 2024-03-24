@@ -6,11 +6,11 @@ import {
   tick,
 } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 
 import { AppModule } from 'src/app/app.module';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HomeComponent } from './home.component';
-import { RouterModule } from '@angular/router';
 
 describe('HomeComponent', () => {
   let homeComponent: HomeComponent;

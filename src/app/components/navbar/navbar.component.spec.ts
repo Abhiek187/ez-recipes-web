@@ -6,9 +6,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule } from '@angular/router';
 
 import { NavbarComponent } from './navbar.component';
-import { RouterModule } from '@angular/router';
 
 describe('NavbarComponent', () => {
   let navbarComponent: NavbarComponent;
