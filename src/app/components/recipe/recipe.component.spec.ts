@@ -138,6 +138,18 @@ describe('RecipeComponent', () => {
       `${recipeComponent.recipe!.time} minutes`
     );
 
+    // The recipe types & culture should be listed if applicable
+    const recipeTypes =
+      rootElement.querySelector<HTMLHeadingElement>('.recipe-types');
+    const recipeCulture =
+      rootElement.querySelector<HTMLHeadingElement>('.recipe-culture');
+    for (const type of recipeComponent.recipe!.types) {
+      expect(recipeTypes?.textContent).toContain(type);
+    }
+    for (const culture of recipeComponent.recipe!.culture) {
+      expect(recipeCulture?.textContent).toContain(culture);
+    }
+
     // The "I Made This!" and "Show Me Another Recipe!" buttons should be present
     const madeContainer =
       rootElement.querySelector<HTMLDivElement>('.made-container');

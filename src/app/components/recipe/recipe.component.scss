@@ -49,13 +49,26 @@ $blue-500: #2196f3;
       }
     }
 
-    .recipe-pill-list mat-chip {
-      background-color: $blue-500;
+    .recipe-pill-list {
+      margin-bottom: 8px;
+
+      mat-chip {
+        background-color: $blue-500;
+      }
     }
 
     .recipe-time {
       text-align: center;
       font-weight: normal;
+      margin-bottom: 0;
+    }
+
+    .recipe-types {
+      margin-bottom: 0;
+    }
+
+    .recipe-culture {
+      margin-bottom: 8px;
     }
 
     .share-button-container {

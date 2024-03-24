@@ -81,6 +81,13 @@
         </ng-template>
       </h2>
 
+      <h3 class="recipe-types" *ngIf="recipe!.types.length > 0">
+        <b>Great for:</b> {{ recipe.types.join(", ") }}
+      </h3>
+      <h3 class="recipe-culture" *ngIf="recipe!.culture.length > 0">
+        <b>Cuisines:</b> {{ recipe.culture.join(", ") }}
+      </h3>
+
       <div class="share-button-container">
         <div class="made-container">
           <button
