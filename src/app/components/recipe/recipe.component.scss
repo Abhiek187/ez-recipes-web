@@ -1,6 +1,10 @@
 $side-width-breakpoint: 700px;
 $step-breakpoint: 800px;
 
+/* Material design color tool: https://m2.material.io/design/color/the-color-system.html */
+$yellow-300: #fff176;
+$blue-500: #2196f3;
+
 .progress-spinner {
   margin: 10px auto;
 }
@@ -43,6 +47,10 @@ $step-breakpoint: 800px;
       .recipe-caption {
         text-align: center;
       }
+    }
+
+    .recipe-pill-list mat-chip {
+      background-color: $blue-500;
     }
 
     .recipe-time {
@@ -114,9 +122,6 @@ $step-breakpoint: 800px;
   }
 
   margin: 10px;
-
-  /* Material design color tool: https://material.io/resources/color */
-  $yellow-300: #fff176;
 
   .recipe-summary-card {
     background-color: $yellow-300;

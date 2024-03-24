@@ -44,6 +44,33 @@
         </figcaption>
       </figure>
 
+      <!-- Recipe info -->
+      <mat-chip-listbox class="recipe-pill-list">
+        <!-- Don't make the chips clickable, but still show their color -->
+        <mat-chip
+          *ngIf="['mild', 'spicy'].includes(recipe.spiceLevel)"
+          [ngStyle]="{
+            'background-color':
+              recipe.spiceLevel === 'mild' ? 'orange' : '#f44326'
+          }"
+          disableRipple
+        >
+          {{ recipe.spiceLevel | titlecase }}
+        </mat-chip>
+        <mat-chip *ngIf="recipe.isVegetarian" disableRipple>
+          Vegetarian
+        </mat-chip>
+        <mat-chip *ngIf="recipe.isVegan" disableRipple> Vegan </mat-chip>
+        <mat-chip *ngIf="recipe.isGlutenFree" disableRipple>
+          Gluten-Free
+        </mat-chip>
+        <mat-chip *ngIf="recipe.isHealthy" disableRipple> Healthy </mat-chip>
+        <mat-chip *ngIf="recipe.isCheap" disableRipple> Cheap </mat-chip>
+        <mat-chip *ngIf="recipe.isSustainable" disableRipple>
+          Sustainable
+        </mat-chip>
+      </mat-chip-listbox>
+
       <h2 class="recipe-time" [ngPlural]="recipe!.time">
         <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
         <ng-template ngPluralCase="1">
