@@ -45,7 +45,7 @@
       </figure>
 
       <!-- Recipe info -->
-      <mat-chip-listbox class="recipe-pill-list">
+      <mat-chip-set class="recipe-pill-list">
         <!-- Don't make the chips clickable, but still show their color -->
         <mat-chip
           *ngIf="['mild', 'spicy'].includes(recipe.spiceLevel)"
@@ -69,7 +69,7 @@
         <mat-chip *ngIf="recipe.isSustainable" disableRipple>
           Sustainable
         </mat-chip>
-      </mat-chip-listbox>
+      </mat-chip-set>
 
       <h2 class="recipe-time" [ngPlural]="recipe!.time">
         <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
@@ -225,12 +225,13 @@
                   *ngFor="let ingredient of step.ingredients"
                 >
                   <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
+                  <!-- Image alts are redundant since there's text next to them -->
                   <img
                     [src]="
                       'https://spoonacular.com/cdn/ingredients_100x100/' +
                       ingredient.image
                     "
-                    [alt]="ingredient.name"
+                    alt=""
                   />
                   <p>{{ ingredient.name }}</p>
                 </li>
@@ -254,7 +255,7 @@
                       'https://spoonacular.com/cdn/equipment_100x100/' +
                       equipment.image
                     "
-                    [alt]="equipment.name"
+                    alt=""
                   />
                   <p>{{ equipment.name }}</p>
                 </li>
