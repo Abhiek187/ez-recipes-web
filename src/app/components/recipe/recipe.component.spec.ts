@@ -11,10 +11,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
+import { RouterModule } from '@angular/router';
 
 describe('RecipeComponent', () => {
   let recipeComponent: RecipeComponent;
@@ -32,7 +32,7 @@ describe('RecipeComponent', () => {
         MatSnackBarModule,
         MatProgressSpinnerModule,
         HttpClientTestingModule,
-        RouterTestingModule,
+        RouterModule.forRoot([]),
       ],
     }).compileComponents();
 

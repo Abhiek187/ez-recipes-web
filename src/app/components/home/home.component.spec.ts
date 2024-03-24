@@ -6,11 +6,11 @@ import {
   tick,
 } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppModule } from 'src/app/app.module';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HomeComponent } from './home.component';
+import { RouterModule } from '@angular/router';
 
 describe('HomeComponent', () => {
   let homeComponent: HomeComponent;
@@ -20,7 +20,7 @@ describe('HomeComponent', () => {
   beforeEach(async () => {
     // Import all the necessary modules and components to test the app component
     await TestBed.configureTestingModule({
-      imports: [AppModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [AppModule, RouterModule.forRoot([]), HttpClientTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
