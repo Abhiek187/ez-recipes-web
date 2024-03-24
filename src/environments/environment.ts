@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   serverBaseUrl: 'http://localhost:5000',
-  mock: true, // only enable for debugging, tests will fail if this is left on
+  mock: false, // only enable for debugging, tests will fail if this is left on
 };
 
 /*
