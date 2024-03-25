@@ -264,7 +264,7 @@ describe('RecipeComponent', () => {
           expect(ingredientImage.src).toBe(
             `https://spoonacular.com/cdn/ingredients_100x100/${ingredient.image}`
           );
-          expect(ingredientImage.alt).toBe(ingredient.name);
+          expect(ingredientImage.alt).toBe('');
           expect(ingredientListItem?.textContent).toContain(ingredient.name);
         }
 
@@ -278,7 +278,7 @@ describe('RecipeComponent', () => {
           expect(equipmentImage.src).toBe(
             `https://spoonacular.com/cdn/equipment_100x100/${equipment.image}`
           );
-          expect(equipmentImage.alt).toBe(equipment.name);
+          expect(equipmentImage.alt).toBe('');
           expect(equipmentListItem?.textContent).toContain(equipment.name);
         }
       }
