@@ -6,7 +6,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
+import { RouterModule } from '@angular/router';
 
 import { NavbarComponent } from './navbar.component';
 
@@ -26,7 +26,7 @@ describe('NavbarComponent', () => {
         MatListModule,
         MatSnackBarModule,
         BrowserAnimationsModule,
-        RouterTestingModule,
+        RouterModule.forRoot([]),
       ],
     }).compileComponents();
 

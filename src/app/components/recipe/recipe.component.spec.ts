@@ -7,11 +7,12 @@ import {
 } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { RouterTestingModule } from '@angular/router/testing';
+import { RouterModule } from '@angular/router';
 
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
@@ -28,11 +29,12 @@ describe('RecipeComponent', () => {
         MatIconModule,
         MatButtonModule,
         MatCardModule,
+        MatChipsModule,
         MatDividerModule,
         MatSnackBarModule,
         MatProgressSpinnerModule,
         HttpClientTestingModule,
-        RouterTestingModule,
+        RouterModule.forRoot([]),
       ],
     }).compileComponents();
 
@@ -50,6 +52,9 @@ describe('RecipeComponent', () => {
     expect(link.rel).toBe('noopener noreferrer');
   };
 
+  const capitalize = (str: string) =>
+    str.replace(/\b\w/g, (letter) => letter.toUpperCase());
+
   it('should display all recipe information in the header', () => {
     // Check that the recipe header shows all relevant information
     expect(recipeComponent).toBeTruthy();
@@ -58,10 +63,7 @@ describe('RecipeComponent', () => {
     const recipeName =
       rootElement.querySelector<HTMLHeadingElement>('.recipe-name');
     // The recipe name should be capitalized
-    const capitalizedName = recipeComponent.recipe!.name.replace(
-      /\b\w/g,
-      (letter) => letter.toUpperCase()
-    );
+    const capitalizedName = capitalize(recipeComponent.recipe!.name);
     expect(recipeName?.textContent).toBe(capitalizedName);
     const recipeLink =
       rootElement.querySelector<HTMLAnchorElement>('.recipe-link');
@@ -88,12 +90,67 @@ describe('RecipeComponent', () => {
     expect(recipeCaptionLink.href).toBe(recipeComponent.recipe!.sourceUrl);
     expectLinkToOpenInNewTab(recipeCaptionLink);
 
+    // The recipe pills should show if applicable
+    const recipePills =
+      rootElement.querySelector<HTMLElement>('.recipe-pill-list');
+    if (['mild', 'spicy'].includes(recipeComponent.recipe!.spiceLevel)) {
+      expect(recipePills?.textContent).toContain(
+        capitalize(recipeComponent.recipe!.spiceLevel)
+      );
+    } else {
+      expect(recipePills?.textContent).not.toContain(
+        capitalize(recipeComponent.recipe!.spiceLevel)
+      );
+    }
+    if (recipeComponent.recipe!.isVegetarian) {
+      expect(recipePills?.textContent).toContain('Vegetarian');
+    } else {
+      expect(recipePills?.textContent).not.toContain('Vegetarian');
+    }
+    if (recipeComponent.recipe!.isVegan) {
+      expect(recipePills?.textContent).toContain('Vegan');
+    } else {
+      expect(recipePills?.textContent).not.toContain('Vegan');
+    }
+    if (recipeComponent.recipe!.isGlutenFree) {
+      expect(recipePills?.textContent).toContain('Gluten-Free');
+    } else {
+      expect(recipePills?.textContent).not.toContain('Gluten-Free');
+    }
+    if (recipeComponent.recipe!.isHealthy) {
+      expect(recipePills?.textContent).toContain('Healthy');
+    } else {
+      expect(recipePills?.textContent).not.toContain('Healthy');
+    }
+    if (recipeComponent.recipe!.isCheap) {
+      expect(recipePills?.textContent).toContain('Cheap');
+    } else {
+      expect(recipePills?.textContent).not.toContain('Cheap');
+    }
+    if (recipeComponent.recipe!.isSustainable) {
+      expect(recipePills?.textContent).toContain('Sustainable');
+    } else {
+      expect(recipePills?.textContent).not.toContain('Sustainable');
+    }
+
     // The recipe time should be in minutes
     const recipeTime =
       rootElement.querySelector<HTMLHeadingElement>('.recipe-time');
     expect(recipeTime?.textContent).toContain(
       `${recipeComponent.recipe!.time} minutes`
     );
+
+    // The recipe types & culture should be listed if applicable
+    const recipeTypes =
+      rootElement.querySelector<HTMLHeadingElement>('.recipe-types');
+    const recipeCulture =
+      rootElement.querySelector<HTMLHeadingElement>('.recipe-culture');
+    for (const type of recipeComponent.recipe!.types) {
+      expect(recipeTypes?.textContent).toContain(type);
+    }
+    for (const culture of recipeComponent.recipe!.culture) {
+      expect(recipeCulture?.textContent).toContain(culture);
+    }
 
     // The "I Made This!" and "Show Me Another Recipe!" buttons should be present
     const madeContainer =
@@ -154,9 +211,7 @@ describe('RecipeComponent', () => {
       ingredientsCard?.querySelector<HTMLDivElement>('.ingredient-grid');
     for (const ingredient of recipeComponent.recipe!.ingredients) {
       // The ingredient name should be capitalized
-      const capitalizedName = ingredient.name.replace(/\b\w/g, (letter) =>
-        letter.toUpperCase()
-      );
+      const capitalizedName = capitalize(ingredient.name);
       expect(ingredientGrid?.textContent).toContain(capitalizedName);
       expect(ingredientGrid?.textContent).toContain(ingredient.amount);
       expect(ingredientGrid?.textContent).toContain(ingredient.unit);
@@ -209,7 +264,7 @@ describe('RecipeComponent', () => {
           expect(ingredientImage.src).toBe(
             `https://spoonacular.com/cdn/ingredients_100x100/${ingredient.image}`
           );
-          expect(ingredientImage.alt).toBe(ingredient.name);
+          expect(ingredientImage.alt).toBe('');
           expect(ingredientListItem?.textContent).toContain(ingredient.name);
         }
 
@@ -223,7 +278,7 @@ describe('RecipeComponent', () => {
           expect(equipmentImage.src).toBe(
             `https://spoonacular.com/cdn/equipment_100x100/${equipment.image}`
           );
-          expect(equipmentImage.alt).toBe(equipment.name);
+          expect(equipmentImage.alt).toBe('');
           expect(equipmentListItem?.textContent).toContain(equipment.name);
         }
       }

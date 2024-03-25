@@ -32,10 +32,7 @@
           width="312"
           height="231"
         />
-        <figcaption
-          class="recipe-caption mat-caption"
-          *ngIf="recipe!.credit !== null"
-        >
+        <figcaption class="recipe-caption mat-caption">
           Image ©
           <a
             [href]="recipe!.sourceUrl"
@@ -47,6 +44,33 @@
         </figcaption>
       </figure>
 
+      <!-- Recipe info -->
+      <mat-chip-set class="recipe-pill-list">
+        <!-- Don't make the chips clickable, but still show their color -->
+        <mat-chip
+          *ngIf="['mild', 'spicy'].includes(recipe.spiceLevel)"
+          [ngStyle]="{
+            'background-color':
+              recipe.spiceLevel === 'mild' ? 'orange' : '#f44326'
+          }"
+          disableRipple
+        >
+          {{ recipe.spiceLevel | titlecase }}
+        </mat-chip>
+        <mat-chip *ngIf="recipe.isVegetarian" disableRipple>
+          Vegetarian
+        </mat-chip>
+        <mat-chip *ngIf="recipe.isVegan" disableRipple> Vegan </mat-chip>
+        <mat-chip *ngIf="recipe.isGlutenFree" disableRipple>
+          Gluten-Free
+        </mat-chip>
+        <mat-chip *ngIf="recipe.isHealthy" disableRipple> Healthy </mat-chip>
+        <mat-chip *ngIf="recipe.isCheap" disableRipple> Cheap </mat-chip>
+        <mat-chip *ngIf="recipe.isSustainable" disableRipple>
+          Sustainable
+        </mat-chip>
+      </mat-chip-set>
+
       <h2 class="recipe-time" [ngPlural]="recipe!.time">
         <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
         <ng-template ngPluralCase="1">
@@ -56,6 +80,13 @@
           <b>Time:</b> {{ recipe!.time }} minutes
         </ng-template>
       </h2>
+
+      <h3 class="recipe-types" *ngIf="recipe!.types.length > 0">
+        <b>Great for:</b> {{ recipe.types.join(", ") }}
+      </h3>
+      <h3 class="recipe-culture" *ngIf="recipe!.culture.length > 0">
+        <b>Cuisines:</b> {{ recipe.culture.join(", ") }}
+      </h3>
 
       <div class="share-button-container">
         <div class="made-container">
@@ -194,12 +225,13 @@
                   *ngFor="let ingredient of step.ingredients"
                 >
                   <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
+                  <!-- Image alts are redundant since there's text next to them -->
                   <img
                     [src]="
                       'https://spoonacular.com/cdn/ingredients_100x100/' +
                       ingredient.image
                     "
-                    [alt]="ingredient.name"
+                    alt=""
                   />
                   <p>{{ ingredient.name }}</p>
                 </li>
@@ -223,7 +255,7 @@
                       'https://spoonacular.com/cdn/equipment_100x100/' +
                       equipment.image
                     "
-                    [alt]="equipment.name"
+                    alt=""
                   />
                   <p>{{ equipment.name }}</p>
                 </li>

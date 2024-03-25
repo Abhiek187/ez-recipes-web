@@ -1,6 +1,10 @@
 $side-width-breakpoint: 700px;
 $step-breakpoint: 800px;
 
+/* Material design color tool: https://m2.material.io/design/color/the-color-system.html */
+$yellow-300: #fff176;
+$blue-400: #42a5f5;
+
 .progress-spinner {
   margin: 10px auto;
 }
@@ -45,15 +49,30 @@ $step-breakpoint: 800px;
       }
     }
 
+    .recipe-pill-list {
+      margin-bottom: 8px;
+
+      mat-chip {
+        background-color: $blue-400;
+      }
+    }
+
     .recipe-time {
       text-align: center;
       font-weight: normal;
+      margin-bottom: 0;
+    }
+
+    .recipe-types,
+    .recipe-culture {
+      margin-bottom: 0;
     }
 
     .share-button-container {
       display: flex;
       justify-content: center;
       gap: 10px;
+      margin-top: 8px;
 
       .made-container,
       .show-recipe-container {
@@ -66,6 +85,8 @@ $step-breakpoint: 800px;
   }
 
   .nutrition-card {
+    height: 100%;
+
     @media screen and (max-width: $side-width-breakpoint) {
       /* Make the nutrition label smaller on small screens */
       width: 232px;
@@ -114,9 +135,6 @@ $step-breakpoint: 800px;
   }
 
   margin: 10px;
-
-  /* Material design color tool: https://material.io/resources/color */
-  $yellow-300: #fff176;
 
   .recipe-summary-card {
     background-color: $yellow-300;
