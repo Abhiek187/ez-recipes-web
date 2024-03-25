@@ -3,7 +3,7 @@ $step-breakpoint: 800px;
 
 /* Material design color tool: https://m2.material.io/design/color/the-color-system.html */
 $yellow-300: #fff176;
-$blue-500: #2196f3;
+$blue-400: #42a5f5;
 
 .progress-spinner {
   margin: 10px auto;
@@ -53,7 +53,7 @@ $blue-500: #2196f3;
       margin-bottom: 8px;
 
       mat-chip {
-        background-color: $blue-500;
+        background-color: $blue-400;
       }
     }
 
