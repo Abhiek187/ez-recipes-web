@@ -1,12 +1,17 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
 
 import Recipe from '../models/recipe.model';
 import { environment } from 'src/environments/environment';
-import { mockRecipe } from '../models/recipe.mock';
+import { mockRecipe, mockRecipes } from '../models/recipe.mock';
 import RecipeError from '../models/recipe-error.model';
 import Constants from '../constants/constants';
+import RecipeFilter from '../models/recipe-filter.model';
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +35,18 @@ export class RecipeService {
 
   resetRecipe() {
     this.recipe.next(null);
+  }
+
+  getRecipesWithFilter(filter: RecipeFilter): Observable<Recipe[]> {
+    if (!environment.production && environment.mock) {
+      return this.getMockRecipes();
+    }
+
+    return this.http
+      .get<Recipe[]>(`${environment.serverBaseUrl}${Constants.recipesPath}`, {
+        params: new HttpParams({ fromObject: filter }),
+      })
+      .pipe(catchError(this.handleError.bind(this)));
   }
 
   getRandomRecipe(): Observable<Recipe> {
@@ -66,6 +83,20 @@ export class RecipeService {
           this.mockError
             ? subscriber.error(Error('A mock error occurred.'))
             : subscriber.next(mockRecipe);
+          subscriber.complete();
+        },
+        this.mockLoading ? 10_000 : 0
+      );
+    });
+  }
+
+  getMockRecipes(): Observable<Recipe[]> {
+    return new Observable((subscriber) => {
+      setTimeout(
+        () => {
+          this.mockError
+            ? subscriber.error(Error('A mock error occurred.'))
+            : subscriber.next(mockRecipes);
           subscriber.complete();
         },
         this.mockLoading ? 10_000 : 0

@@ -9,13 +9,14 @@ import { environment } from 'src/environments/environment';
 import { mockRecipe } from '../models/recipe.mock';
 import Recipe from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
+import Constants from '../constants/constants';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
 
-  const testUrl = '/api/recipes/random';
+  const testUrl = `${Constants.recipesPath}/random`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -56,7 +57,7 @@ describe('RecipeService', () => {
     const req = httpTestingController.expectOne(testUrl);
 
     // Assert that the request is a GET.
-    expect(req.request.method).toEqual('GET');
+    expect(req.request.method).toBe('GET');
 
     // Respond with mock data, causing Observable to resolve.
     // Subscribe callback asserts that correct data was returned.
