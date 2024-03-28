@@ -1,4 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -6,17 +10,16 @@ import {
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from 'src/environments/environment';
-import { mockRecipe } from '../models/recipe.mock';
+import { mockRecipe, mockRecipes } from '../models/recipe.mock';
 import Recipe from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
+import RecipeFilter from '../models/recipe-filter.model';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-
-  const testUrl = `${Constants.recipesPath}/random`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,6 +49,7 @@ describe('RecipeService', () => {
   it('should fetch a random recipe', () => {
     // Check that the getRandomRecipe method returns a mock recipe
     // Make an HTTP GET request
+    const testUrl = `${Constants.recipesPath}/random`;
     httpClient.get<Recipe>(testUrl).subscribe((data) =>
       // When observable resolves, result should match test data
       expect(data).toBe(mockRecipe)
@@ -64,10 +68,11 @@ describe('RecipeService', () => {
     req.flush(mockRecipe);
   });
 
-  it('should return an error if the recipe API fails', () => {
+  it('should return an error if the random recipe API fails', () => {
     // Check that getRandomRecipe returns an error if the request failed
     // Create mock ProgressEvent with type `error`, raised when something goes wrong
     // at network level. e.g. Connection timeout, DNS error, offline, etc.
+    const testUrl = `${Constants.recipesPath}/random`;
     const mockError = new ProgressEvent('error');
 
     httpClient.get<Recipe>(testUrl).subscribe({
@@ -83,10 +88,87 @@ describe('RecipeService', () => {
     req.error(mockError);
   });
 
+  it('should fetch a recipe by ID', () => {
+    // Check that get recipe by ID returns a mock recipe
+    const id = 0;
+    const testUrl = `${Constants.recipesPath}/${id}`;
+
+    httpClient
+      .get<Recipe>(testUrl)
+      .subscribe((data) => expect(data).toBe(mockRecipe));
+
+    const req = httpTestingController.expectOne(testUrl);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockRecipe);
+  });
+
+  it('should return an error if the recipe ID API fails', () => {
+    // Check that getRandomRecipe returns an error if the request failed
+    const id = 0;
+    const testUrl = `${Constants.recipesPath}/${id}`;
+    const mockError = new ProgressEvent('error');
+
+    httpClient.get<Recipe>(testUrl).subscribe({
+      next: () => fail('should have failed with the network error'),
+      error: (error: HttpErrorResponse) => {
+        expect(error.error).toBe(mockError);
+      },
+    });
+
+    const req = httpTestingController.expectOne(testUrl);
+    req.error(mockError);
+  });
+
+  it('should fetch recipes by filter', () => {
+    // Check that getRecipesWithFilter returns an array of mock recipes
+    const testUrl = Constants.recipesPath;
+    const testFilter: RecipeFilter = {};
+
+    httpClient
+      .get<Recipe[]>(testUrl, {
+        params: new HttpParams({ fromObject: testFilter }),
+      })
+      .subscribe((data) => expect(data).toBe(mockRecipes));
+
+    const req = httpTestingController.expectOne(testUrl);
+    expect(req.request.method).toBe('GET');
+    // The query params should be serialized properly
+    expect(req.request.params.toString()).toBe('');
+    req.flush(mockRecipes);
+  });
+
+  it('should return an error if the filter recipe API fails', () => {
+    // Check that getRandomRecipe returns an error if the request failed
+    const testUrl = Constants.recipesPath;
+    const testFilter: RecipeFilter = {};
+    const mockError = new ProgressEvent('error');
+
+    httpClient
+      .get<Recipe[]>(testUrl, {
+        params: new HttpParams({ fromObject: testFilter }),
+      })
+      .subscribe({
+        next: () => fail('should have failed with the network error'),
+        error: (error: HttpErrorResponse) => {
+          expect(error.error).toBe(mockError);
+        },
+      });
+
+    const req = httpTestingController.expectOne(testUrl);
+    req.error(mockError);
+  });
+
   it('should return a mock recipe', () => {
     // Check that getMockRecipe returns a mock recipe
     recipeService.getMockRecipe().subscribe((data) => {
       expect(data).toBe(mockRecipe);
+    });
+  });
+
+  it('should return mock recipes', () => {
+    // Check that getMockRecipes returns multiple mock recipes
+    recipeService.getMockRecipes().subscribe((data) => {
+      expect(data).toBe(mockRecipes);
     });
   });
 
