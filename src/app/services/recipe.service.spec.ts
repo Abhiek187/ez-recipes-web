@@ -1,8 +1,4 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpParams,
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -15,6 +11,7 @@ import Recipe from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
+import recipeFilterParams from './recipe-filter-params';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
@@ -122,18 +119,42 @@ describe('RecipeService', () => {
   it('should fetch recipes by filter', () => {
     // Check that getRecipesWithFilter returns an array of mock recipes
     const testUrl = Constants.recipesPath;
-    const testFilter: RecipeFilter = {};
+    const testFilter: RecipeFilter = {
+      query: 'vegan nuggets',
+      minCals: 100,
+      maxCals: 1000,
+      vegetarian: true,
+      vegan: true,
+      glutenFree: true,
+      healthy: false,
+      cheap: false,
+      sustainable: false,
+      spiceLevel: ['none', 'mild'],
+      type: ['snack', 'lunch'],
+      culture: ['American', 'British'],
+    };
 
     httpClient
       .get<Recipe[]>(testUrl, {
-        params: new HttpParams({ fromObject: testFilter }),
+        params: recipeFilterParams(testFilter),
       })
       .subscribe((data) => expect(data).toBe(mockRecipes));
 
-    const req = httpTestingController.expectOne(testUrl);
-    expect(req.request.method).toBe('GET');
     // The query params should be serialized properly
-    expect(req.request.params.toString()).toBe('');
+    const req = httpTestingController.expectOne(
+      `${testUrl}?query=${encodeURIComponent(testFilter.query!)}&min-cals=${
+        testFilter.minCals
+      }&max-cals=${
+        testFilter.maxCals
+      }&vegetarian=&vegan=&gluten-free=&${testFilter.spiceLevel
+        ?.map((spiceLevel) => `spice-level=${spiceLevel}`)
+        .join('&')}&${testFilter.type
+        ?.map((mealType) => `type=${encodeURIComponent(mealType)}`)
+        .join('&')}&${testFilter.culture
+        ?.map((cuisine) => `culture=${encodeURIComponent(cuisine)}`)
+        .join('&')}`
+    );
+    expect(req.request.method).toBe('GET');
     req.flush(mockRecipes);
   });
 
@@ -145,7 +166,7 @@ describe('RecipeService', () => {
 
     httpClient
       .get<Recipe[]>(testUrl, {
-        params: new HttpParams({ fromObject: testFilter }),
+        params: recipeFilterParams(testFilter),
       })
       .subscribe({
         next: () => fail('should have failed with the network error'),

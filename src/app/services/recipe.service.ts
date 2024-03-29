@@ -1,8 +1,4 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpParams,
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
 
@@ -12,6 +8,7 @@ import { mockRecipe, mockRecipes } from '../models/recipe.mock';
 import RecipeError from '../models/recipe-error.model';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
+import recipeFilterParams from './recipe-filter-params';
 
 @Injectable({
   providedIn: 'root',
@@ -44,7 +41,7 @@ export class RecipeService {
 
     return this.http
       .get<Recipe[]>(`${environment.serverBaseUrl}${Constants.recipesPath}`, {
-        params: new HttpParams({ fromObject: filter }),
+        params: recipeFilterParams(filter),
       })
       .pipe(catchError(this.handleError.bind(this)));
   }
