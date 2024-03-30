@@ -1,13 +1,38 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { NgIf, NgFor } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatNavList, MatListItem } from '@angular/material/list';
+import {
+  MatSidenavContainer,
+  MatSidenav,
+  MatSidenavContent,
+} from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatToolbar } from '@angular/material/toolbar';
 import { Title } from '@angular/platform-browser';
-import { Router, Routes } from '@angular/router';
+import { Router, Routes, RouterLink, RouterOutlet } from '@angular/router';
 
 import { RecipeComponent } from '../recipe/recipe.component';
 
 @Component({
   selector: 'app-navbar',
+  standalone: true,
+  imports: [
+    MatToolbar,
+    MatIconButton,
+    MatIcon,
+    NgIf,
+    MatSidenavContainer,
+    MatSidenav,
+    MatNavList,
+    NgFor,
+    MatListItem,
+    RouterLink,
+    MatSidenavContent,
+    RouterOutlet,
+  ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })

@@ -5,7 +5,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 
 import { NavbarComponent } from './navbar.component';
@@ -17,7 +17,6 @@ describe('NavbarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NavbarComponent],
       imports: [
         MatToolbarModule,
         MatIconModule,
@@ -25,8 +24,9 @@ describe('NavbarComponent', () => {
         MatSidenavModule,
         MatListModule,
         MatSnackBarModule,
-        BrowserAnimationsModule,
+        NoopAnimationsModule,
         RouterModule.forRoot([]),
+        NavbarComponent,
       ],
     }).compileComponents();
 

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
 import { AppComponent } from './app.component';
-import { AppModule } from './app.module';
+import { RouterModule } from '@angular/router';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -9,7 +11,7 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     // Import all the necessary modules and components to test the app component
     await TestBed.configureTestingModule({
-      imports: [AppModule],
+      imports: [NoopAnimationsModule, RouterModule.forRoot([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
