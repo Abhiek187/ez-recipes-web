@@ -9,18 +9,11 @@ import { AppComponent } from './app.component';
 import { RecipeComponent } from './components/recipe/recipe.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
-import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { MaterialModule } from './material.module';
 import { environment } from '../environments/environment';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    RecipeComponent,
-    NavbarComponent,
-    HomeComponent,
-    PageNotFoundComponent,
-  ],
+  declarations: [AppComponent, RecipeComponent, NavbarComponent, HomeComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
