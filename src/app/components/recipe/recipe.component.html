@@ -1,8 +1,4 @@
-<mat-spinner
-  diameter="50"
-  class="progress-spinner"
-  *ngIf="isLoading"
-></mat-spinner>
+<mat-spinner diameter="50" class="progress-spinner" *ngIf="isLoading" />
 
 <ng-container *ngIf="recipe !== null">
   <!-- Recipe header -->
@@ -17,7 +13,7 @@
       rel="noopener noreferrer"
       aria-label="Open recipe source"
     >
-      <mat-icon>link</mat-icon>
+      <mat-icon fontIcon="link" />
     </a>
   </header>
 
@@ -96,7 +92,7 @@
             aria-label="I made this"
             (click)="addPreparation()"
           >
-            <mat-icon>restaurant</mat-icon>
+            <mat-icon fontIcon="restaurant" />
           </button>
           <p>I Made This!</p>
         </div>
@@ -109,7 +105,7 @@
             (click)="getRandomRecipe()"
             [disabled]="isLoading"
           >
-            <mat-icon>receipt_long</mat-icon>
+            <mat-icon fontIcon="receipt_long" />
           </button>
           <p>Show Me Another Recipe!</p>
         </div>
@@ -133,7 +129,7 @@
           >
         </mat-card-subtitle>
       </mat-card-header>
-      <mat-divider class="nutrient-divider"></mat-divider>
+      <mat-divider class="nutrient-divider" />
       <mat-card-content>
         <div class="nutrient-grid">
           <ng-container *ngFor="let nutrient of recipe!.nutrients">
@@ -165,12 +161,15 @@
     <mat-card class="recipe-summary-card">
       <mat-card-header class="recipe-summary-header">
         <mat-card-title>Summary</mat-card-title>
-        <mat-icon class="lightbulb-icon" aria-hidden="true"
-          >tips_and_updates</mat-icon
+        <mat-icon
+          fontIcon="tips_and_updates"
+          class="lightbulb-icon"
+          aria-hidden="true"
+        />
         >
       </mat-card-header>
       <!-- Render HTML tags -->
-      <mat-card-content [innerHtml]="recipe!.summary"></mat-card-content>
+      <mat-card-content [innerHtml]="recipe!.summary" />
     </mat-card>
 
     <!-- Ingredients -->
@@ -178,7 +177,7 @@
       <mat-card-header class="recipe-ingredients-header">
         <mat-card-title>Ingredients</mat-card-title>
       </mat-card-header>
-      <mat-divider class="ingredient-divider"></mat-divider>
+      <mat-divider class="ingredient-divider" />
       <mat-card-content>
         <div class="ingredient-grid">
           <ng-container *ngFor="let ingredient of recipe!.ingredients">
@@ -211,7 +210,7 @@
               <h4 class="step-number">{{ step.number }}</h4>
               <p>{{ step.step }}</p>
             </div>
-            <mat-divider *ngIf="step.ingredients.length > 0"></mat-divider>
+            <mat-divider *ngIf="step.ingredients.length > 0" />
 
             <!-- Ingredients per step -->
             <div
@@ -237,7 +236,7 @@
                 </li>
               </ul>
             </div>
-            <mat-divider *ngIf="step.equipment.length > 0"></mat-divider>
+            <mat-divider *ngIf="step.equipment.length > 0" />
 
             <!-- Equipment per step -->
             <div
@@ -267,7 +266,7 @@
     </div>
   </main>
 
-  <mat-divider></mat-divider>
+  <mat-divider />
 
   <!-- spoonacular API attribution -->
   <footer class="recipe-footer">

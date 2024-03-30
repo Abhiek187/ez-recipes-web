@@ -6,7 +6,7 @@
     aria-label="Open menu"
     (click)="snav.toggle()"
   >
-    <mat-icon>menu</mat-icon>
+    <mat-icon fontIcon="menu" />
   </button>
   <span>EZ Recipes</span>
   <span class="spacer"></span>
@@ -20,7 +20,7 @@
     "
     (click)="toggleFavoriteRecipe()"
   >
-    <mat-icon>{{ isFavorite ? "favorite" : "favorite_border" }}</mat-icon>
+    <mat-icon [fontIcon]="isFavorite ? 'favorite' : 'favorite_border'" />
   </button>
   <button
     mat-icon-button
@@ -29,7 +29,7 @@
     aria-label="Share this recipe"
     (click)="shareRecipe()"
   >
-    <mat-icon>share</mat-icon>
+    <mat-icon fontIcon="share" />
   </button>
 </mat-toolbar>
 
@@ -56,6 +56,6 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">
-    <router-outlet (activate)="onRouterOutletActivate($event)"></router-outlet>
+    <router-outlet (activate)="onRouterOutletActivate($event)" />
   </mat-sidenav-content>
 </mat-sidenav-container>
