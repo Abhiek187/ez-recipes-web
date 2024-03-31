@@ -12,7 +12,7 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbar } from '@angular/material/toolbar';
 import { Title } from '@angular/platform-browser';
-import { Router, Routes, RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { RecipeComponent } from '../recipe/recipe.component';
@@ -35,6 +35,7 @@ import { routes } from 'src/app/app-routing.module';
     MatSidenavContent,
     RouterOutlet,
     MatButton,
+    RouterLinkActive,
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
@@ -44,20 +45,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
   // Navigation links to show in the sidenav
   navItems = [routes.home, routes.search];
 
-  routerConfig: Routes;
   isRecipePage = false;
   isFavorite = false;
   breakpointSubscription?: Subscription;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private router: Router,
     private titleService: Title,
     private snackBar: MatSnackBar
   ) {
     // Detect breakpoint changes so the template can respond
     this.isSmallScreen = this.breakpointObserver.isMatched(Breakpoints.XSmall);
-    this.routerConfig = this.router.config;
   }
 
   ngOnInit(): void {

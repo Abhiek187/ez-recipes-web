@@ -1,4 +1,5 @@
 <mat-toolbar color="primary" class="toolbar">
+  <!-- Show a hamburger menu on small screens -->
   <ng-container *ngIf="isSmallScreen">
     <!-- All material icons are found at: https://fonts.google.com/icons -->
     <button
@@ -11,10 +12,20 @@
     </button>
     <span>EZ Recipes</span>
   </ng-container>
-  <ng-container *ngIf="!isSmallScreen">
-    <button mat-button color="accent" routerLink="/">EZ Recipes</button>
-    <button mat-button color="accent" routerLink="/search">Search</button>
-  </ng-container>
+  <!-- Show all the links side-by-side if there's enough screen space -->
+  <nav class="nav-links" *ngIf="!isSmallScreen">
+    <ng-container *ngFor="let nav of navItems">
+      <button
+        mat-button
+        color="accent"
+        [routerLink]="nav.path"
+        [routerLinkActive]="nav.path === '' ? '' : 'selected'"
+        [style]="{ 'font-size': nav.path === '' ? '20px' : '16px' }"
+      >
+        {{ nav.path === "" ? "EZ Recipes" : nav.title }}
+      </button>
+    </ng-container>
+  </nav>
   <span class="spacer"></span>
   <!-- Update the material icon to match the corresponding boolean value -->
   <button

@@ -1,7 +1,7 @@
 $side-width-breakpoint: 700px;
 $step-breakpoint: 800px;
 
-/* Material design color tool: https://m2.material.io/design/color/the-color-system.html */
+// Material design color tool: https://m2.material.io/design/color/the-color-system.html
 $yellow-300: #fff176;
 $blue-400: #42a5f5;
 
@@ -25,7 +25,7 @@ $blue-400: #42a5f5;
   margin-left: 10px;
   margin-right: 10px;
 
-  /* Display recipe information side-by-side if the screen is large enough */
+  // Display recipe information side-by-side if the screen is large enough
   @media screen and (min-width: $side-width-breakpoint) {
     display: flex;
     justify-content: space-around;
@@ -35,13 +35,13 @@ $blue-400: #42a5f5;
     padding-bottom: 16px;
 
     .recipe-figure {
-      /* Center image */
+      // Center image
       margin-left: auto;
       margin-right: auto;
 
       .recipe-image {
         display: block;
-        margin: 0 auto 5px auto; /* top right bottom left */
+        margin: 0 auto 5px auto; // top right bottom left
       }
 
       .recipe-caption {
@@ -88,7 +88,7 @@ $blue-400: #42a5f5;
     height: 100%;
 
     @media screen and (max-width: $side-width-breakpoint) {
-      /* Make the nutrition label smaller on small screens */
+      // Make the nutrition label smaller on small screens
       width: 232px;
       margin-left: auto;
       margin-right: auto;
@@ -101,7 +101,7 @@ $blue-400: #42a5f5;
     }
 
     .nutrient-divider {
-      /* Simulate the old inset behavior */
+      // Simulate the old inset behavior
       margin-left: 16px;
       margin-right: 16px;
     }
@@ -139,7 +139,7 @@ $blue-400: #42a5f5;
   .recipe-summary-card {
     background-color: $yellow-300;
     margin-bottom: 16px;
-    flex-basis: 50%; /* take up 50% of the flexbox */
+    flex-basis: 50%; // take up 50% of the flexbox
 
     .recipe-summary-header {
       justify-content: center;
@@ -147,7 +147,7 @@ $blue-400: #42a5f5;
       padding-bottom: 16px;
     }
 
-    /* Position the lightbulb icon at the top right of the card */
+    // Position the lightbulb icon at the top right of the card
     .lightbulb-icon {
       position: absolute;
       top: 10px;
@@ -160,7 +160,7 @@ $blue-400: #42a5f5;
     margin-right: auto;
 
     @media screen and (max-width: $side-width-breakpoint) {
-      /* Make the ingredients label smaller on small screens, without overflowing */
+      // Make the ingredients label smaller on small screens, without overflowing
       width: min(calc(100vw - 24px), 300px);
     }
 
@@ -178,7 +178,7 @@ $blue-400: #42a5f5;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       margin-top: 10px !important;
-      row-gap: 5px; /* space out each ingredient to improve readability */
+      row-gap: 5px; // space out each ingredient to improve readability
 
       .ingredient-amount,
       .ingredient-name {
@@ -206,7 +206,7 @@ $blue-400: #42a5f5;
     flex-wrap: wrap;
 
     .step-card {
-      margin: 10px auto; /* top right bottom left */
+      margin: 10px auto; // top right bottom left
       width: 45%;
 
       @media screen and (max-width: $step-breakpoint) {
@@ -225,9 +225,9 @@ $blue-400: #42a5f5;
         font-weight: bold;
         border: 1px solid black;
         border-radius: 50%;
-        flex: 0 0 30px; /* fix the width of the flex item to 30px */
+        flex: 0 0 30px; // fix the width of the flex item to 30px
         height: 30px;
-        line-height: 30px; /* line-height will allow the text to be vertically aligned */
+        line-height: 30px; // line-height will allow the text to be vertically aligned
         text-align: center;
         vertical-align: middle;
       }
