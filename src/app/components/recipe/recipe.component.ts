@@ -27,7 +27,7 @@ import { RecipeService } from '../../services/recipe.service';
     MatProgressSpinnerModule,
   ],
   templateUrl: './recipe.component.html',
-  styleUrls: ['./recipe.component.scss'],
+  styleUrl: './recipe.component.scss',
 })
 export class RecipeComponent implements OnInit, OnDestroy {
   recipe: Recipe | null = null;

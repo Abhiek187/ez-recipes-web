@@ -27,7 +27,7 @@ import { routes } from 'src/app/app-routing.module';
     RouterModule,
   ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss'],
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isSmallScreen: boolean;
