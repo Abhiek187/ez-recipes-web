@@ -1,45 +1,80 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnInit } from '@angular/core';
+import { NgIf, NgFor } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatNavList, MatListItem } from '@angular/material/list';
+import {
+  MatSidenavContainer,
+  MatSidenav,
+  MatSidenavContent,
+} from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatToolbar } from '@angular/material/toolbar';
 import { Title } from '@angular/platform-browser';
-import { Router, Routes } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { RecipeComponent } from '../recipe/recipe.component';
+import { routes } from 'src/app/app-routing.module';
 
 @Component({
   selector: 'app-navbar',
+  standalone: true,
+  imports: [
+    MatToolbar,
+    MatIconButton,
+    MatIcon,
+    NgIf,
+    MatSidenavContainer,
+    MatSidenav,
+    MatNavList,
+    NgFor,
+    MatListItem,
+    RouterLink,
+    MatSidenavContent,
+    RouterOutlet,
+    MatButton,
+    RouterLinkActive,
+  ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   isSmallScreen: boolean;
-  navItems: string[] = ['Home']; // navigation links to show in the sidenav
+  // Navigation links to show in the sidenav
+  navItems = [routes.home, routes.search];
 
-  routerConfig: Routes;
   isRecipePage = false;
   isFavorite = false;
+  breakpointSubscription?: Subscription;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private router: Router,
     private titleService: Title,
     private snackBar: MatSnackBar
   ) {
     // Detect breakpoint changes so the template can respond
     this.isSmallScreen = this.breakpointObserver.isMatched(Breakpoints.XSmall);
-    this.routerConfig = this.router.config;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.breakpointSubscription = this.breakpointObserver
+      .observe(Breakpoints.XSmall)
+      .subscribe(() => {
+        this.isSmallScreen = this.breakpointObserver.isMatched(
+          Breakpoints.XSmall
+        );
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.breakpointSubscription?.unsubscribe();
+  }
 
   onRouterOutletActivate(event: any) {
     // Check if the recipe component is shown in the router outlet
     this.isRecipePage = event instanceof RecipeComponent;
-  }
-
-  getRoute(title: string): string | undefined {
-    // Get the route path with the matching title, returns undefined if the title isn't found
-    return this.routerConfig.find((route) => route.title === title)?.path;
   }
 
   toggleFavoriteRecipe() {

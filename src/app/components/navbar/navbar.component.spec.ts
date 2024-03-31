@@ -5,10 +5,11 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 
 import { NavbarComponent } from './navbar.component';
+import { routes } from 'src/app/app-routing.module';
 
 describe('NavbarComponent', () => {
   let navbarComponent: NavbarComponent;
@@ -17,7 +18,6 @@ describe('NavbarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NavbarComponent],
       imports: [
         MatToolbarModule,
         MatIconModule,
@@ -25,8 +25,9 @@ describe('NavbarComponent', () => {
         MatSidenavModule,
         MatListModule,
         MatSnackBarModule,
-        BrowserAnimationsModule,
+        NoopAnimationsModule,
         RouterModule.forRoot([]),
+        NavbarComponent,
       ],
     }).compileComponents();
 
@@ -36,13 +37,36 @@ describe('NavbarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should display the navbar correctly', () => {
-    // Check that the navbar contains the app name and a hamburger icon
+  it('should display button links on large screens', () => {
+    // Check that the navbar contains all the nav links and the hamburger menu is hidden
     expect(navbarComponent).toBeTruthy();
+
+    const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
+    expect(menuIcon).toBeNull();
     expect(rootElement.textContent).toContain('EZ Recipes');
+    expect(rootElement.textContent).toContain(routes.search.title);
+
+    // The favorite and share buttons should be hidden by default on the home page
+    const favoriteIcon =
+      rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
+    const shareIcon =
+      rootElement.querySelector<HTMLButtonElement>('.share-icon');
+
+    expect(navbarComponent.isRecipePage).toBeFalse();
+    expect(favoriteIcon).toBeNull();
+    expect(shareIcon).toBeNull();
+  });
+
+  it('should display the hamburger menu on small screens', () => {
+    // Check that the navbar contains the app name and a hamburger icon
+    navbarComponent.isSmallScreen = true;
+    fixture.detectChanges();
 
     const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
     expect(menuIcon).not.toBeNull();
+    expect(rootElement.textContent).toContain('EZ Recipes');
+    expect(rootElement.textContent).toContain(routes.home.title);
+    expect(rootElement.textContent).toContain(routes.search.title);
 
     // The favorite and share buttons should be hidden by default on the home page
     const favoriteIcon =
@@ -57,6 +81,9 @@ describe('NavbarComponent', () => {
 
   it('should toggle the sidenav when clicking the hamburger icon', () => {
     // Check that the sidenav appears and disappears when clicking the hamburger icon
+    navbarComponent.isSmallScreen = true;
+    fixture.detectChanges();
+
     const sidenav = rootElement.querySelector<HTMLDivElement>('.sidenav');
     expect(sidenav).not.toBeNull();
     expect(sidenav?.classList).not.toContain('mat-drawer-opened');
@@ -67,7 +94,7 @@ describe('NavbarComponent', () => {
     expect(sidenav?.classList).toContain('mat-drawer-opened');
 
     for (const navItem of navbarComponent.navItems) {
-      expect(sidenav?.textContent).toContain(navItem);
+      expect(sidenav?.textContent).toContain(navItem.title);
     }
 
     menuIcon?.click();
@@ -89,22 +116,23 @@ describe('NavbarComponent', () => {
     navbarComponent.isRecipePage = true;
     fixture.detectChanges();
 
-    const favoriteIcon =
+    const favoriteButton =
       rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
-    expect(favoriteIcon).not.toBeNull();
+    const favoriteIcon = favoriteButton?.querySelector('mat-icon');
+    expect(favoriteButton).not.toBeNull();
     // Recipe shouldn't be liked by default
-    expect(favoriteIcon?.textContent).toBe('favorite_border');
-    expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
+    expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');
+    expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
 
-    favoriteIcon?.click();
+    favoriteButton?.click();
     fixture.detectChanges();
-    expect(favoriteIcon?.textContent).toBe('favorite');
-    expect(favoriteIcon?.ariaLabel).toBe('Unfavorite this recipe');
+    expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite');
+    expect(favoriteButton?.ariaLabel).toBe('Unfavorite this recipe');
 
-    favoriteIcon?.click();
+    favoriteButton?.click();
     fixture.detectChanges();
-    expect(favoriteIcon?.textContent).toBe('favorite_border');
-    expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
+    expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');
+    expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
   });
 
   it('should call shareRecipe after clicking the share button', () => {

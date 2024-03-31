@@ -1300,3 +1300,9 @@ abstract class MockRecipes {
 }
 
 export const mockRecipe = MockRecipes.jambalayaStew;
+export const mockRecipes = [
+  MockRecipes.grilledFish,
+  MockRecipes.gingerbread,
+  MockRecipes.jambalayaStew,
+  MockRecipes.chocolateCupcake,
+];

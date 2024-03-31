@@ -24,7 +24,6 @@ describe('RecipeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RecipeComponent],
       imports: [
         MatIconModule,
         MatButtonModule,
@@ -35,6 +34,7 @@ describe('RecipeComponent', () => {
         MatProgressSpinnerModule,
         HttpClientTestingModule,
         RouterModule.forRoot([]),
+        RecipeComponent,
       ],
     }).compileComponents();
 

@@ -1,4 +1,26 @@
+import {
+  NgIf,
+  NgStyle,
+  NgPlural,
+  NgPluralCase,
+  NgFor,
+  NgClass,
+  DecimalPipe,
+  TitleCasePipe,
+} from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatIconAnchor, MatMiniFabButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardHeader,
+  MatCardTitle,
+  MatCardSubtitle,
+  MatCardContent,
+} from '@angular/material/card';
+import { MatChipSet, MatChip } from '@angular/material/chips';
+import { MatDivider } from '@angular/material/divider';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
@@ -9,6 +31,29 @@ import { RecipeService } from '../../services/recipe.service';
 
 @Component({
   selector: 'app-recipe',
+  standalone: true,
+  imports: [
+    NgIf,
+    MatProgressSpinner,
+    MatIconAnchor,
+    MatIcon,
+    MatChipSet,
+    MatChip,
+    NgStyle,
+    NgPlural,
+    NgPluralCase,
+    MatMiniFabButton,
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardSubtitle,
+    MatDivider,
+    MatCardContent,
+    NgFor,
+    NgClass,
+    DecimalPipe,
+    TitleCasePipe,
+  ],
   templateUrl: './recipe.component.html',
   styleUrls: ['./recipe.component.scss'],
 })
