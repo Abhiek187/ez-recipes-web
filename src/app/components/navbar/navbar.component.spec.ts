@@ -67,7 +67,7 @@ describe('NavbarComponent', () => {
     expect(sidenav?.classList).toContain('mat-drawer-opened');
 
     for (const navItem of navbarComponent.navItems) {
-      expect(sidenav?.textContent).toContain(navItem);
+      expect(sidenav?.textContent).toContain(navItem.title);
     }
 
     menuIcon?.click();
@@ -89,22 +89,23 @@ describe('NavbarComponent', () => {
     navbarComponent.isRecipePage = true;
     fixture.detectChanges();
 
-    const favoriteIcon =
+    const favoriteButton =
       rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
-    expect(favoriteIcon).not.toBeNull();
+    const favoriteIcon = favoriteButton?.querySelector('mat-icon');
+    expect(favoriteButton).not.toBeNull();
     // Recipe shouldn't be liked by default
-    expect(favoriteIcon?.textContent).toBe('favorite_border');
-    expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
+    expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');
+    expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
 
-    favoriteIcon?.click();
+    favoriteButton?.click();
     fixture.detectChanges();
-    expect(favoriteIcon?.textContent).toBe('favorite');
-    expect(favoriteIcon?.ariaLabel).toBe('Unfavorite this recipe');
+    expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite');
+    expect(favoriteButton?.ariaLabel).toBe('Unfavorite this recipe');
 
-    favoriteIcon?.click();
+    favoriteButton?.click();
     fixture.detectChanges();
-    expect(favoriteIcon?.textContent).toBe('favorite_border');
-    expect(favoriteIcon?.ariaLabel).toBe('Favorite this recipe');
+    expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');
+    expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
   });
 
   it('should call shareRecipe after clicking the share button', () => {

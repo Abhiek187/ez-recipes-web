@@ -15,6 +15,7 @@ import { Title } from '@angular/platform-browser';
 import { Router, Routes, RouterLink, RouterOutlet } from '@angular/router';
 
 import { RecipeComponent } from '../recipe/recipe.component';
+import { routes } from 'src/app/app-routing.module';
 
 @Component({
   selector: 'app-navbar',
@@ -38,7 +39,8 @@ import { RecipeComponent } from '../recipe/recipe.component';
 })
 export class NavbarComponent implements OnInit {
   isSmallScreen: boolean;
-  navItems: string[] = ['Home']; // navigation links to show in the sidenav
+  // Navigation links to show in the sidenav
+  navItems = [routes.home, routes.search];
 
   routerConfig: Routes;
   isRecipePage = false;
@@ -60,11 +62,6 @@ export class NavbarComponent implements OnInit {
   onRouterOutletActivate(event: any) {
     // Check if the recipe component is shown in the router outlet
     this.isRecipePage = event instanceof RecipeComponent;
-  }
-
-  getRoute(title: string): string | undefined {
-    // Get the route path with the matching title, returns undefined if the title isn't found
-    return this.routerConfig.find((route) => route.title === title)?.path;
   }
 
   toggleFavoriteRecipe() {
