@@ -1,7 +1,7 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { NgIf, NgFor } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatNavList, MatListItem } from '@angular/material/list';
 import {
@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbar } from '@angular/material/toolbar';
 import { Title } from '@angular/platform-browser';
 import { Router, Routes, RouterLink, RouterOutlet } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { RecipeComponent } from '../recipe/recipe.component';
 import { routes } from 'src/app/app-routing.module';
@@ -33,11 +34,12 @@ import { routes } from 'src/app/app-routing.module';
     RouterLink,
     MatSidenavContent,
     RouterOutlet,
+    MatButton,
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   isSmallScreen: boolean;
   // Navigation links to show in the sidenav
   navItems = [routes.home, routes.search];
@@ -45,6 +47,7 @@ export class NavbarComponent implements OnInit {
   routerConfig: Routes;
   isRecipePage = false;
   isFavorite = false;
+  breakpointSubscription?: Subscription;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -57,7 +60,19 @@ export class NavbarComponent implements OnInit {
     this.routerConfig = this.router.config;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.breakpointSubscription = this.breakpointObserver
+      .observe(Breakpoints.XSmall)
+      .subscribe(() => {
+        this.isSmallScreen = this.breakpointObserver.isMatched(
+          Breakpoints.XSmall
+        );
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.breakpointSubscription?.unsubscribe();
+  }
 
   onRouterOutletActivate(event: any) {
     // Check if the recipe component is shown in the router outlet

@@ -9,6 +9,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 
 import { NavbarComponent } from './navbar.component';
+import { routes } from 'src/app/app-routing.module';
 
 describe('NavbarComponent', () => {
   let navbarComponent: NavbarComponent;
@@ -36,13 +37,36 @@ describe('NavbarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should display the navbar correctly', () => {
-    // Check that the navbar contains the app name and a hamburger icon
+  it('should display button links on large screens', () => {
+    // Check that the navbar contains all the nav links and the hamburger menu is hidden
     expect(navbarComponent).toBeTruthy();
+
+    const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
+    expect(menuIcon).toBeNull();
     expect(rootElement.textContent).toContain('EZ Recipes');
+    expect(rootElement.textContent).toContain(routes.search.title);
+
+    // The favorite and share buttons should be hidden by default on the home page
+    const favoriteIcon =
+      rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
+    const shareIcon =
+      rootElement.querySelector<HTMLButtonElement>('.share-icon');
+
+    expect(navbarComponent.isRecipePage).toBeFalse();
+    expect(favoriteIcon).toBeNull();
+    expect(shareIcon).toBeNull();
+  });
+
+  it('should display the hamburger menu on small screens', () => {
+    // Check that the navbar contains the app name and a hamburger icon
+    navbarComponent.isSmallScreen = true;
+    fixture.detectChanges();
 
     const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
     expect(menuIcon).not.toBeNull();
+    expect(rootElement.textContent).toContain('EZ Recipes');
+    expect(rootElement.textContent).toContain(routes.home.title);
+    expect(rootElement.textContent).toContain(routes.search.title);
 
     // The favorite and share buttons should be hidden by default on the home page
     const favoriteIcon =
@@ -57,6 +81,9 @@ describe('NavbarComponent', () => {
 
   it('should toggle the sidenav when clicking the hamburger icon', () => {
     // Check that the sidenav appears and disappears when clicking the hamburger icon
+    navbarComponent.isSmallScreen = true;
+    fixture.detectChanges();
+
     const sidenav = rootElement.querySelector<HTMLDivElement>('.sidenav');
     expect(sidenav).not.toBeNull();
     expect(sidenav?.classList).not.toContain('mat-drawer-opened');

@@ -1,14 +1,20 @@
 <mat-toolbar color="primary" class="toolbar">
-  <!-- All material icons are found at: https://fonts.google.com/icons -->
-  <button
-    mat-icon-button
-    class="menu-icon"
-    aria-label="Open menu"
-    (click)="snav.toggle()"
-  >
-    <mat-icon fontIcon="menu" />
-  </button>
-  <span>EZ Recipes</span>
+  <ng-container *ngIf="isSmallScreen">
+    <!-- All material icons are found at: https://fonts.google.com/icons -->
+    <button
+      mat-icon-button
+      class="menu-icon"
+      aria-label="Open menu"
+      (click)="snav.toggle()"
+    >
+      <mat-icon fontIcon="menu" />
+    </button>
+    <span>EZ Recipes</span>
+  </ng-container>
+  <ng-container *ngIf="!isSmallScreen">
+    <button mat-button color="accent" routerLink="/">EZ Recipes</button>
+    <button mat-button color="accent" routerLink="/search">Search</button>
+  </ng-container>
   <span class="spacer"></span>
   <!-- Update the material icon to match the corresponding boolean value -->
   <button
