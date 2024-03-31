@@ -1,7 +1,7 @@
-import { NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { MatButton } from '@angular/material/button';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -13,7 +13,7 @@ import { RecipeService } from 'src/app/services/recipe.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatButton, NgIf, MatProgressSpinner],
+  imports: [CommonModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
