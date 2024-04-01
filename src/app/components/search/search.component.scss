@@ -1,14 +1,45 @@
 .recipe-form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   margin: 8px;
 
+  .recipe-query {
+    width: 100%;
+    max-width: 700px; // the width of all checkboxes and dropdowns side-by-side
+  }
+
   .calories-row {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+
+    mat-form-field {
+      width: 100px;
+    }
+  }
+
+  .checkbox-row,
+  .dropdown-row {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .submit-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+
+    .progress-spinner {
+      // Place next to the submit button, but keep the button centered
+      position: absolute;
+      margin-left: calc(73.4px + 16px); // width of button + gap
+    }
   }
 }
