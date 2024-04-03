@@ -1,6 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Type } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -61,7 +61,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.breakpointSubscription?.unsubscribe();
   }
 
-  onRouterOutletActivate(event: any) {
+  onRouterOutletActivate(event: Type<Component>) {
     // Check if the recipe component is shown in the router outlet
     this.isRecipePage = event instanceof RecipeComponent;
   }

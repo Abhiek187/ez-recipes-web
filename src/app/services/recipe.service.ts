@@ -123,12 +123,12 @@ export class RecipeService {
   }
 
   // Type guard to check if the server returned a valid error response
-  private isRecipeError(error: any): error is RecipeError {
+  private isRecipeError(error: unknown): error is RecipeError {
     // Assert that error is an object: https://stackoverflow.com/a/8511350
     if (typeof error !== 'object' || Array.isArray(error) || error === null) {
       return false;
     }
 
-    return error.hasOwnProperty('error');
+    return Object.prototype.hasOwnProperty.call(error, 'error');
   }
 }
