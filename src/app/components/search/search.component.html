@@ -14,33 +14,57 @@
     <mat-icon matSuffix fontIcon="search" />
   </mat-form-field>
 
-  <section class="calories-row">
-    <mat-form-field>
-      <input
-        matInput
-        formControlName="minCals"
-        placeholder="0"
-        type="number"
-        min="0"
-        max="2000"
-        pattern="\d*"
-        inputmode="numeric"
-      />
-    </mat-form-field>
-    <p>≤ Calories ≤</p>
-    <mat-form-field>
-      <input
-        matInput
-        formControlName="maxCals"
-        placeholder="2000"
-        type="number"
-        min="0"
-        max="2000"
-        pattern="\d*"
-        inputmode="numeric"
-      />
-    </mat-form-field>
-    <p>kcal</p>
+  <section class="calories-section">
+    <div class="calories-row">
+      <mat-form-field>
+        <input
+          matInput
+          formControlName="minCals"
+          placeholder="0"
+          type="number"
+          min="0"
+          max="2000"
+          pattern="\d*"
+          inputmode="numeric"
+        />
+      </mat-form-field>
+      <p>≤ Calories ≤</p>
+      <mat-form-field>
+        <input
+          matInput
+          formControlName="maxCals"
+          placeholder="2000"
+          type="number"
+          min="0"
+          max="2000"
+          pattern="\d*"
+          inputmode="numeric"
+        />
+      </mat-form-field>
+      <p>kcal</p>
+    </div>
+    <!-- Show errors as separate rows so they don't overlap with the rest of the form -->
+    <div class="calorie-errors">
+      <span
+        *ngIf="
+          filterFormGroup.get('minCals')?.errors?.min ||
+          filterFormGroup.get('maxCals')?.errors?.min
+        "
+      >
+        <mat-icon fontIcon="error" />{{ Errors.min }}
+      </span>
+      <span
+        *ngIf="
+          filterFormGroup.get('minCals')?.errors?.max ||
+          filterFormGroup.get('maxCals')?.errors?.max
+        "
+      >
+        <mat-icon fontIcon="error" />{{ Errors.max }}
+      </span>
+      <span *ngIf="filterFormGroup.errors?.range">
+        <mat-icon fontIcon="error" />{{ Errors.range }}
+      </span>
+    </div>
   </section>
 
   <section class="checkbox-row">
@@ -93,4 +117,7 @@
     <mat-spinner diameter="40" class="progress-spinner" *ngIf="isLoading" />
   </span>
   <p class="loading-message" *ngIf="isLoading">{{ loadingMessage }}</p>
+  <p class="no-results-error" *ngIf="noRecipesFound">
+    <mat-icon fontIcon="error" />{{ Errors.noResults }}
+  </p>
 </form>

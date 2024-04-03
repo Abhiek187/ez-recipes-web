@@ -1,3 +1,5 @@
+$error-color: #d32f2f; // red-700
+
 .recipe-form {
   display: flex;
   flex-direction: column;
@@ -10,15 +12,29 @@
     max-width: 700px; // the width of all checkboxes and dropdowns side-by-side
   }
 
-  .calories-row {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
+  .calories-section {
+    .calories-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
 
-    mat-form-field {
-      width: 100px;
+      mat-form-field {
+        width: 100px;
+      }
+    }
+
+    .calorie-errors {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: $error-color;
+
+      span {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
     }
   }
 
@@ -26,13 +42,11 @@
   .dropdown-row {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
     gap: 16px;
   }
 
   .submit-row {
     display: flex;
-    flex-direction: row;
     align-items: center;
     gap: 16px;
 
@@ -41,5 +55,12 @@
       position: absolute;
       margin-left: calc(73.4px + 16px); // width of button + gap
     }
+  }
+
+  .no-results-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $error-color;
   }
 }
