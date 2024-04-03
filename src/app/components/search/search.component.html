@@ -46,22 +46,26 @@
     <!-- Show errors as separate rows so they don't overlap with the rest of the form -->
     <div class="calorie-errors">
       <span
-        *ngIf="
+        [@showHide]="
           filterFormGroup.get('minCals')?.errors?.min ||
           filterFormGroup.get('maxCals')?.errors?.min
+            ? 'show'
+            : 'hide'
         "
       >
         <mat-icon fontIcon="error" />{{ Errors.min }}
       </span>
       <span
-        *ngIf="
+        [@showHide]="
           filterFormGroup.get('minCals')?.errors?.max ||
           filterFormGroup.get('maxCals')?.errors?.max
+            ? 'show'
+            : 'hide'
         "
       >
         <mat-icon fontIcon="error" />{{ Errors.max }}
       </span>
-      <span *ngIf="filterFormGroup.errors?.range">
+      <span [@showHide]="filterFormGroup.errors?.range ? 'show' : 'hide'">
         <mat-icon fontIcon="error" />{{ Errors.range }}
       </span>
     </div>

@@ -27,7 +27,6 @@ $error-color: #d32f2f; // red-700
     .calorie-errors {
       display: flex;
       flex-direction: column;
-      gap: 8px;
       color: $error-color;
 
       span {

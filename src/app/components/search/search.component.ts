@@ -1,3 +1,10 @@
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
@@ -65,6 +72,26 @@ const calorieRangeValidator: ValidatorFn = (
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
+  animations: [
+    trigger('showHide', [
+      state(
+        'show',
+        style({
+          height: '25px',
+          opacity: 1,
+        })
+      ),
+      state(
+        'hide',
+        style({
+          height: '0px',
+          opacity: 0,
+        })
+      ),
+      transition('show => hide', [animate('0.2s ease-in-out')]),
+      transition('hide => show', [animate('0.2s ease-in-out')]),
+    ]),
+  ],
 })
 export class SearchComponent {
   filterFormGroup = new FormGroup(
