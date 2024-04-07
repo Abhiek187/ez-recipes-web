@@ -3,7 +3,7 @@
     <mat-label>Query</mat-label>
     <input
       matInput
-      formControlName="query"
+      [formControlName]="filterFormNames.query"
       placeholder="food"
       type="search"
       inputmode="search"
@@ -19,7 +19,7 @@
       <mat-form-field>
         <input
           matInput
-          formControlName="minCals"
+          [formControlName]="filterFormNames.minCals"
           placeholder="0"
           type="number"
           min="0"
@@ -32,7 +32,7 @@
       <mat-form-field>
         <input
           matInput
-          formControlName="maxCals"
+          [formControlName]="filterFormNames.maxCals"
           placeholder="2000"
           type="number"
           min="0"
@@ -47,8 +47,8 @@
     <div class="calorie-errors">
       <span
         [@showHide]="
-          filterFormGroup.get('minCals')?.errors?.min ||
-          filterFormGroup.get('maxCals')?.errors?.min
+          filterFormGroup.controls.minCals.errors?.min ||
+          filterFormGroup.controls.maxCals.errors?.min
             ? 'show'
             : 'hide'
         "
@@ -57,8 +57,8 @@
       </span>
       <span
         [@showHide]="
-          filterFormGroup.get('minCals')?.errors?.max ||
-          filterFormGroup.get('maxCals')?.errors?.max
+          filterFormGroup.controls.minCals.errors?.max ||
+          filterFormGroup.controls.maxCals.errors?.max
             ? 'show'
             : 'hide'
         "
@@ -72,39 +72,45 @@
   </section>
 
   <section class="checkbox-row">
-    <mat-checkbox formControlName="vegetarian">Vegetarian</mat-checkbox>
-    <mat-checkbox formControlName="vegan">Vegan</mat-checkbox>
-    <mat-checkbox formControlName="glutenFree">Gluten-Free</mat-checkbox>
-    <mat-checkbox formControlName="healthy">Healthy</mat-checkbox>
-    <mat-checkbox formControlName="cheap">Cheap</mat-checkbox>
-    <mat-checkbox formControlName="sustainable">Sustainable</mat-checkbox>
+    <mat-checkbox [formControlName]="filterFormNames.vegetarian"
+      >Vegetarian</mat-checkbox
+    >
+    <mat-checkbox [formControlName]="filterFormNames.vegan">Vegan</mat-checkbox>
+    <mat-checkbox [formControlName]="filterFormNames.glutenFree"
+      >Gluten-Free</mat-checkbox
+    >
+    <mat-checkbox [formControlName]="filterFormNames.healthy"
+      >Healthy</mat-checkbox
+    >
+    <mat-checkbox [formControlName]="filterFormNames.cheap">Cheap</mat-checkbox>
+    <mat-checkbox [formControlName]="filterFormNames.sustainable"
+      >Sustainable</mat-checkbox
+    >
   </section>
 
   <section class="dropdown-row">
     <mat-form-field>
       <mat-label>Spice Level</mat-label>
-      <mat-select formControlName="spiceLevel" multiple>
-        <mat-option
-          *ngFor="let spiceLevel of spiceLevels"
-          [value]="spiceLevel"
-          >{{ spiceLevel }}</mat-option
-        >
+      <mat-select [formControlName]="filterFormNames.spiceLevel" multiple>
+        <mat-option *ngFor="let spiceLevel of spiceLevels" [value]="spiceLevel">
+          {{ spiceLevel }}
+        </mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Meal Type</mat-label>
-      <mat-select formControlName="type" multiple>
-        <mat-option *ngFor="let mealType of mealTypes" [value]="mealType">{{
-          mealType
-        }}</mat-option>
+      <mat-select [formControlName]="filterFormNames.type" multiple>
+        <mat-option *ngFor="let mealType of mealTypes" [value]="mealType">
+          {{ mealType }}
+        </mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Cuisine</mat-label>
-      <mat-select formControlName="culture" multiple>
-        <mat-option *ngFor="let cuisine of cuisines" [value]="cuisine">{{
-          cuisine
-        }}</mat-option>
+      <mat-select [formControlName]="filterFormNames.culture" multiple>
+        <mat-option *ngFor="let cuisine of cuisines" [value]="cuisine">
+          {{ cuisine }}
+        </mat-option>
       </mat-select>
     </mat-form-field>
   </section>

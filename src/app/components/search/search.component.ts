@@ -31,8 +31,11 @@ import { getRandomElement } from 'src/app/helpers/array';
 import RecipeFilter from 'src/app/models/recipe-filter.model';
 import Recipe, {
   CUISINES,
+  Cuisine,
   MEAL_TYPES,
+  MealType,
   SPICE_LEVELS,
+  SpiceLevel,
 } from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
 
@@ -41,12 +44,28 @@ type PartialNull<T> = {
   [P in keyof T]?: T[P] | null;
 };
 
+// FormControl names will need to be referenced in the component, template, and test
+const FilterForm = {
+  query: 'query',
+  minCals: 'minCals',
+  maxCals: 'maxCals',
+  vegetarian: 'vegetarian',
+  vegan: 'vegan',
+  glutenFree: 'glutenFree',
+  healthy: 'healthy',
+  cheap: 'cheap',
+  sustainable: 'sustainable',
+  spiceLevel: 'spiceLevel',
+  type: 'type',
+  culture: 'culture',
+} as const;
+
 // Check that minCals doesn't exceed maxCals
 const calorieRangeValidator: ValidatorFn = (
   control: AbstractControl
 ): ValidationErrors | null => {
-  const minCals = control.get('minCals');
-  const maxCals = control.get('maxCals');
+  const minCals = control.get(FilterForm.minCals);
+  const maxCals = control.get(FilterForm.maxCals);
 
   return minCals?.value !== null &&
     maxCals?.value !== null &&
@@ -94,26 +113,27 @@ const calorieRangeValidator: ValidatorFn = (
   ],
 })
 export class SearchComponent {
+  filterFormNames = FilterForm;
   filterFormGroup = new FormGroup(
     {
-      query: new FormControl(''),
-      minCals: new FormControl<number | null>(null, [
+      [FilterForm.query]: new FormControl(''),
+      [FilterForm.minCals]: new FormControl<number | null>(null, [
         Validators.min(0),
         Validators.max(2000),
       ]),
-      maxCals: new FormControl<number | null>(null, [
+      [FilterForm.maxCals]: new FormControl<number | null>(null, [
         Validators.min(0),
         Validators.max(2000),
       ]),
-      vegetarian: new FormControl(false),
-      vegan: new FormControl(false),
-      glutenFree: new FormControl(false),
-      healthy: new FormControl(false),
-      cheap: new FormControl(false),
-      sustainable: new FormControl(false),
-      spiceLevel: new FormControl([]),
-      type: new FormControl([]),
-      culture: new FormControl([]),
+      [FilterForm.vegetarian]: new FormControl(false),
+      [FilterForm.vegan]: new FormControl(false),
+      [FilterForm.glutenFree]: new FormControl(false),
+      [FilterForm.healthy]: new FormControl(false),
+      [FilterForm.cheap]: new FormControl(false),
+      [FilterForm.sustainable]: new FormControl(false),
+      [FilterForm.spiceLevel]: new FormControl<SpiceLevel[]>([]),
+      [FilterForm.type]: new FormControl<MealType[]>([]),
+      [FilterForm.culture]: new FormControl<Cuisine[]>([]),
     },
     { validators: calorieRangeValidator }
   );
