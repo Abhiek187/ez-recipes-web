@@ -1,26 +1,11 @@
-import {
-  NgIf,
-  NgStyle,
-  NgPlural,
-  NgPluralCase,
-  NgFor,
-  NgClass,
-  DecimalPipe,
-  TitleCasePipe,
-} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatIconAnchor, MatMiniFabButton } from '@angular/material/button';
-import {
-  MatCard,
-  MatCardHeader,
-  MatCardTitle,
-  MatCardSubtitle,
-  MatCardContent,
-} from '@angular/material/card';
-import { MatChipSet, MatChip } from '@angular/material/chips';
-import { MatDivider } from '@angular/material/divider';
-import { MatIcon } from '@angular/material/icon';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
@@ -33,29 +18,16 @@ import { RecipeService } from '../../services/recipe.service';
   selector: 'app-recipe',
   standalone: true,
   imports: [
-    NgIf,
-    MatProgressSpinner,
-    MatIconAnchor,
-    MatIcon,
-    MatChipSet,
-    MatChip,
-    NgStyle,
-    NgPlural,
-    NgPluralCase,
-    MatMiniFabButton,
-    MatCard,
-    MatCardHeader,
-    MatCardTitle,
-    MatCardSubtitle,
-    MatDivider,
-    MatCardContent,
-    NgFor,
-    NgClass,
-    DecimalPipe,
-    TitleCasePipe,
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatChipsModule,
+    MatDividerModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './recipe.component.html',
-  styleUrls: ['./recipe.component.scss'],
+  styleUrl: './recipe.component.scss',
 })
 export class RecipeComponent implements OnInit, OnDestroy {
   recipe: Recipe | null = null;

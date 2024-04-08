@@ -1,7 +1,7 @@
-import { NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { MatButton } from '@angular/material/button';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -13,11 +13,11 @@ import { RecipeService } from 'src/app/services/recipe.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatButton, NgIf, MatProgressSpinner],
+  imports: [CommonModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   isLoading = false;
   private defaultLoadingMessage = '';
   loadingMessage = this.defaultLoadingMessage;
@@ -27,8 +27,6 @@ export class HomeComponent implements OnInit {
     private snackBar: MatSnackBar,
     private router: Router
   ) {}
-
-  ngOnInit(): void {}
 
   getRandomRecipe() {
     // Show the progress spinner while the recipe is loading

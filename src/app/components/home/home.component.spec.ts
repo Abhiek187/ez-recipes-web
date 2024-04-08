@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HomeComponent } from './home.component';
+import Constants from 'src/app/constants/constants';
 
 describe('HomeComponent', () => {
   let homeComponent: HomeComponent;
@@ -26,6 +27,13 @@ describe('HomeComponent', () => {
     fixture.detectChanges(); // re-render the component
     homeComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
+
+    // Create a fake timer to mock setInterval & setTimeout
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
   });
 
   it('should create the app', () => {
@@ -69,11 +77,21 @@ describe('HomeComponent', () => {
     // Check that the material spinner shows when isLoading is true
     homeComponent.isLoading = true;
     fixture.detectChanges();
+
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
+    expect(rootElement.querySelector('.loading-message')).not.toBeNull();
     // The find recipe button should be disabled
     expect(
       rootElement.querySelector<HTMLButtonElement>('.find-recipe-button')
         ?.disabled
     ).toBeTrue();
+  });
+
+  it('should show a random message while loading', () => {
+    // The loading message should start blank, then show a random message after some time
+    homeComponent.showLoadingMessages();
+    expect(homeComponent.loadingMessage).toBe('');
+    jasmine.clock().tick(3000);
+    expect(Constants.loadingMessages).toContain(homeComponent.loadingMessage);
   });
 });

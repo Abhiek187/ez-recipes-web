@@ -1,18 +1,14 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { NgIf, NgFor } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatButton, MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { MatNavList, MatListItem } from '@angular/material/list';
-import {
-  MatSidenavContainer,
-  MatSidenav,
-  MatSidenavContent,
-} from '@angular/material/sidenav';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, Type } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatToolbar } from '@angular/material/toolbar';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { Title } from '@angular/platform-browser';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { RecipeComponent } from '../recipe/recipe.component';
@@ -22,23 +18,16 @@ import { routes } from 'src/app/app-routing.module';
   selector: 'app-navbar',
   standalone: true,
   imports: [
-    MatToolbar,
-    MatIconButton,
-    MatIcon,
-    NgIf,
-    MatSidenavContainer,
-    MatSidenav,
-    MatNavList,
-    NgFor,
-    MatListItem,
-    RouterLink,
-    MatSidenavContent,
-    RouterOutlet,
-    MatButton,
-    RouterLinkActive,
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    RouterModule,
   ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss'],
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isSmallScreen: boolean;
@@ -72,7 +61,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.breakpointSubscription?.unsubscribe();
   }
 
-  onRouterOutletActivate(event: any) {
+  onRouterOutletActivate(event: Type<Component>) {
     // Check if the recipe component is shown in the router outlet
     this.isRecipePage = event instanceof RecipeComponent;
   }
