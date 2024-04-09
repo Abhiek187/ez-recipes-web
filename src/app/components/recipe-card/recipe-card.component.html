@@ -1,0 +1,32 @@
+<mat-card (click)="openRecipe()">
+  <img mat-card-image [src]="recipe.image" [alt]="recipe.name" />
+  <mat-card-content>
+    <span>
+      <mat-card-title>{{ recipe.name }}</mat-card-title>
+      <button
+        mat-icon-button
+        [attr.aria-label]="
+          (isFavorite ? 'Unfavorite' : 'Favorite') + ' this recipe'
+        "
+        (click)="toggleFavoriteRecipe()"
+      >
+        <mat-icon [fontIcon]="isFavorite ? 'favorite' : 'favorite_border'" />
+      </button>
+    </span>
+    <span>
+      <h2 [ngPlural]="recipe.time">
+        <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
+        <ng-template ngPluralCase="1">
+          <b>Time:</b> {{ recipe.time }} minute
+        </ng-template>
+        <ng-template ngPluralCase="other">
+          <b>Time:</b> {{ recipe.time }} minutes
+        </ng-template>
+      </h2>
+
+      <p *ngIf="calories !== undefined">
+        {{ calories.amount | number : "1.0-0" }} {{ calories.unit }}
+      </p>
+    </span>
+  </mat-card-content>
+</mat-card>

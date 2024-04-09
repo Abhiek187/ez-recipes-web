@@ -38,6 +38,7 @@ import Recipe, {
   SpiceLevel,
 } from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
+import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
 
 // Add null & undefined to all the object's values
 type PartialNull<T> = {
@@ -88,6 +89,7 @@ const calorieRangeValidator: ValidatorFn = (
     MatOptionModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    RecipeCardComponent,
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
@@ -148,6 +150,7 @@ export class SearchComponent {
   private defaultLoadingMessage = '';
   loadingMessage = this.defaultLoadingMessage;
   noRecipesFound = false;
+  recipes: Recipe[] = [];
 
   // Exclude unknown cases and sort for ease of reference
   readonly spiceLevels = SPICE_LEVELS.filter(
@@ -171,7 +174,7 @@ export class SearchComponent {
       next: (recipes: Recipe[]) => {
         this.isLoading = false;
         clearInterval(timer);
-        console.log('Found recipes:', recipes);
+        this.recipes = recipes;
         this.noRecipesFound = recipes.length === 0;
       },
       error: (error: Error) => {

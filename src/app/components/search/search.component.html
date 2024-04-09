@@ -1,3 +1,4 @@
+<!-- Search form -->
 <form class="recipe-form" [formGroup]="filterFormGroup" (ngSubmit)="onSubmit()">
   <mat-form-field class="recipe-query">
     <mat-label>Query</mat-label>
@@ -132,3 +133,11 @@
     <mat-icon fontIcon="error" />{{ Errors.noResults }}
   </p>
 </form>
+
+<!-- Results -->
+<ng-container *ngIf="recipes.length > 0">
+  <h1>Results</h1>
+  <ul *ngFor="let recipe of recipes">
+    <li><app-recipe-card [recipe]="recipe" /></li>
+  </ul>
+</ng-container>
