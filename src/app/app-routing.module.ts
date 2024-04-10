@@ -10,11 +10,17 @@ import {
 import { HomeComponent } from './components/home/home.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { RecipeComponent } from './components/recipe/recipe.component';
-import { SearchComponent } from './components/search/search.component';
 
 export const routes: Record<string, Route> = {
   recipe: { path: 'recipe/:id', component: RecipeComponent },
-  search: { path: 'search', title: 'Search', component: SearchComponent },
+  search: {
+    path: 'search',
+    title: 'Search',
+    loadComponent: () =>
+      import('./components/search/search.component').then(
+        (mod) => mod.SearchComponent
+      ),
+  },
   // The default route should be listed between the static routes and wildcard routes
   home: { path: '', title: 'Home', component: HomeComponent },
   // Show a 404 page for any other route
