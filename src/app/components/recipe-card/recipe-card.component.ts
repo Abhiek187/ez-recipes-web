@@ -39,5 +39,8 @@ export class RecipeCardComponent implements OnInit {
     this.recipeService.setRecipe(this.recipe);
     console.log(this.recipe);
     this.router.navigate([`/recipe/${this.recipe.id}`]);
+    // Scroll to the top so the recipe header can be viewed
+    const sidenav = document.querySelector<HTMLElement>('.sidenav-content');
+    sidenav?.scroll(0, 0);
   }
 }
