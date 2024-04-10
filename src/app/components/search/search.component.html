@@ -135,9 +135,12 @@
 </form>
 
 <!-- Results -->
-<ng-container *ngIf="recipes.length > 0">
-  <h1>Results</h1>
-  <ul *ngFor="let recipe of recipes">
-    <li><app-recipe-card [recipe]="recipe" /></li>
+<section *ngIf="recipes.length > 0">
+  <mat-divider class="results-divider" />
+  <h1 class="results-title">Results</h1>
+  <ul class="results-list">
+    <li *ngFor="let recipe of recipes">
+      <app-recipe-card [recipe]="recipe" />
+    </li>
   </ul>
-</ng-container>
+</section>

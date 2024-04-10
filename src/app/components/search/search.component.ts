@@ -19,6 +19,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -83,6 +84,7 @@ const calorieRangeValidator: ValidatorFn = (
     ReactiveFormsModule,
     MatButtonModule,
     MatCheckboxModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
@@ -166,7 +168,6 @@ export class SearchComponent {
 
   onSubmit() {
     const recipeFilter = this.removeNullValues(this.filterFormGroup.value);
-    console.log('Submitted recipe filter:', recipeFilter);
     this.isLoading = true;
     const timer = this.showLoadingMessages();
 

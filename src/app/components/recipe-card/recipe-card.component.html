@@ -1,20 +1,31 @@
-<mat-card (click)="openRecipe()">
-  <img mat-card-image [src]="recipe.image" [alt]="recipe.name" />
-  <mat-card-content>
-    <span>
+<!-- Treat the card like a button -->
+<mat-card
+  class="recipe-card"
+  role="button"
+  tabindex="0"
+  (click)="openRecipe()"
+  (keydown.enter)="openRecipe()"
+  (keydown.space)="openRecipe(); $event.preventDefault()"
+>
+  <img mat-card-image [src]="recipe.image" alt="" width="312" height="231" />
+  <mat-card-content class="recipe-content">
+    <span class="recipe-name-row">
       <mat-card-title>{{ recipe.name }}</mat-card-title>
       <button
         mat-icon-button
         [attr.aria-label]="
           (isFavorite ? 'Unfavorite' : 'Favorite') + ' this recipe'
         "
-        (click)="toggleFavoriteRecipe()"
+        (click)="toggleFavoriteRecipe($event)"
       >
-        <mat-icon [fontIcon]="isFavorite ? 'favorite' : 'favorite_border'" />
+        <mat-icon
+          [fontIcon]="isFavorite ? 'favorite' : 'favorite_border'"
+          color="warn"
+        />
       </button>
     </span>
-    <span>
-      <h2 [ngPlural]="recipe.time">
+    <span class="recipe-info-row">
+      <p [ngPlural]="recipe.time">
         <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
         <ng-template ngPluralCase="1">
           <b>Time:</b> {{ recipe.time }} minute
@@ -22,7 +33,7 @@
         <ng-template ngPluralCase="other">
           <b>Time:</b> {{ recipe.time }} minutes
         </ng-template>
-      </h2>
+      </p>
 
       <p *ngIf="calories !== undefined">
         {{ calories.amount | number : "1.0-0" }} {{ calories.unit }}

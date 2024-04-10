@@ -28,7 +28,9 @@ export class RecipeCardComponent implements OnInit {
     );
   }
 
-  toggleFavoriteRecipe() {
+  toggleFavoriteRecipe(event: MouseEvent) {
+    // Don't trigger the card's click event
+    event.stopPropagation();
     // Placeholder for the heart button
     this.isFavorite = !this.isFavorite;
   }
