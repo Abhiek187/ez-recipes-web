@@ -305,6 +305,9 @@ describe('SearchComponent', () => {
       rootElement.querySelector<HTMLHeadingElement>('.results-title');
     expect(resultsTitle).not.toBeNull();
     expect(resultsTitle?.textContent).toBe('Results');
-    expect(rootElement.querySelector('.results-list')).not.toBeNull();
+    const resultsList =
+      rootElement.querySelector<HTMLUListElement>('.results-list');
+    expect(resultsList).not.toBeNull();
+    expect(resultsList?.childElementCount).toBe(mockRecipes.length);
   });
 });
