@@ -9,6 +9,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { SearchComponent } from './search.component';
 import Constants from 'src/app/constants/constants';
+import { mockRecipes } from 'src/app/models/recipe.mock';
 
 describe('SearchComponent', () => {
   let searchComponent: SearchComponent;
@@ -94,6 +95,7 @@ describe('SearchComponent', () => {
     expect(submitButton?.disabled).toBeFalse();
     expect(rootElement.querySelector('.progress-spinner')).toBeNull();
     expect(rootElement.querySelector('.no-results-error')).toBeNull();
+    expect(rootElement.querySelector('.results-title')).toBeNull();
   });
 
   it('should start with a valid form', () => {
@@ -255,6 +257,7 @@ describe('SearchComponent', () => {
     expect(noResultsError?.textContent).toContain(
       searchComponent.Errors.noResults
     );
+    expect(rootElement.querySelector('.results-title')).toBeNull();
   });
 
   it('should load recipes after submitting the initial form', fakeAsync(() => {
@@ -291,5 +294,17 @@ describe('SearchComponent', () => {
     expect(searchComponent.loadingMessage).toBe('');
     jasmine.clock().tick(3000);
     expect(Constants.loadingMessages).toContain(searchComponent.loadingMessage);
+  });
+
+  it('shows results if there are recipes', () => {
+    // The results section should show if there's at least one recipe
+    searchComponent.recipes = mockRecipes;
+    fixture.detectChanges();
+
+    const resultsTitle =
+      rootElement.querySelector<HTMLHeadingElement>('.results-title');
+    expect(resultsTitle).not.toBeNull();
+    expect(resultsTitle?.textContent).toBe('Results');
+    expect(rootElement.querySelector('.results-list')).not.toBeNull();
   });
 });
