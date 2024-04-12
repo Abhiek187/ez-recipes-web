@@ -6,6 +6,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule } from '@angular/router';
 
 import { SearchComponent } from './search.component';
 import Constants from 'src/app/constants/constants';
@@ -18,7 +19,12 @@ describe('SearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SearchComponent, NoopAnimationsModule, HttpClientTestingModule],
+      imports: [
+        SearchComponent,
+        NoopAnimationsModule,
+        HttpClientTestingModule,
+        RouterModule.forRoot([]),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SearchComponent);

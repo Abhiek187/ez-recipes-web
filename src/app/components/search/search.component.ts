@@ -5,8 +5,8 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -26,9 +26,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import Constants from 'src/app/constants/constants';
-import { getRandomElement } from 'src/app/helpers/array';
+import { getRandomElement, toArray } from 'src/app/helpers/array';
 import RecipeFilter from 'src/app/models/recipe-filter.model';
 import Recipe, {
   CUISINES,
@@ -37,9 +39,13 @@ import Recipe, {
   MealType,
   SPICE_LEVELS,
   SpiceLevel,
+  isValidCuisine,
+  isValidMealType,
+  isValidSpiceLevel,
 } from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
+import { isNumeric } from 'src/app/helpers/string';
 
 // Add null & undefined to all the object's values
 type PartialNull<T> = {
@@ -116,7 +122,7 @@ const calorieRangeValidator: ValidatorFn = (
     ]),
   ],
 })
-export class SearchComponent {
+export class SearchComponent implements OnInit, OnDestroy {
   filterFormNames = FilterForm;
   filterFormGroup = new FormGroup(
     {
@@ -148,6 +154,9 @@ export class SearchComponent {
     noResults: 'No recipes found',
   };
 
+  queryParamsSubscription?: Subscription;
+  valueChangeSubscription?: Subscription;
+
   isLoading = false;
   private defaultLoadingMessage = '';
   loadingMessage = this.defaultLoadingMessage;
@@ -163,8 +172,69 @@ export class SearchComponent {
 
   constructor(
     private recipeService: RecipeService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
+    private router: Router,
+    private location: Location
   ) {}
+
+  ngOnInit(): void {
+    // Initialize the form based on the query parameters
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      (params) => {
+        this.filterFormGroup.patchValue({
+          ...params,
+          // Parse all non-string values
+          [FilterForm.minCals]: isNumeric(params.minCals)
+            ? Number(params.minCals)
+            : null,
+          [FilterForm.maxCals]: isNumeric(params.maxCals)
+            ? Number(params.maxCals)
+            : null,
+          [FilterForm.vegetarian]: params.vegetarian === 'true',
+          [FilterForm.vegan]: params.vegan === 'true',
+          [FilterForm.glutenFree]: params.glutenFree === 'true',
+          [FilterForm.healthy]: params.healthy === 'true',
+          [FilterForm.cheap]: params.cheap === 'true',
+          [FilterForm.sustainable]: params.sustainable === 'true',
+          // 0 = undefined, 1 = string, 2+ = array
+          [FilterForm.spiceLevel]: toArray(params.spiceLevel).filter(
+            (spiceLevel): spiceLevel is SpiceLevel =>
+              isValidSpiceLevel(spiceLevel)
+          ),
+          [FilterForm.type]: toArray(params.type).filter(
+            (spiceLevel): spiceLevel is MealType => isValidMealType(spiceLevel)
+          ),
+          [FilterForm.culture]: toArray(params.culture).filter(
+            (spiceLevel): spiceLevel is Cuisine => isValidCuisine(spiceLevel)
+          ),
+        });
+      }
+    );
+
+    this.valueChangeSubscription = this.filterFormGroup.valueChanges.subscribe(
+      (filter) => {
+        // Update the query params with the selected filters
+        const urlTreePath = this.router
+          .createUrlTree([], {
+            queryParams: filter,
+          })
+          .toString();
+
+        if (this.location.path() === urlTreePath) {
+          // Don't add duplicate items to the browser's history
+          this.location.replaceState(urlTreePath);
+        } else {
+          this.location.go(urlTreePath);
+        }
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.queryParamsSubscription?.unsubscribe();
+    this.valueChangeSubscription?.unsubscribe();
+  }
 
   onSubmit() {
     const recipeFilter = this.removeNullValues(this.filterFormGroup.value);
