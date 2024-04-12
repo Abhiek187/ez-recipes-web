@@ -13,6 +13,7 @@
       <mat-card-title>{{ recipe.name }}</mat-card-title>
       <button
         mat-icon-button
+        class="recipe-favorite-icon"
         [attr.aria-label]="
           (isFavorite ? 'Unfavorite' : 'Favorite') + ' this recipe'
         "

@@ -74,12 +74,14 @@ describe('RecipeCardComponent', () => {
     // Check that isFavorite toggles when the heart button is clicked
     expect(recipeCardComponent.isFavorite).toBeFalse();
 
-    const clickEvent = new MouseEvent('click');
-    recipeCardComponent.toggleFavoriteRecipe(clickEvent);
+    const favoriteButton = rootElement.querySelector<HTMLButtonElement>(
+      '.recipe-favorite-icon'
+    );
+    favoriteButton?.click();
     fixture.detectChanges();
     expect(recipeCardComponent.isFavorite).toBeTrue();
 
-    recipeCardComponent.toggleFavoriteRecipe(clickEvent);
+    favoriteButton?.click();
     fixture.detectChanges();
     expect(recipeCardComponent.isFavorite).toBeFalse();
   });
