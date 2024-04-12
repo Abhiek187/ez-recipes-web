@@ -88,7 +88,8 @@ describe('RecipeCardComponent', () => {
 
   it('should open the selected recipe', () => {
     // Check that the correct recipe is set and navigated to
-    recipeCardComponent.openRecipe();
+    const recipeCard = rootElement.querySelector<HTMLElement>('.recipe-card');
+    recipeCard?.click();
     expect(mockRecipeService.setRecipe).toHaveBeenCalledWith(mockRecipe);
     expect(mockRouter.navigate).toHaveBeenCalledWith([
       `/recipe/${mockRecipe.id}`,
