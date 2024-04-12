@@ -63,3 +63,27 @@ $error-color: #d32f2f; // red-700
     color: $error-color;
   }
 }
+
+.results-divider {
+  margin: 16px 16px 8px;
+}
+
+.results-title {
+  text-align: center;
+}
+
+.results-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 16px;
+
+  li {
+    cursor: pointer;
+    max-width: 312px; // match the width of the images
+  }
+}

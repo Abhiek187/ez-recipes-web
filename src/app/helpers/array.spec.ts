@@ -1,4 +1,4 @@
-import { getRandomElement } from './array';
+import { getRandomElement, toArray } from './array';
 
 describe('getRandomElement', () => {
   it('returns an element in the array', () => {
@@ -30,5 +30,19 @@ describe('getRandomElement', () => {
     expect(() => getRandomElement(emptyArray)).toThrowError(
       'The array must contain at least one element to be randomly selected.'
     );
+  });
+});
+
+describe('toArray', () => {
+  it('should convert undefined to an empty array', () => {
+    expect(toArray()).toEqual([]);
+  });
+
+  it('should convert a string to an array', () => {
+    expect(toArray('foo')).toEqual(['foo']);
+  });
+
+  it('should return an array as-is', () => {
+    expect(toArray(['foo', 'bar'])).toEqual(['foo', 'bar']);
   });
 });
