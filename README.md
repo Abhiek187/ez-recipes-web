@@ -4,16 +4,19 @@
 [![CodeQL](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/codeql.yml/badge.svg)](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/codeql.yml)
 
 <div>
-    <img src="screenshots/img-1.png" alt="Home screen" width="600">
-    <img src="screenshots/img-2.png" alt="Baked Ratatouille, recipe heading" width="600">
-    <img src="screenshots/img-3.png" alt="Baked Ratatouille, instructions" width="600">
+    <img src="screenshots/home.png" alt="Home screen" width="600">
+    <img src="screenshots/recipe-1.png" alt="Jambalaya Stew, recipe heading" width="600">
+    <img src="screenshots/recipe-3.png" alt="Jambalaya Stew, instructions" width="600">
+    <img src="screenshots/search-2.png" alt="Searching for pasta with chicken" width="600">
 </div>
 
 ## Overview
 
-Cooking food at home is an essential skill for anyone looking to save money and eat healthily. However, learning how to cook can be daunting, since there are so many recipes to choose from. And even when meal prepping, knowing what ingredients to buy, what equipment is required, and the order of steps to make the meal can be hard to remember for many different recipes. Plus, during busy days, it's nice to be able to cook up something quick and tasty.
+Cooking food at home is an essential skill for anyone looking to save money and eat healthily. However, learning how to cook can be daunting, since there are so many recipes to choose from. Even when meal prepping, knowing what ingredients to buy, what equipment is required, and the order of steps to make the meal can be hard to remember for many different recipes. Plus, during busy days, it's nice to be able to cook up something quick and tasty.
 
 Introducing EZ Recipes, an app that lets chefs find low-effort recipes that can be made in under an hour, use common kitchen ingredients, and can produce multiple servings. On one page, chefs can view what the recipe looks like, its nutritional qualities, the total cooking time, all the ingredients needed, and step-by-step instructions showing what ingredients and equipment are required per step. Each recipe can be shared so other chefs can learn how to make the same recipes.
+
+Chefs can either find a random recipe or search for one using various filters, including by name, dietary restrictions, spice level, and meal type.
 
 The site can be visited at https://ez-recipes-web.onrender.com/.
 
@@ -84,6 +87,10 @@ Source: [Render](https://render.com/docs/static-sites)
 
 Run `npm test` to run the unit tests using Karma.
 
+### Linting
+
+Run `npm run lint` to lint the entire app using ESLint.
+
 ### Build
 
 Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory. Then run `python3 -m http.server -d dist/ez-recipes/ PORT` to serve the page over a simple HTTP server. (By default, `PORT` is 8000.)
@@ -110,15 +117,13 @@ Run `docker kill <container id>` to shut down the image when done. The container
 
 ## Future Updates
 
-EZ Recipes is currently in an MVP state. Chefs can view random recipes and browse recipes by their ID. But more features will come in the future to enhance the cooking experience, including (but not limited to):
+EZ Recipes is continuously improving! More features will come in the future to enhance the cooking experience, including (but not limited to):
 
-- The ability to save recipes locally and remotely in a database
 - Accounts so chefs can sync their favorite recipes across all their devices
 - The ability to favorite, rate, and view the popularity of recipes
 - An enhanced home page showing recently viewed recipes and any recommended/popular recipes
-- Showing additional recipe information, such as potential allergies
-- Filtering recipes by name or various metrics, such as whether they're healthy, vegetarian, or spicy
-- Helpful tooltips showing the definition of certain cooking terms, to better assist newer chefs in learning how to cook or prep certain ingredients and how to use certain kitchen tools. Think [How to Stock](https://github.com/Abhiek187/how-to-stock), but for cooking food instead of managing finances.
+- Showing additional recipe information, such as allergens
+- Helpful tooltips showing the definition of certain cooking terms. This will better assist newer chefs in learning how to cook, prep certain ingredients, and use certain kitchen tools. Think [How to Stock](https://github.com/Abhiek187/how-to-stock), but for cooking food instead of managing finances.
 
 ## Related Repos
 
