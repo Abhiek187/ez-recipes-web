@@ -4,10 +4,10 @@
 [![CodeQL](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/codeql.yml/badge.svg)](https://github.com/Abhiek187/ez-recipes-web/actions/workflows/codeql.yml)
 
 <div>
-    <img src="screenshots/home.png" alt="Home screen" width="600">
-    <img src="screenshots/recipe-1.png" alt="Jambalaya Stew, recipe heading" width="600">
-    <img src="screenshots/recipe-3.png" alt="Jambalaya Stew, instructions" width="600">
-    <img src="screenshots/search-2.png" alt="Searching for pasta with chicken" width="600">
+    <img src="src/assets/screenshots/wide/home.png" alt="Home screen" width="600">
+    <img src="src/assets/screenshots/wide/recipe-1.png" alt="Jambalaya Stew, recipe heading" width="600">
+    <img src="src/assets/screenshots/wide/recipe-3.png" alt="Jambalaya Stew, instructions" width="600">
+    <img src="src/assets/screenshots/wide/search-2.png" alt="Searching for pasta with chicken" width="600">
 </div>
 
 ## Overview
