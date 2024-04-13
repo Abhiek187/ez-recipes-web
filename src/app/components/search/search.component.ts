@@ -156,6 +156,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   queryParamsSubscription?: Subscription;
   valueChangeSubscription?: Subscription;
+  recipeServiceSubscription?: Subscription;
 
   isLoading = false;
   private defaultLoadingMessage = '';
@@ -234,6 +235,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.queryParamsSubscription?.unsubscribe();
     this.valueChangeSubscription?.unsubscribe();
+    this.recipeServiceSubscription?.unsubscribe();
   }
 
   onSubmit() {
@@ -241,19 +243,21 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     const timer = this.showLoadingMessages();
 
-    this.recipeService.getRecipesWithFilter(recipeFilter).subscribe({
-      next: (recipes: Recipe[]) => {
-        this.isLoading = false;
-        clearInterval(timer);
-        this.recipes = recipes;
-        this.noRecipesFound = recipes.length === 0;
-      },
-      error: (error: Error) => {
-        this.isLoading = false;
-        clearInterval(timer);
-        this.snackBar.open(error.message, 'Dismiss');
-      },
-    });
+    this.recipeServiceSubscription = this.recipeService
+      .getRecipesWithFilter(recipeFilter)
+      .subscribe({
+        next: (recipes: Recipe[]) => {
+          this.isLoading = false;
+          clearInterval(timer);
+          this.recipes = recipes;
+          this.noRecipesFound = recipes.length === 0;
+        },
+        error: (error: Error) => {
+          this.isLoading = false;
+          clearInterval(timer);
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
   }
 
   /* FormControls use null for missing values, but HttpParams doesn't except null values.
