@@ -10,14 +10,71 @@
     {
       "src": "/assets/icons/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     },
     {
       "src": "/assets/icons/android-chrome-512x512.png",
       "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "description": "Browse easy-to-make recipes for chefs of all kind",
+  "screenshots": [
+    {
+      "src": "/assets/screenshots/wide/home.png",
+      "sizes": "2360x1640",
       "type": "image/png",
-      "purpose": "maskable any"
+      "form_factor": "wide",
+      "label": "Home screen"
+    },
+    {
+      "src": "/assets/screenshots/narrow/home-1.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home screen"
+    },
+    {
+      "src": "/assets/screenshots/wide/recipe-1.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Jambalaya Stew, recipe heading"
+    },
+    {
+      "src": "/assets/screenshots/narrow/recipe-1.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Jambalaya Stew, recipe heading"
+    },
+    {
+      "src": "/assets/screenshots/wide/recipe-3.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Jambalaya Stew, instructions"
+    },
+    {
+      "src": "/assets/screenshots/narrow/recipe-4.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Jambalaya Stew, instructions"
+    },
+    {
+      "src": "/assets/screenshots/wide/search-2.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Searching for pasta with chicken"
+    },
+    {
+      "src": "/assets/screenshots/narrow/search-2.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Searching for pasta with chicken"
     }
   ]
 }

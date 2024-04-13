@@ -34,6 +34,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
   isLoading = false;
   recipeChangeSubscription?: Subscription;
   routerSubscription?: Subscription;
+  getRecipeSubscription?: Subscription;
 
   // Nutrients that should be bold on the nutrition label
   nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
@@ -94,6 +95,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
     this.recipeChangeSubscription?.unsubscribe();
     this.routerSubscription?.unsubscribe();
     this.recipeService.resetRecipe();
+    this.getRecipeSubscription?.unsubscribe();
   }
 
   updateRecipe(recipe: Recipe | null) {
@@ -111,17 +113,19 @@ export class RecipeComponent implements OnInit, OnDestroy {
     // Get a recipe by ID
     this.isLoading = true;
 
-    this.recipeService.getRecipeById(id).subscribe({
-      next: (recipe: Recipe) => {
-        this.isLoading = false;
-        this.recipeService.setRecipe(recipe);
-        console.log(recipe);
-      },
-      error: (error: Error) => {
-        this.isLoading = false;
-        this.snackBar.open(error.message, 'Dismiss');
-      },
-    });
+    this.getRecipeSubscription = this.recipeService
+      .getRecipeById(id)
+      .subscribe({
+        next: (recipe: Recipe) => {
+          this.isLoading = false;
+          this.recipeService.setRecipe(recipe);
+          console.log(recipe);
+        },
+        error: (error: Error) => {
+          this.isLoading = false;
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
   }
 
   addPreparation() {
@@ -136,19 +140,21 @@ export class RecipeComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     // Show a random, low-effort recipe
-    this.recipeService.getRandomRecipe().subscribe({
-      next: (recipe: Recipe) => {
-        this.isLoading = false;
-        this.updateRecipe(recipe);
-        console.log(recipe);
-        // Change the URL without reloading the component
-        this.router.navigate([`/recipe/${recipe.id}`]);
-      },
-      error: (error: Error) => {
-        // Show a snackbar explaining that an error occurred
-        this.isLoading = false;
-        this.snackBar.open(error.message, 'Dismiss');
-      },
-    });
+    this.getRecipeSubscription = this.recipeService
+      .getRandomRecipe()
+      .subscribe({
+        next: (recipe: Recipe) => {
+          this.isLoading = false;
+          this.updateRecipe(recipe);
+          console.log(recipe);
+          // Change the URL without reloading the component
+          this.router.navigate([`/recipe/${recipe.id}`]);
+        },
+        error: (error: Error) => {
+          // Show a snackbar explaining that an error occurred
+          this.isLoading = false;
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
   }
 }
