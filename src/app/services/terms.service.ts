@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import Term from '../models/term.model';
 import { mockTerms } from '../models/term.mock';
 import Constants from '../constants/constants';
+import TermStore from '../models/term-store.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,7 @@ import Constants from '../constants/constants';
 export class TermsService {
   constructor(private http: HttpClient) {}
 
+  // API methods
   getTerms(): Observable<Term[]> {
     if (!environment.production && environment.mock) {
       return this.getMockTerms();
@@ -32,5 +34,29 @@ export class TermsService {
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.error(error);
     return throwError(() => new Error(error.message));
+  }
+
+  // localStorage methods
+  getCachedTerms(): Term[] | null {
+    const termStoreStr = localStorage.getItem(Constants.LocalStorage.terms);
+    if (termStoreStr === null) return null;
+    const termStore: TermStore = JSON.parse(termStoreStr);
+
+    // Delete the terms if they are expired
+    if (Date.now() >= termStore.expireAt) {
+      localStorage.removeItem(Constants.LocalStorage.terms);
+      return null;
+    }
+
+    return termStore.terms;
+  }
+
+  saveTerms(terms: Term[]) {
+    const termStore: TermStore = {
+      terms,
+      expireAt: Date.now() + 7 * 24 * 60 * 60 * 1000, // 1 week
+    };
+    const termStoreStr = JSON.stringify(termStore);
+    localStorage.setItem(Constants.LocalStorage.terms, termStoreStr);
   }
 }

@@ -19,6 +19,10 @@ abstract class Constants {
   // APIs
   static readonly recipesPath = '/api/recipes';
   static readonly termsPath = '/api/terms';
+
+  static LocalStorage = class {
+    static readonly terms = 'terms';
+  };
 }
 
 export default Constants;
