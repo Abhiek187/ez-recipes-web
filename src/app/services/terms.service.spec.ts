@@ -9,7 +9,11 @@ import { TermsService } from './terms.service';
 import Term from '../models/term.model';
 import Constants from '../constants/constants';
 import { mockTerms } from '../models/term.mock';
-import { mockTermStore, mockTermStoreStr } from '../models/term-store.mock';
+import {
+  mockDate,
+  mockTermStore,
+  mockTermStoreStr,
+} from '../models/term-store.mock';
 
 describe('TermsService', () => {
   let termsService: TermsService;
@@ -27,10 +31,15 @@ describe('TermsService', () => {
     termsService = TestBed.inject(TermsService);
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
+
+    // Mock dates to prevent tests from failing by a second
+    jasmine.clock().install();
+    jasmine.clock().mockDate(mockDate);
   });
 
   afterEach(() => {
     httpTestingController.verify();
+    jasmine.clock().uninstall();
   });
 
   it('should be created', () => {
