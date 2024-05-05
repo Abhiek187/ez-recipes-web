@@ -8,5 +8,5 @@
  * @returns true if `num` can be parsed as a number, false otherwise
  */
 export const isNumeric = (num: number | string): boolean =>
-  (typeof num === "number" || (typeof num === "string" && num.trim() !== "")) &&
+  (typeof num === 'number' || (typeof num === 'string' && num.trim() !== '')) &&
   !isNaN(num as number);

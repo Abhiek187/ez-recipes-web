@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
 
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { TermsService } from './services/terms.service';
 
 @Component({
   selector: 'app-root',
@@ -12,8 +13,12 @@ import { NavbarComponent } from './components/navbar/navbar.component';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
-  constructor(private swUpdate: SwUpdate, private snackBar: MatSnackBar) {
+export class AppComponent implements OnInit {
+  constructor(
+    private swUpdate: SwUpdate,
+    private snackBar: MatSnackBar,
+    private termsService: TermsService
+  ) {
     // Notify the user if a new version of the PWA is available
     this.swUpdate.versionUpdates
       .pipe(
@@ -44,5 +49,19 @@ export class AppComponent {
         window.location.reload();
       });
     });
+  }
+
+  ngOnInit(): void {
+    // Check if terms need to be cached
+    const savedTerms = this.termsService.getCachedTerms();
+
+    if (savedTerms === null) {
+      this.termsService.getTerms().subscribe({
+        next: (terms) => {
+          this.termsService.saveTerms(terms);
+        },
+        // No need to handle errors besides logging
+      });
+    }
   }
 }

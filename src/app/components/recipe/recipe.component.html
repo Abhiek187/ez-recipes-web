@@ -183,8 +183,22 @@
             <p class="ingredient-amount">
               {{ ingredient.amount }} {{ ingredient.unit }}
             </p>
-            <!-- Capitalize the ingredient names -->
-            <p class="ingredient-name">{{ ingredient.name | titlecase }}</p>
+            <p class="ingredient-name">
+              <ng-container *ngFor="let word of ingredient.name.split(' ')">
+                <!-- Capitalize the ingredient names -->
+                <span
+                  *ngIf="
+                    dictionary !== undefined &&
+                      dictionary.hasOwnProperty(word.toLowerCase());
+                    else default
+                  "
+                  class="term"
+                  [matTooltip]="dictionary[word.toLowerCase()]"
+                  >{{ word | titlecase }}
+                </span>
+                <ng-template #default>{{ word | titlecase }} </ng-template>
+              </ng-container>
+            </p>
           </ng-container>
         </div>
       </mat-card-content>
@@ -207,7 +221,22 @@
             <!-- Step number & directions -->
             <div class="step-container">
               <h4 class="step-number">{{ step.number }}</h4>
-              <p>{{ step.step }}</p>
+              <p>
+                <ng-container *ngFor="let word of step.step.split(' ')">
+                  <!-- Can't use the "in" operator -->
+                  <span
+                    *ngIf="
+                      dictionary !== undefined &&
+                        dictionary.hasOwnProperty(word.toLowerCase());
+                      else default
+                    "
+                    class="term"
+                    [matTooltip]="dictionary[word.toLowerCase()]"
+                    >{{ word }}
+                  </span>
+                  <ng-template #default>{{ word }} </ng-template>
+                </ng-container>
+              </p>
             </div>
             <mat-divider *ngIf="step.ingredients.length > 0" />
 

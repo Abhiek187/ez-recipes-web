@@ -7,12 +7,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import Recipe from '../../models/recipe.model';
 import { RecipeService } from '../../services/recipe.service';
+import { TermsService } from 'src/app/services/terms.service';
 
 @Component({
   selector: 'app-recipe',
@@ -25,6 +27,7 @@ import { RecipeService } from '../../services/recipe.service';
     MatDividerModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   templateUrl: './recipe.component.html',
   styleUrl: './recipe.component.scss',
@@ -32,6 +35,8 @@ import { RecipeService } from '../../services/recipe.service';
 export class RecipeComponent implements OnInit, OnDestroy {
   recipe: Recipe | null = null;
   isLoading = false;
+  dictionary?: { [word: string]: string };
+
   recipeChangeSubscription?: Subscription;
   routerSubscription?: Subscription;
   getRecipeSubscription?: Subscription;
@@ -44,7 +49,8 @@ export class RecipeComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router,
-    private titleService: Title
+    private titleService: Title,
+    private termsService: TermsService
   ) {}
 
   ngOnInit(): void {
@@ -85,6 +91,15 @@ export class RecipeComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    const terms = this.termsService.getCachedTerms();
+    // Make it easier to lookup words and their definitions (O(n) time instead of O(n^2) time)
+    this.dictionary = terms?.reduce<{
+      [word: string]: string;
+    }>((dict, term) => {
+      dict[term.word] = term.definition;
+      return dict;
+    }, {});
   }
 
   ngOnDestroy(): void {

@@ -9,6 +9,11 @@ import { TermsService } from './terms.service';
 import Term from '../models/term.model';
 import Constants from '../constants/constants';
 import { mockTerms } from '../models/term.mock';
+import {
+  mockDate,
+  mockTermStore,
+  mockTermStoreStr,
+} from '../models/term-store.mock';
 
 describe('TermsService', () => {
   let termsService: TermsService;
@@ -16,6 +21,7 @@ describe('TermsService', () => {
   let httpTestingController: HttpTestingController;
 
   const testUrl = Constants.termsPath;
+  const localStorageProto = Object.getPrototypeOf(localStorage);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,10 +31,15 @@ describe('TermsService', () => {
     termsService = TestBed.inject(TermsService);
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
+
+    // Mock dates to prevent tests from failing by a second
+    jasmine.clock().install();
+    jasmine.clock().mockDate(mockDate);
   });
 
   afterEach(() => {
     httpTestingController.verify();
+    jasmine.clock().uninstall();
   });
 
   it('should be created', () => {
@@ -66,5 +77,33 @@ describe('TermsService', () => {
     termsService
       .getMockTerms()
       .subscribe((data) => expect(data).toBe(mockTerms));
+  });
+
+  it('should return null if no terms are stored in localStorage', () => {
+    spyOn(localStorageProto, 'getItem').and.returnValue(null);
+    expect(termsService.getCachedTerms()).toBeNull();
+  });
+
+  it('should return null if the terms have expired', () => {
+    spyOn(localStorageProto, 'getItem').and.returnValue(
+      mockTermStoreStr(Date.now() - 1)
+    );
+    spyOn(localStorageProto, 'removeItem').and.callThrough();
+    expect(termsService.getCachedTerms()).toBeNull();
+    expect(localStorageProto.removeItem).toHaveBeenCalled();
+  });
+
+  it("should return all the cached terms if they're valid", () => {
+    spyOn(localStorageProto, 'getItem').and.returnValue(mockTermStoreStr());
+    expect(termsService.getCachedTerms()).toEqual(mockTermStore().terms);
+  });
+
+  it('should store all terms in localStorage', () => {
+    spyOn(localStorageProto, 'setItem').and.callThrough();
+    termsService.saveTerms(mockTerms);
+    expect(localStorageProto.setItem).toHaveBeenCalledWith(
+      Constants.LocalStorage.terms,
+      mockTermStoreStr()
+    );
   });
 });
