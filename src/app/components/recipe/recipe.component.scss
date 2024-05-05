@@ -5,6 +5,12 @@ $step-breakpoint: 800px;
 $yellow-300: #fff176;
 $blue-400: #42a5f5;
 
+.term {
+  // Appear hoverable like with the <abbr> tag
+  text-decoration: underline dotted;
+  cursor: help;
+}
+
 .progress-spinner {
   margin: 10px auto;
 }
