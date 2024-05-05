@@ -193,7 +193,7 @@
                     else default
                   "
                   class="term"
-                  [matTooltip]="dictionary[word]"
+                  [matTooltip]="dictionary[word.toLowerCase()]"
                   >{{ word | titlecase }}
                 </span>
                 <ng-template #default>{{ word | titlecase }} </ng-template>
@@ -231,7 +231,7 @@
                       else default
                     "
                     class="term"
-                    [matTooltip]="dictionary[word]"
+                    [matTooltip]="dictionary[word.toLowerCase()]"
                     >{{ word }}
                   </span>
                   <ng-template #default>{{ word }} </ng-template>
