@@ -1,0 +1,9 @@
+<mat-list *ngIf="terms !== null" role="list">
+  <ng-container *ngFor="let term of terms; let last = last">
+    <mat-list-item role="listitem">
+      <b>{{ term.word }}</b> — {{ term.definition }}
+    </mat-list-item>
+    <!-- Don't add a divider below the last item -->
+    <mat-divider *ngIf="!last" />
+  </ng-container>
+</mat-list>

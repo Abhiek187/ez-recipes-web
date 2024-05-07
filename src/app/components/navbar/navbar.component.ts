@@ -32,7 +32,7 @@ import { routes } from 'src/app/app-routing.module';
 export class NavbarComponent implements OnInit, OnDestroy {
   isSmallScreen: boolean;
   // Navigation links to show in the sidenav
-  navItems = [routes.home, routes.search];
+  navItems = [routes.home, routes.search, routes.glossary];
 
   isRecipePage = false;
   isFavorite = false;

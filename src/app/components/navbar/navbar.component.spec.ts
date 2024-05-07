@@ -33,6 +33,7 @@ describe('NavbarComponent', () => {
     expect(menuIcon).toBeNull();
     expect(rootElement.textContent).toContain('EZ Recipes');
     expect(rootElement.textContent).toContain(routes.search.title);
+    expect(rootElement.textContent).toContain(routes.glossary.title);
 
     // The favorite and share buttons should be hidden by default on the home page
     const favoriteIcon =
@@ -55,6 +56,7 @@ describe('NavbarComponent', () => {
     expect(rootElement.textContent).toContain('EZ Recipes');
     expect(rootElement.textContent).toContain(routes.home.title);
     expect(rootElement.textContent).toContain(routes.search.title);
+    expect(rootElement.textContent).toContain(routes.glossary.title);
 
     // The favorite and share buttons should be hidden by default on the home page
     const favoriteIcon =
