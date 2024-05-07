@@ -21,6 +21,14 @@ export const routes: Record<string, Route> = {
         (mod) => mod.SearchComponent
       ),
   },
+  glossary: {
+    path: 'glossary',
+    title: 'Glossary',
+    loadComponent: () =>
+      import('./components/glossary/glossary.component').then(
+        (mod) => mod.GlossaryComponent
+      ),
+  },
   // The default route should be listed between the static routes and wildcard routes
   home: { path: '', title: 'Home', component: HomeComponent },
   // Show a 404 page for any other route
