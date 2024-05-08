@@ -14,14 +14,13 @@ import { TermsService } from 'src/app/services/terms.service';
   styleUrl: './glossary.component.scss',
 })
 export class GlossaryComponent implements OnInit {
-  terms: Term[] | null = null;
+  terms?: Term[];
 
   constructor(private termsService: TermsService) {}
 
   ngOnInit(): void {
-    this.terms = this.termsService.getCachedTerms();
-    // Sort all the terms alphabetically for ease of reference
-    this.terms?.sort((a, b) => {
+    this.terms = this.termsService.getCachedTerms()?.toSorted((a, b) => {
+      // Sort all the terms alphabetically for ease of reference
       if (a.word < b.word) return -1;
       else if (a.word > b.word) return 1;
       else return 0;

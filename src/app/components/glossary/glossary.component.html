@@ -1,4 +1,4 @@
-<mat-list *ngIf="terms !== null">
+<mat-list *ngIf="terms !== undefined">
   <ng-container *ngFor="let term of terms; let last = last">
     <mat-list-item>
       <b>{{ term.word }}</b> — {{ term.definition }}
