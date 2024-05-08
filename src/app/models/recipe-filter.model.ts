@@ -13,6 +13,7 @@ type RecipeFilter = {
   spiceLevel?: SpiceLevel[];
   type?: MealType[];
   culture?: Cuisine[];
+  token?: string; // either an ObjectId or searchSequenceToken for pagination
 };
 
 export default RecipeFilter;

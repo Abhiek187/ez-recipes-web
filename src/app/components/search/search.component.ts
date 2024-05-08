@@ -163,6 +163,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   loadingMessage = this.defaultLoadingMessage;
   noRecipesFound = false;
   recipes: Recipe[] = [];
+  lastToken: string | null = null;
 
   // Exclude unknown cases and sort for ease of reference
   readonly spiceLevels = SPICE_LEVELS.filter(
@@ -239,7 +240,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    const recipeFilter = this.removeNullValues(this.filterFormGroup.value);
+    const recipeFilter = this.removeNullValues({
+      ...this.filterFormGroup.value,
+      token: this.lastToken,
+    });
     this.isLoading = true;
     const timer = this.showLoadingMessages();
 
@@ -251,6 +255,11 @@ export class SearchComponent implements OnInit, OnDestroy {
           clearInterval(timer);
           this.recipes = recipes;
           this.noRecipesFound = recipes.length === 0;
+
+          const lastRecipe = recipes.at(-1);
+          if (lastRecipe !== undefined) {
+            this.lastToken = lastRecipe.token ?? lastRecipe._id;
+          }
         },
         error: (error: Error) => {
           this.isLoading = false;
