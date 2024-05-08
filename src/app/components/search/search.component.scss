@@ -64,26 +64,32 @@ $error-color: #d32f2f; // red-700
   }
 }
 
-.results-divider {
-  margin: 16px 16px 8px;
-}
+.results {
+  .results-divider {
+    margin: 16px 16px 8px;
+  }
 
-.results-title {
-  text-align: center;
-}
+  .results-title {
+    text-align: center;
+  }
 
-.results-list {
-  list-style-type: none;
-  padding-left: 0;
-  margin: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  align-items: flex-start;
-  gap: 16px;
+  .results-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 16px;
 
-  li {
-    cursor: pointer;
-    max-width: 312px; // match the width of the images
+    li {
+      cursor: pointer;
+      max-width: 312px; // match the width of the images
+    }
+  }
+
+  .progress-spinner {
+    margin: 0 auto 8px;
   }
 }

@@ -231,21 +231,27 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    // HostListener doesn't work since useCapture needs to be true
+    // https://stackoverflow.com/a/54005290
+    window.addEventListener('scroll', this.onScroll.bind(this), true);
   }
 
   ngOnDestroy(): void {
     this.queryParamsSubscription?.unsubscribe();
     this.valueChangeSubscription?.unsubscribe();
     this.recipeServiceSubscription?.unsubscribe();
+
+    window.removeEventListener('scroll', this.onScroll.bind(this), true);
   }
 
-  onSubmit() {
+  private searchRecipes(paginate: boolean) {
     const recipeFilter = this.removeNullValues({
       ...this.filterFormGroup.value,
-      token: this.lastToken,
+      ...(paginate && { token: this.lastToken }),
     });
     this.isLoading = true;
-    const timer = this.showLoadingMessages();
+    const timer = !paginate ? this.showLoadingMessages() : undefined;
 
     this.recipeServiceSubscription = this.recipeService
       .getRecipesWithFilter(recipeFilter)
@@ -253,12 +259,17 @@ export class SearchComponent implements OnInit, OnDestroy {
         next: (recipes: Recipe[]) => {
           this.isLoading = false;
           clearInterval(timer);
-          this.recipes = recipes;
-          this.noRecipesFound = recipes.length === 0;
+          // Append results if paginating, replace otherwise
+          this.recipes = paginate ? this.recipes.concat(recipes) : recipes;
+          // Don't show an error if there are no more paginated results
+          this.noRecipesFound = !paginate && recipes.length === 0;
 
           const lastRecipe = recipes.at(-1);
           if (lastRecipe !== undefined) {
             this.lastToken = lastRecipe.token ?? lastRecipe._id;
+          } else {
+            // Prevent subsequent calls if there are no more results
+            this.lastToken = null;
           }
         },
         error: (error: Error) => {
@@ -267,6 +278,10 @@ export class SearchComponent implements OnInit, OnDestroy {
           this.snackBar.open(error.message, 'Dismiss');
         },
       });
+  }
+
+  onSubmit() {
+    this.searchRecipes(false);
   }
 
   /* FormControls use null for missing values, but HttpParams doesn't except null values.
@@ -284,5 +299,21 @@ export class SearchComponent implements OnInit, OnDestroy {
     return setInterval(() => {
       this.loadingMessage = getRandomElement(Constants.loadingMessages);
     }, 3000);
+  }
+
+  onScroll(event: Event) {
+    const target = event.target as HTMLElement | null;
+    if (target === null) return;
+
+    // Check if the user scrolled to the bottom and try loading additional results
+    // Prevent multiple requests from running at once
+    if (
+      target.offsetHeight + Math.ceil(target.scrollTop) >=
+        target.scrollHeight &&
+      this.lastToken !== null &&
+      !this.isLoading
+    ) {
+      this.searchRecipes(true);
+    }
   }
 }

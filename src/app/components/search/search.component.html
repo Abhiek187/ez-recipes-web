@@ -135,7 +135,7 @@
 </form>
 
 <!-- Results -->
-<section *ngIf="recipes.length > 0">
+<section class="results" *ngIf="recipes.length > 0">
   <mat-divider class="results-divider" />
   <h1 class="results-title">Results</h1>
   <ul class="results-list">
@@ -143,4 +143,5 @@
       <app-recipe-card [recipe]="recipe" />
     </li>
   </ul>
+  <mat-spinner diameter="40" class="progress-spinner" *ngIf="isLoading" />
 </section>
