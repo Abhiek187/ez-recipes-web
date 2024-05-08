@@ -6,6 +6,7 @@ abstract class MockRecipes {
    * Normal
    */
   static readonly grilledFish: Recipe = {
+    _id: '65ff8c4c86b51e53a3473b76',
     id: 645710,
     name: 'Grilled Fish Sandwiches',
     url: 'https://spoonacular.com/grilled-fish-sandwiches-645710',
@@ -315,6 +316,7 @@ abstract class MockRecipes {
    * Lots of steps, missing ingredient image
    */
   static readonly gingerbread: Recipe = {
+    _id: '65f7abfe3a34d2324cece138',
     id: 64694,
     name: 'Gingerbread',
     url: 'https://spoonacular.com/gingerbread-64694',
@@ -610,6 +612,7 @@ abstract class MockRecipes {
    * Gluten-free, lots of types & cultures
    */
   static readonly jambalayaStew: Recipe = {
+    _id: '65ff8c9886b51e53a348985a',
     id: 648432,
     name: 'Jambalaya Stew',
     url: 'https://spoonacular.com/jambalaya-stew-648432',
@@ -856,6 +859,7 @@ abstract class MockRecipes {
    * Contains instruction name
    */
   static readonly chocolateCupcake: Recipe = {
+    _id: '65bfe0fde939d8f4ebff712f',
     id: 644783,
     name: 'Gluten And Dairy Free Chocolate Cupcakes',
     url: 'https://spoonacular.com/gluten-and-dairy-free-chocolate-cupcakes-644783',
