@@ -3,6 +3,10 @@
   justify-content: center;
   align-items: center;
   margin-top: 50px;
+
+  @media screen and (max-width: 600px) {
+    margin-top: 25px;
+  }
 }
 
 .progress-spinner {
@@ -12,4 +16,24 @@
 .loading-message {
   text-align: center;
   font-size: 1.2em;
+}
+
+.recents-section {
+  .recents-title {
+    margin: 24px 16px 8px;
+  }
+
+  .recents-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 16px;
+    display: flex;
+    gap: 16px;
+    overflow: auto; // have its own scrollbar
+
+    li {
+      cursor: pointer;
+      max-width: 312px; // match the width of the images
+    }
+  }
 }

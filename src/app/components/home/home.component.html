@@ -12,3 +12,13 @@
 </div>
 <mat-spinner diameter="50" class="progress-spinner" *ngIf="isLoading" />
 <p class="loading-message" *ngIf="isLoading">{{ loadingMessage }}</p>
+
+<section class="recents-section" *ngIf="recentRecipes.length > 0">
+  <h1 class="recents-title">Recently Viewed</h1>
+  <mat-divider />
+  <ul class="recents-list">
+    <li *ngFor="let recipe of recentRecipes">
+      <app-recipe-card [recipe]="recipe" />
+    </li>
+  </ul>
+</section>
