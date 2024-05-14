@@ -303,7 +303,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   onScroll(event: Event) {
-    console.log('onScroll');
     const target = event.target as HTMLElement | null;
     if (target === null) return;
 
