@@ -137,15 +137,37 @@ export class RecipeService {
 
   // IndexedDB methods
   getRecentRecipes() {
+    // Sort all the recipes by their timestamp in descending order
     // dexie's Observable type isn't the same as rxjs's Observable type
-    return liveQuery(() => recentRecipesDB.recipes.toArray());
-  }
-
-  getRecentRecipesCount() {
-    return liveQuery(() => recentRecipesDB.recipes.count());
+    return liveQuery(() =>
+      recentRecipesDB.recipes
+        .orderBy(Constants.recentRecipesDB.indexes.timestamp)
+        .reverse()
+        .toArray()
+    );
   }
 
   async saveRecentRecipe(recipe: Recipe) {
-    await recentRecipesDB.recipes.add(recipe);
+    // If the recipe already exists in the table, replace the timestamp with the current time
+    const recipesUpdated = await recentRecipesDB.recipes.update(recipe.id, {
+      timestamp: Date.now(),
+    });
+    // 0 = key doesn't exists, 1 = key exists
+    if (recipesUpdated === 1) return;
+
+    // If there are too many recipes, delete the oldest recipe
+    const recipeCount = await recentRecipesDB.recipes.count();
+
+    if (recipeCount > Constants.recentRecipesDB.max) {
+      const oldestRecipe = await recentRecipesDB.recipes
+        .orderBy(Constants.recentRecipesDB.indexes.timestamp)
+        .first();
+      await recentRecipesDB.recipes.delete(oldestRecipe!.id);
+    }
+
+    await recentRecipesDB.recipes.add({
+      ...recipe,
+      timestamp: Date.now(),
+    });
   }
 }

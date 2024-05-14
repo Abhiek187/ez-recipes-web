@@ -24,9 +24,16 @@ abstract class Constants {
     static readonly terms = 'terms';
   };
 
+  // IndexedDB
   static recentRecipesDB = {
     name: 'RecentRecipesDB',
     version: 1,
+    max: 10,
+    // Primary key and indexes
+    indexes: {
+      id: 'id',
+      timestamp: 'timestamp',
+    },
   };
 }
 
