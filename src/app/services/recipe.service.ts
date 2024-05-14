@@ -148,26 +148,32 @@ export class RecipeService {
   }
 
   async saveRecentRecipe(recipe: Recipe) {
-    // If the recipe already exists in the table, replace the timestamp with the current time
-    const recipesUpdated = await recentRecipesDB.recipes.update(recipe.id, {
-      timestamp: Date.now(),
-    });
-    // 0 = key doesn't exists, 1 = key exists
-    if (recipesUpdated === 1) return;
+    await recentRecipesDB.transaction(
+      'rw',
+      recentRecipesDB.recipes,
+      async () => {
+        // If the recipe already exists in the table, replace the timestamp with the current time
+        const recipesUpdated = await recentRecipesDB.recipes.update(recipe.id, {
+          timestamp: Date.now(),
+        });
+        // 0 = key doesn't exist, 1 = key exists
+        if (recipesUpdated === 1) return Promise.resolve();
 
-    // If there are too many recipes, delete the oldest recipe
-    const recipeCount = await recentRecipesDB.recipes.count();
+        // If there are too many recipes, delete the oldest recipe
+        const recipeCount = await recentRecipesDB.recipes.count();
 
-    if (recipeCount > Constants.recentRecipesDB.max) {
-      const oldestRecipe = await recentRecipesDB.recipes
-        .orderBy(Constants.recentRecipesDB.indexes.timestamp)
-        .first();
-      await recentRecipesDB.recipes.delete(oldestRecipe!.id);
-    }
+        if (recipeCount >= Constants.recentRecipesDB.max) {
+          const oldestRecipe = await recentRecipesDB.recipes
+            .orderBy(Constants.recentRecipesDB.indexes.timestamp)
+            .first();
+          await recentRecipesDB.recipes.delete(oldestRecipe!.id);
+        }
 
-    await recentRecipesDB.recipes.add({
-      ...recipe,
-      timestamp: Date.now(),
-    });
+        await recentRecipesDB.recipes.add({
+          ...recipe,
+          timestamp: Date.now(),
+        });
+      }
+    );
   }
 }
