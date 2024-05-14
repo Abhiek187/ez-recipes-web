@@ -30,6 +30,7 @@
     display: flex;
     gap: 16px;
     overflow: auto; // have its own scrollbar
+    padding-bottom: 8px;
 
     li {
       cursor: pointer;

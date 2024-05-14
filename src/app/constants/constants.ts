@@ -23,6 +23,11 @@ abstract class Constants {
   static LocalStorage = class {
     static readonly terms = 'terms';
   };
+
+  static recentRecipesDB = {
+    name: 'RecentRecipesDB',
+    version: 1,
+  };
 }
 
 export default Constants;

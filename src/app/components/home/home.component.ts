@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -26,7 +26,7 @@ import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy {
   isLoading = false;
   private defaultLoadingMessage = '';
   loadingMessage = this.defaultLoadingMessage;
@@ -38,6 +38,18 @@ export class HomeComponent implements OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router
   ) {}
+
+  ngOnInit(): void {
+    // Get all the recent recipes from IndexedDB
+    this.recipeService.getRecentRecipes().subscribe({
+      next: (recipes: Recipe[]) => {
+        this.recentRecipes = recipes;
+      },
+      error: (error: Error) => {
+        this.snackBar.open(error.message, 'Dismiss');
+      },
+    });
+  }
 
   ngOnDestroy(): void {
     // Cancel all pending requests to avoid unintentional navigation

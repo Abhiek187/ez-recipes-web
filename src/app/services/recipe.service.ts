@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { liveQuery } from 'dexie';
 import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
 
 import Recipe from '../models/recipe.model';
@@ -9,6 +10,7 @@ import RecipeError from '../models/recipe-error.model';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
+import recentRecipesDB from '../helpers/recent-recipes-db';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +36,7 @@ export class RecipeService {
     this.recipe.next(null);
   }
 
+  // API methods
   getRecipesWithFilter(filter: RecipeFilter): Observable<Recipe[]> {
     if (!environment.production && environment.mock) {
       return this.getMockRecipes();
@@ -130,5 +133,19 @@ export class RecipeService {
     }
 
     return Object.prototype.hasOwnProperty.call(error, 'error');
+  }
+
+  // IndexedDB methods
+  getRecentRecipes() {
+    // dexie's Observable type isn't the same as rxjs's Observable type
+    return liveQuery(() => recentRecipesDB.recipes.toArray());
+  }
+
+  getRecentRecipesCount() {
+    return liveQuery(() => recentRecipesDB.recipes.count());
+  }
+
+  async saveRecentRecipe(recipe: Recipe) {
+    await recentRecipesDB.recipes.add(recipe);
   }
 }

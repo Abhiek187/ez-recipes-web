@@ -122,6 +122,12 @@ export class RecipeComponent implements OnInit, OnDestroy {
         (this.recipe?.name ??
           (this.isLoading ? 'Loading...' : 'Recipe Not Found'))
     );
+
+    if (recipe !== null) {
+      this.recipeService.saveRecentRecipe(recipe).catch((error: Error) => {
+        console.error('Failed to save recipe to recents:', error.message);
+      });
+    }
   }
 
   getRecipe(id: string) {
