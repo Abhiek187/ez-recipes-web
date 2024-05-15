@@ -179,17 +179,19 @@ describe('RecipeService', () => {
     req.error(mockError);
   });
 
-  it('should return a mock recipe', () => {
+  it('should return a mock recipe', (done) => {
     // Check that getMockRecipe returns a mock recipe
     recipeService.getMockRecipe().subscribe((data) => {
       expect(data).toBe(mockRecipe);
+      done();
     });
   });
 
-  it('should return mock recipes', () => {
+  it('should return mock recipes', (done) => {
     // Check that getMockRecipes returns multiple mock recipes
     recipeService.getMockRecipes().subscribe((data) => {
       expect(data).toBe(mockRecipes);
+      done();
     });
   });
 
