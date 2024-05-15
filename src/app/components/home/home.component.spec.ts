@@ -7,15 +7,30 @@ import {
 } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { Observable as DObservable } from 'dexie';
+import { Observable } from 'rxjs';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HomeComponent } from './home.component';
 import Constants from 'src/app/constants/constants';
+import { RecipeService } from 'src/app/services/recipe.service';
+import { mockRecipes } from 'src/app/models/recipe.mock';
+import { mockTime } from 'src/app/models/term-store.mock';
+import { RecipeWithTimestamp } from 'src/app/models/recipe.model';
 
 describe('HomeComponent', () => {
   let homeComponent: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let rootElement: HTMLElement;
+
+  const mockRecentRecipes = (value: RecipeWithTimestamp[]) => {
+    spyOn(RecipeService.prototype, 'getRecentRecipes').and.returnValue(
+      new Observable((subscriber) => {
+        subscriber.next(value);
+      }) as unknown as DObservable
+    );
+    fixture.detectChanges();
+  };
 
   beforeEach(async () => {
     // Import all the necessary modules and components to test the app component
@@ -24,7 +39,6 @@ describe('HomeComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
-    fixture.detectChanges(); // re-render the component
     homeComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
 
@@ -38,11 +52,13 @@ describe('HomeComponent', () => {
 
   it('should create the app', () => {
     // Check that the component can render
+    fixture.detectChanges(); // re-render the component
     expect(homeComponent).toBeTruthy();
   });
 
   it(`shouldn't show a recipe initially`, () => {
     // Check that the page initially shows the "Find Me a Recipe!" button
+    fixture.detectChanges();
     const findRecipeButton = rootElement.querySelector<HTMLButtonElement>(
       '.find-recipe-button'
     );
@@ -61,6 +77,7 @@ describe('HomeComponent', () => {
 
   it('should load a random recipe after clicking the find recipe button', fakeAsync(() => {
     // Check that the getRandomRecipe method is called after clicking the find recipe button
+    fixture.detectChanges();
     spyOn(homeComponent, 'getRandomRecipe');
 
     const findRecipeButton = rootElement.querySelector<HTMLButtonElement>(
@@ -89,9 +106,37 @@ describe('HomeComponent', () => {
 
   it('should show a random message while loading', () => {
     // The loading message should start blank, then show a random message after some time
+    fixture.detectChanges();
     homeComponent.showLoadingMessages();
     expect(homeComponent.loadingMessage).toBe('');
     jasmine.clock().tick(3000);
     expect(Constants.loadingMessages).toContain(homeComponent.loadingMessage);
+  });
+
+  it("shouldn't show the recents section if there aren't any recent recipes", () => {
+    mockRecentRecipes([]);
+
+    const recentsSection =
+      rootElement.querySelector<HTMLElement>('.recents-section');
+    expect(recentsSection).toBeNull();
+  });
+
+  it('should show the recents section if there are recent recipes', () => {
+    mockRecentRecipes(
+      mockRecipes.map((recipe) => ({ ...recipe, timestamp: mockTime }))
+    );
+
+    const recentsSection =
+      rootElement.querySelector<HTMLElement>('.recents-section');
+    expect(recentsSection).not.toBeNull();
+    expect(
+      recentsSection?.querySelector<HTMLHeadingElement>('.recents-title')
+        ?.textContent
+    ).toBe('Recently Viewed');
+
+    const recentsList =
+      recentsSection?.querySelector<HTMLUListElement>('.recents-list');
+    expect(recentsList).not.toBeNull();
+    expect(recentsList?.childElementCount).toBe(mockRecipes.length);
   });
 });
