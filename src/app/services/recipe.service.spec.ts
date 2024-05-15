@@ -1,3 +1,4 @@
+import 'fake-indexeddb';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
   HttpClientTestingModule,

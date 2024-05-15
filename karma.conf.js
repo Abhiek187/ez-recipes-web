@@ -43,6 +43,5 @@ module.exports = function (config) {
     },
     singleRun: false,
     restartOnFileChange: true,
-    files: ["fake-indexeddb/auto"],
   });
 };
