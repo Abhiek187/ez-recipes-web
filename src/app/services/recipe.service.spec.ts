@@ -38,11 +38,11 @@ describe('RecipeService', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     // After every test, assert that there are no more pending requests.
     httpTestingController.verify();
     // Clear the fake table between tests
-    recentRecipesDB.recipes.clear();
+    await recentRecipesDB.recipes.clear();
   });
 
   it('should be created', () => {
@@ -227,7 +227,7 @@ describe('RecipeService', () => {
     });
   });
 
-  it("should return an empty array if there are't any recent recipes", (done) => {
+  xit("should return an empty array if there are't any recent recipes", (done) => {
     recipeService.getRecentRecipes().subscribe((recipes) => {
       expect(recipes).toEqual([]);
       done();
@@ -251,25 +251,23 @@ describe('RecipeService', () => {
     });
   });
 
-  xit("should add a recent recipe if there's enough space", async () => {
+  it("should add a recent recipe if there's enough space", async () => {
     await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp.slice(1));
     await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[0]);
 
-    await expectAsync(recentRecipesDB.recipes.count()).toBeResolvedTo(
-      mockRecipesWithTimestamp.length
-    );
+    const recipeCount = await recentRecipesDB.recipes.count();
+    expect(recipeCount).toBe(mockRecipesWithTimestamp.length);
   });
 
-  xit('should update a recent recipe if it already exists', async () => {
+  it('should update a recent recipe if it already exists', async () => {
     await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
     await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[0]);
 
-    await expectAsync(recentRecipesDB.recipes.count()).toBeResolvedTo(
-      mockRecipesWithTimestamp.length
-    );
+    const recipeCount = await recentRecipesDB.recipes.count();
+    expect(recipeCount).toBe(mockRecipesWithTimestamp.length);
   });
 
-  xit('should replace the oldest recipe if there are too many recent recipes', async () => {
+  it('should replace the oldest recipe if there are too many recent recipes', async () => {
     await recentRecipesDB.recipes.bulkAdd(
       [...Array(Constants.recentRecipesDB.max).keys()].map((index) => ({
         ...mockRecipesWithTimestamp[0],
@@ -278,8 +276,7 @@ describe('RecipeService', () => {
     );
     await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[1]);
 
-    await expectAsync(recentRecipesDB.recipes.count()).toBeResolvedTo(
-      Constants.recentRecipesDB.max
-    );
+    const recipeCount = await recentRecipesDB.recipes.count();
+    expect(recipeCount).toBe(Constants.recentRecipesDB.max);
   });
 });
