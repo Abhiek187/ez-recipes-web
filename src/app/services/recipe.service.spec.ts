@@ -1,23 +1,31 @@
-import 'fake-indexeddb';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Observable, lastValueFrom } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes } from '../models/recipe.mock';
-import Recipe from '../models/recipe.model';
+import Recipe, { RecipeWithTimestamp } from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
+import recentRecipesDB from '../helpers/recent-recipes-db';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
+
+  const mockRecipesWithTimestamp: RecipeWithTimestamp[] = mockRecipes.map(
+    (recipe, index) => ({
+      ...recipe,
+      timestamp: index,
+    })
+  );
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -33,6 +41,8 @@ describe('RecipeService', () => {
   afterEach(() => {
     // After every test, assert that there are no more pending requests.
     httpTestingController.verify();
+    // Clear the fake table between tests
+    recentRecipesDB.recipes.clear();
   });
 
   it('should be created', () => {
@@ -196,22 +206,80 @@ describe('RecipeService', () => {
     });
   });
 
-  it('should set a recipe', () => {
+  it('should set a recipe', (done) => {
     // Check that the setRecipe method sets the recipe variable to the passed in recipe
     recipeService.setRecipe(mockRecipe);
 
     recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
       expect(recipe).toBe(mockRecipe);
+      done();
     });
   });
 
-  it('should reset a recipe', () => {
+  it('should reset a recipe', (done) => {
     // Check that the resetRecipe method sets the recipe variable to null
     recipeService.setRecipe(mockRecipe);
     recipeService.resetRecipe();
 
     recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
       expect(recipe).toBeNull();
+      done();
     });
+  });
+
+  it("should return an empty array if there are't any recent recipes", (done) => {
+    recipeService.getRecentRecipes().subscribe((recipes) => {
+      expect(recipes).toEqual([]);
+      done();
+    });
+  });
+
+  xit('should sort recent recipes in descending order', async (done) => {
+    await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
+
+    // await expectAsync(
+    //   lastValueFrom(
+    //     recipeService.getRecentRecipes() as unknown as Observable<
+    //       RecipeWithTimestamp[]
+    //     >
+    //   )
+    // ).toBeResolvedTo(mockRecipesWithTimestamp.toReversed());
+
+    recipeService.getRecentRecipes().subscribe((recipes) => {
+      expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
+      done();
+    });
+  });
+
+  xit("should add a recent recipe if there's enough space", async () => {
+    await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp.slice(1));
+    await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[0]);
+
+    await expectAsync(recentRecipesDB.recipes.count()).toBeResolvedTo(
+      mockRecipesWithTimestamp.length
+    );
+  });
+
+  xit('should update a recent recipe if it already exists', async () => {
+    await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
+    await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[0]);
+
+    await expectAsync(recentRecipesDB.recipes.count()).toBeResolvedTo(
+      mockRecipesWithTimestamp.length
+    );
+  });
+
+  xit('should replace the oldest recipe if there are too many recent recipes', async () => {
+    await recentRecipesDB.recipes.bulkAdd(
+      [...Array(Constants.recentRecipesDB.max).keys()].map((index) => ({
+        ...mockRecipesWithTimestamp[0],
+        id: index,
+      }))
+    );
+    await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[1]);
+
+    await expectAsync(recentRecipesDB.recipes.count()).toBeResolvedTo(
+      Constants.recentRecipesDB.max
+    );
   });
 });
