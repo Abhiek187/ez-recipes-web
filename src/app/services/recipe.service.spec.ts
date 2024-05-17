@@ -4,7 +4,6 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Observable, lastValueFrom } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes } from '../models/recipe.mock';
@@ -227,28 +226,29 @@ describe('RecipeService', () => {
     });
   });
 
-  xit("should return an empty array if there are't any recent recipes", (done) => {
-    recipeService.getRecentRecipes().subscribe((recipes) => {
-      expect(recipes).toEqual([]);
-      done();
-    });
+  it("should return an empty array if there are't any recent recipes", (done) => {
+    const subscription = recipeService
+      .getRecentRecipes()
+      .subscribe((recipes) => {
+        expect(recipes).toEqual([]);
+        subscription.unsubscribe(); // ensure done() isn't called more than once
+        done();
+      });
   });
 
-  xit('should sort recent recipes in descending order', async (done) => {
-    await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
-
-    // await expectAsync(
-    //   lastValueFrom(
-    //     recipeService.getRecentRecipes() as unknown as Observable<
-    //       RecipeWithTimestamp[]
-    //     >
-    //   )
-    // ).toBeResolvedTo(mockRecipesWithTimestamp.toReversed());
-
-    recipeService.getRecentRecipes().subscribe((recipes) => {
-      expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
-      done();
-    });
+  it('should sort recent recipes in descending order', (done) => {
+    const subscription = recipeService
+      .getRecentRecipes()
+      .subscribe((recipes) => {
+        if (recipes.length === 0) {
+          recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
+          // Trigger liveQuery
+        } else {
+          expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
+          subscription.unsubscribe();
+          done();
+        }
+      });
   });
 
   it("should add a recent recipe if there's enough space", async () => {
