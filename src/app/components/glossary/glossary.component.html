@@ -1,7 +1,9 @@
 <mat-list *ngIf="terms !== undefined">
   <ng-container *ngFor="let term of terms; let last = last">
-    <mat-list-item>
-      <b>{{ term.word }}</b> — {{ term.definition }}
+    <mat-list-item class="term-list">
+      <span class="term-line">
+        <b>{{ term.word }}</b> — {{ term.definition }}
+      </span>
     </mat-list-item>
     <!-- Don't add a divider below the last item -->
     <mat-divider *ngIf="!last" />

@@ -1,0 +1,11 @@
+// Wrap text in a mat-list, based on https://stackoverflow.com/a/47379645
+.term-list {
+  height: initial;
+  padding-top: 8px;
+  padding-bottom: 8px;
+
+  .term-line {
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+  }
+}
