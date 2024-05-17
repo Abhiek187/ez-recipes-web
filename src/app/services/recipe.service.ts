@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { liveQuery } from 'dexie';
 import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
 
 import Recipe from '../models/recipe.model';
@@ -9,6 +10,7 @@ import RecipeError from '../models/recipe-error.model';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
+import recentRecipesDB from '../helpers/recent-recipes-db';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +36,7 @@ export class RecipeService {
     this.recipe.next(null);
   }
 
+  // API methods
   getRecipesWithFilter(filter: RecipeFilter): Observable<Recipe[]> {
     if (!environment.production && environment.mock) {
       return this.getMockRecipes();
@@ -130,5 +133,47 @@ export class RecipeService {
     }
 
     return Object.prototype.hasOwnProperty.call(error, 'error');
+  }
+
+  // IndexedDB methods
+  getRecentRecipes() {
+    // Sort all the recipes by their timestamp in descending order
+    // dexie's Observable type isn't the same as rxjs's Observable type
+    return liveQuery(() =>
+      recentRecipesDB.recipes
+        .orderBy(Constants.recentRecipesDB.indexes.timestamp)
+        .reverse()
+        .toArray()
+    );
+  }
+
+  async saveRecentRecipe(recipe: Recipe) {
+    await recentRecipesDB.transaction(
+      'rw',
+      recentRecipesDB.recipes,
+      async () => {
+        // If the recipe already exists in the table, replace the timestamp with the current time
+        const recipesUpdated = await recentRecipesDB.recipes.update(recipe.id, {
+          timestamp: Date.now(),
+        });
+        // 0 = key doesn't exist, 1 = key exists
+        if (recipesUpdated === 1) return Promise.resolve();
+
+        // If there are too many recipes, delete the oldest recipe
+        const recipeCount = await recentRecipesDB.recipes.count();
+
+        if (recipeCount >= Constants.recentRecipesDB.max) {
+          const oldestRecipe = await recentRecipesDB.recipes
+            .orderBy(Constants.recentRecipesDB.indexes.timestamp)
+            .first();
+          await recentRecipesDB.recipes.delete(oldestRecipe!.id);
+        }
+
+        await recentRecipesDB.recipes.add({
+          ...recipe,
+          timestamp: Date.now(),
+        });
+      }
+    );
   }
 }

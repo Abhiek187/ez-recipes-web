@@ -23,6 +23,18 @@ abstract class Constants {
   static LocalStorage = class {
     static readonly terms = 'terms';
   };
+
+  // IndexedDB
+  static recentRecipesDB = {
+    name: 'RecentRecipesDB',
+    version: 1,
+    max: 10,
+    // Primary key and indexes
+    indexes: {
+      id: 'id',
+      timestamp: 'timestamp',
+    },
+  };
 }
 
 export default Constants;

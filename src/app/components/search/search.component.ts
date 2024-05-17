@@ -153,6 +153,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     range: 'Max calories cannot exceed min calories',
     noResults: 'No recipes found',
   };
+  readonly scrollListener = this.onScroll.bind(this);
 
   queryParamsSubscription?: Subscription;
   valueChangeSubscription?: Subscription;
@@ -234,7 +235,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     // HostListener doesn't work since useCapture needs to be true
     // https://stackoverflow.com/a/54005290
-    window.addEventListener('scroll', this.onScroll.bind(this), true);
+    window.addEventListener('scroll', this.scrollListener, true);
   }
 
   ngOnDestroy(): void {
@@ -242,7 +243,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.valueChangeSubscription?.unsubscribe();
     this.recipeServiceSubscription?.unsubscribe();
 
-    window.removeEventListener('scroll', this.onScroll.bind(this), true);
+    window.removeEventListener('scroll', this.scrollListener, true);
   }
 
   private searchRecipes(paginate: boolean) {

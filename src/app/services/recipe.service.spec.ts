@@ -7,16 +7,24 @@ import { TestBed } from '@angular/core/testing';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes } from '../models/recipe.mock';
-import Recipe from '../models/recipe.model';
+import Recipe, { RecipeWithTimestamp } from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
+import recentRecipesDB from '../helpers/recent-recipes-db';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
+
+  const mockRecipesWithTimestamp: RecipeWithTimestamp[] = mockRecipes.map(
+    (recipe, index) => ({
+      ...recipe,
+      timestamp: index,
+    })
+  );
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -29,9 +37,11 @@ describe('RecipeService', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     // After every test, assert that there are no more pending requests.
     httpTestingController.verify();
+    // Clear the fake table between tests
+    await recentRecipesDB.recipes.clear();
   });
 
   it('should be created', () => {
@@ -179,36 +189,94 @@ describe('RecipeService', () => {
     req.error(mockError);
   });
 
-  it('should return a mock recipe', () => {
+  it('should return a mock recipe', (done) => {
     // Check that getMockRecipe returns a mock recipe
     recipeService.getMockRecipe().subscribe((data) => {
       expect(data).toBe(mockRecipe);
+      done();
     });
   });
 
-  it('should return mock recipes', () => {
+  it('should return mock recipes', (done) => {
     // Check that getMockRecipes returns multiple mock recipes
     recipeService.getMockRecipes().subscribe((data) => {
       expect(data).toBe(mockRecipes);
+      done();
     });
   });
 
-  it('should set a recipe', () => {
+  it('should set a recipe', (done) => {
     // Check that the setRecipe method sets the recipe variable to the passed in recipe
     recipeService.setRecipe(mockRecipe);
 
     recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
       expect(recipe).toBe(mockRecipe);
+      done();
     });
   });
 
-  it('should reset a recipe', () => {
+  it('should reset a recipe', (done) => {
     // Check that the resetRecipe method sets the recipe variable to null
     recipeService.setRecipe(mockRecipe);
     recipeService.resetRecipe();
 
     recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
       expect(recipe).toBeNull();
+      done();
     });
+  });
+
+  it("should return an empty array if there are't any recent recipes", (done) => {
+    const subscription = recipeService
+      .getRecentRecipes()
+      .subscribe((recipes) => {
+        expect(recipes).toEqual([]);
+        subscription.unsubscribe(); // ensure done() isn't called more than once
+        done();
+      });
+  });
+
+  it('should sort recent recipes in descending order', (done) => {
+    const subscription = recipeService
+      .getRecentRecipes()
+      .subscribe((recipes) => {
+        if (recipes.length === 0) {
+          recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
+          // Trigger liveQuery
+        } else {
+          expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
+          subscription.unsubscribe();
+          done();
+        }
+      });
+  });
+
+  it("should add a recent recipe if there's enough space", async () => {
+    await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp.slice(1));
+    await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[0]);
+
+    const recipeCount = await recentRecipesDB.recipes.count();
+    expect(recipeCount).toBe(mockRecipesWithTimestamp.length);
+  });
+
+  it('should update a recent recipe if it already exists', async () => {
+    await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
+    await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[0]);
+
+    const recipeCount = await recentRecipesDB.recipes.count();
+    expect(recipeCount).toBe(mockRecipesWithTimestamp.length);
+  });
+
+  it('should replace the oldest recipe if there are too many recent recipes', async () => {
+    await recentRecipesDB.recipes.bulkAdd(
+      [...Array(Constants.recentRecipesDB.max).keys()].map((index) => ({
+        ...mockRecipesWithTimestamp[0],
+        id: index,
+      }))
+    );
+    await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[1]);
+
+    const recipeCount = await recentRecipesDB.recipes.count();
+    expect(recipeCount).toBe(Constants.recentRecipesDB.max);
   });
 });

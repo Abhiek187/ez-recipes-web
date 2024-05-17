@@ -131,3 +131,7 @@ type Recipe = {
 };
 
 export default Recipe;
+
+export interface RecipeWithTimestamp extends Recipe {
+  timestamp: number;
+}
