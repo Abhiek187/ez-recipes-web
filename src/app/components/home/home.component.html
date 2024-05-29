@@ -10,15 +10,20 @@
     Find Me a Recipe!
   </button>
 </div>
-<mat-spinner diameter="50" class="progress-spinner" *ngIf="isLoading" />
-<p class="loading-message" *ngIf="isLoading">{{ loadingMessage }}</p>
 
-<section class="recents-section" *ngIf="recentRecipes.length > 0">
+@if (isLoading) {
+<mat-spinner diameter="50" class="progress-spinner" />
+<p class="loading-message">{{ loadingMessage }}</p>
+} @if (recentRecipes.length > 0) {
+<section class="recents-section">
   <h1 class="recents-title">Recently Viewed</h1>
   <mat-divider />
   <ul class="recents-list">
-    <li *ngFor="let recipe of recentRecipes">
+    @for (recipe of recentRecipes; track recipe.id) {
+    <li>
       <app-recipe-card [recipe]="recipe" />
     </li>
+    }
   </ul>
 </section>
+}

@@ -1,310 +1,297 @@
-<mat-spinner diameter="50" class="progress-spinner" *ngIf="isLoading" />
+@if (isLoading) {
+<mat-spinner diameter="50" class="progress-spinner" />
+} @if (recipe !== null) {
+<!-- Recipe header -->
+<header class="recipe-header">
+  <!-- Show the recipe name and a link to its source next to it -->
+  <h1 class="recipe-name">{{ recipe.name | titlecase }}</h1>
+  <a
+    mat-icon-button
+    class="recipe-link"
+    [href]="recipe.url"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Open recipe source"
+  >
+    <mat-icon fontIcon="link" />
+  </a>
+</header>
 
-<ng-container *ngIf="recipe !== null">
-  <!-- Recipe header -->
-  <header class="recipe-header">
-    <!-- Show the recipe name and a link to its source next to it -->
-    <h1 class="recipe-name">{{ recipe!.name | titlecase }}</h1>
-    <a
-      mat-icon-button
-      class="recipe-link"
-      [href]="recipe!.url"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Open recipe source"
-    >
-      <mat-icon fontIcon="link" />
-    </a>
-  </header>
+<aside class="recipe-aside">
+  <div class="recipe-image-buttons-container">
+    <!-- Recipe image -->
+    <figure class="recipe-figure">
+      <img
+        class="recipe-image"
+        [src]="recipe.image"
+        [alt]="recipe.name"
+        width="312"
+        height="231"
+      />
+      <figcaption class="recipe-caption mat-caption">
+        Image ©
+        <a [href]="recipe.sourceUrl" target="_blank" rel="noopener noreferrer">
+          {{ recipe.credit }}
+        </a>
+      </figcaption>
+    </figure>
 
-  <aside class="recipe-aside">
-    <div class="recipe-image-buttons-container">
-      <!-- Recipe image -->
-      <figure class="recipe-figure">
-        <img
-          class="recipe-image"
-          [src]="recipe!.image"
-          [alt]="recipe!.name"
-          width="312"
-          height="231"
-        />
-        <figcaption class="recipe-caption mat-caption">
-          Image ©
-          <a
-            [href]="recipe!.sourceUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ recipe!.credit }}
-          </a>
-        </figcaption>
-      </figure>
+    <!-- Recipe info -->
+    <mat-chip-set class="recipe-pill-list">
+      <!-- Don't make the chips clickable, but still show their color -->
+      @if (['mild', 'spicy'].includes(recipe.spiceLevel)) {
+      <mat-chip
+        [ngStyle]="{
+          'background-color':
+            recipe.spiceLevel === 'mild' ? 'orange' : '#f44326'
+        }"
+        disableRipple
+      >
+        {{ recipe.spiceLevel | titlecase }}
+      </mat-chip>
+      } @if (recipe.isVegetarian) {
+      <mat-chip disableRipple>Vegetarian</mat-chip>
+      } @if (recipe.isVegan) {
+      <mat-chip disableRipple>Vegan</mat-chip>
+      } @if (recipe.isGlutenFree) {
+      <mat-chip disableRipple>Gluten-Free</mat-chip>
+      } @if (recipe.isHealthy) {
+      <mat-chip disableRipple>Healthy</mat-chip>
+      } @if (recipe.isCheap) {
+      <mat-chip disableRipple>Cheap</mat-chip>
+      } @if (recipe.isSustainable) {
+      <mat-chip disableRipple>Sustainable</mat-chip>
+      }
+    </mat-chip-set>
 
-      <!-- Recipe info -->
-      <mat-chip-set class="recipe-pill-list">
-        <!-- Don't make the chips clickable, but still show their color -->
-        <mat-chip
-          *ngIf="['mild', 'spicy'].includes(recipe.spiceLevel)"
-          [ngStyle]="{
-            'background-color':
-              recipe.spiceLevel === 'mild' ? 'orange' : '#f44326'
-          }"
-          disableRipple
+    <h2 class="recipe-time" [ngPlural]="recipe.time">
+      <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
+      <ng-template ngPluralCase="1">
+        <b>Time:</b> {{ recipe.time }} minute
+      </ng-template>
+      <ng-template ngPluralCase="other">
+        <b>Time:</b> {{ recipe.time }} minutes
+      </ng-template>
+    </h2>
+
+    @if (recipe.types.length > 0) {
+    <h3 class="recipe-types">
+      <b>Great for:</b> {{ recipe.types.join(", ") }}
+    </h3>
+    }
+    <h3 class="recipe-culture">
+      <b>Cuisines:</b> {{ recipe.culture.join(", ") }}
+    </h3>
+
+    <div class="share-button-container">
+      <div class="made-container">
+        <button
+          mat-mini-fab
+          color="warn"
+          aria-label="I made this"
+          (click)="addPreparation()"
         >
-          {{ recipe.spiceLevel | titlecase }}
-        </mat-chip>
-        <mat-chip *ngIf="recipe.isVegetarian" disableRipple>
-          Vegetarian
-        </mat-chip>
-        <mat-chip *ngIf="recipe.isVegan" disableRipple> Vegan </mat-chip>
-        <mat-chip *ngIf="recipe.isGlutenFree" disableRipple>
-          Gluten-Free
-        </mat-chip>
-        <mat-chip *ngIf="recipe.isHealthy" disableRipple> Healthy </mat-chip>
-        <mat-chip *ngIf="recipe.isCheap" disableRipple> Cheap </mat-chip>
-        <mat-chip *ngIf="recipe.isSustainable" disableRipple>
-          Sustainable
-        </mat-chip>
-      </mat-chip-set>
+          <mat-icon fontIcon="restaurant" />
+        </button>
+        <p>I Made This!</p>
+      </div>
+      <div class="show-recipe-container">
+        <button
+          mat-mini-fab
+          color="accent"
+          class="show-recipe-button"
+          aria-label="Show me another recipe"
+          (click)="getRandomRecipe()"
+          [disabled]="isLoading"
+        >
+          <mat-icon fontIcon="receipt_long" />
+        </button>
+        <p>Show Me Another Recipe!</p>
+      </div>
+    </div>
+  </div>
 
-      <h2 class="recipe-time" [ngPlural]="recipe!.time">
-        <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
+  <!-- Nutritional information -->
+  <mat-card class="nutrition-card">
+    <mat-card-header class="nutrition-card-header">
+      <mat-card-title>Nutrition Facts</mat-card-title>
+      <mat-card-subtitle
+        >Health Score: {{ recipe.healthScore }}%</mat-card-subtitle
+      >
+      <!-- Change the output based on whether there is more than 1 serving -->
+      <mat-card-subtitle [ngPlural]="recipe.servings">
         <ng-template ngPluralCase="1">
-          <b>Time:</b> {{ recipe!.time }} minute
+          {{ recipe.servings }} serving
         </ng-template>
         <ng-template ngPluralCase="other">
-          <b>Time:</b> {{ recipe!.time }} minutes
+          {{ recipe.servings }} servings
         </ng-template>
-      </h2>
-
-      <h3 class="recipe-types" *ngIf="recipe!.types.length > 0">
-        <b>Great for:</b> {{ recipe.types.join(", ") }}
-      </h3>
-      <h3 class="recipe-culture" *ngIf="recipe!.culture.length > 0">
-        <b>Cuisines:</b> {{ recipe.culture.join(", ") }}
-      </h3>
-
-      <div class="share-button-container">
-        <div class="made-container">
-          <button
-            mat-mini-fab
-            color="warn"
-            aria-label="I made this"
-            (click)="addPreparation()"
-          >
-            <mat-icon fontIcon="restaurant" />
-          </button>
-          <p>I Made This!</p>
-        </div>
-        <div class="show-recipe-container">
-          <button
-            mat-mini-fab
-            color="accent"
-            class="show-recipe-button"
-            aria-label="Show me another recipe"
-            (click)="getRandomRecipe()"
-            [disabled]="isLoading"
-          >
-            <mat-icon fontIcon="receipt_long" />
-          </button>
-          <p>Show Me Another Recipe!</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Nutritional information -->
-    <mat-card class="nutrition-card">
-      <mat-card-header class="nutrition-card-header">
-        <mat-card-title>Nutrition Facts</mat-card-title>
-        <mat-card-subtitle
-          >Health Score: {{ recipe!.healthScore }}%</mat-card-subtitle
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-divider class="nutrient-divider" />
+    <mat-card-content>
+      <div class="nutrient-grid">
+        @for (nutrient of recipe.nutrients; track nutrient.name) {
+        <p
+          class="nutrient-name"
+          [ngClass]="{
+            'nutrient-heading': nutrientHeadings.includes(nutrient.name)
+          }"
         >
-        <!-- Change the output based on whether there is more than 1 serving -->
-        <mat-card-subtitle [ngPlural]="recipe!.servings">
-          <ng-template ngPluralCase="1"
-            >{{ recipe!.servings }} serving</ng-template
-          >
-          <ng-template ngPluralCase="other"
-            >{{ recipe!.servings }} servings</ng-template
-          >
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-divider class="nutrient-divider" />
-      <mat-card-content>
-        <div class="nutrient-grid">
-          <ng-container *ngFor="let nutrient of recipe!.nutrients">
-            <p
-              class="nutrient-name"
-              [ngClass]="{
-                'nutrient-heading': nutrientHeadings.includes(nutrient.name)
-              }"
-            >
-              {{ nutrient.name }}
-            </p>
-            <!-- Round the nutritional information to whole numbers -->
-            <p
-              class="nutrient-amount"
-              [ngClass]="{
-                'nutrient-heading': nutrientHeadings.includes(nutrient.name)
-              }"
-            >
-              {{ nutrient.amount | number : "1.0-0" }} {{ nutrient.unit }}
-            </p>
-          </ng-container>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </aside>
-
-  <section class="recipe-section">
-    <!-- Recipe summary -->
-    <mat-card class="recipe-summary-card">
-      <mat-card-header class="recipe-summary-header">
-        <mat-card-title>Summary</mat-card-title>
-        <mat-icon
-          fontIcon="tips_and_updates"
-          class="lightbulb-icon"
-          aria-hidden="true"
-        />
-      </mat-card-header>
-      <!-- Render HTML tags -->
-      <mat-card-content [innerHtml]="recipe!.summary" />
-    </mat-card>
-
-    <!-- Ingredients -->
-    <mat-card class="recipe-ingredients-card">
-      <mat-card-header class="recipe-ingredients-header">
-        <mat-card-title>Ingredients</mat-card-title>
-      </mat-card-header>
-      <mat-divider class="ingredient-divider" />
-      <mat-card-content>
-        <div class="ingredient-grid">
-          <ng-container *ngFor="let ingredient of recipe!.ingredients">
-            <p class="ingredient-amount">
-              {{ ingredient.amount }} {{ ingredient.unit }}
-            </p>
-            <p class="ingredient-name">
-              <ng-container *ngFor="let word of ingredient.name.split(' ')">
-                <!-- Capitalize the ingredient names -->
-                <span
-                  *ngIf="
-                    dictionary !== undefined &&
-                      dictionary.hasOwnProperty(word.toLowerCase());
-                    else default
-                  "
-                  class="term"
-                  [matTooltip]="dictionary[word.toLowerCase()]"
-                  >{{ word | titlecase }}
-                </span>
-                <ng-template #default>{{ word | titlecase }} </ng-template>
-              </ng-container>
-            </p>
-          </ng-container>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </section>
-
-  <main>
-    <!-- Steps -->
-    <h2 class="steps-header">Steps</h2>
-    <!-- If applicable, split each instruction into separate sections -->
-    <div
-      class="instructions-container"
-      *ngFor="let instruction of recipe!.instructions"
-    >
-      <h3 class="instruction-header">{{ instruction.name }}</h3>
-      <!-- Display each step in a grid -->
-      <div class="step-cards-container">
-        <mat-card class="step-card" *ngFor="let step of instruction.steps">
-          <mat-card-content>
-            <!-- Step number & directions -->
-            <div class="step-container">
-              <h4 class="step-number">{{ step.number }}</h4>
-              <p>
-                <ng-container *ngFor="let word of step.step.split(' ')">
-                  <!-- Can't use the "in" operator -->
-                  <span
-                    *ngIf="
-                      dictionary !== undefined &&
-                        dictionary.hasOwnProperty(word.toLowerCase());
-                      else default
-                    "
-                    class="term"
-                    [matTooltip]="dictionary[word.toLowerCase()]"
-                    >{{ word }}
-                  </span>
-                  <ng-template #default>{{ word }} </ng-template>
-                </ng-container>
-              </p>
-            </div>
-            <mat-divider *ngIf="step.ingredients.length > 0" />
-
-            <!-- Ingredients per step -->
-            <div
-              class="step-ingredients-container"
-              *ngIf="step.ingredients.length > 0"
-            >
-              <h4 class="step-ingredients-header">Ingredients</h4>
-              <ul class="step-ingredients-list">
-                <li
-                  class="step-ingredients-list-item"
-                  *ngFor="let ingredient of step.ingredients"
-                >
-                  <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
-                  <!-- Image alts are redundant since there's text next to them -->
-                  <img
-                    [src]="
-                      'https://spoonacular.com/cdn/ingredients_100x100/' +
-                      ingredient.image
-                    "
-                    alt=""
-                  />
-                  <p>{{ ingredient.name }}</p>
-                </li>
-              </ul>
-            </div>
-            <mat-divider *ngIf="step.equipment.length > 0" />
-
-            <!-- Equipment per step -->
-            <div
-              class="step-equipment-container"
-              *ngIf="step.equipment.length > 0"
-            >
-              <h4 class="step-equipment-header">Equipment</h4>
-              <ul class="step-equipment-list">
-                <li
-                  class="step-equipment-list-item"
-                  *ngFor="let equipment of step.equipment"
-                >
-                  <img
-                    [src]="
-                      'https://spoonacular.com/cdn/equipment_100x100/' +
-                      equipment.image
-                    "
-                    alt=""
-                  />
-                  <p>{{ equipment.name }}</p>
-                </li>
-              </ul>
-            </div>
-          </mat-card-content>
-        </mat-card>
+          {{ nutrient.name }}
+        </p>
+        <!-- Round the nutritional information to whole numbers -->
+        <p
+          class="nutrient-amount"
+          [ngClass]="{
+            'nutrient-heading': nutrientHeadings.includes(nutrient.name)
+          }"
+        >
+          {{ nutrient.amount | number : "1.0-0" }} {{ nutrient.unit }}
+        </p>
+        }
       </div>
+    </mat-card-content>
+  </mat-card>
+</aside>
+
+<section class="recipe-section">
+  <!-- Recipe summary -->
+  <mat-card class="recipe-summary-card">
+    <mat-card-header class="recipe-summary-header">
+      <mat-card-title>Summary</mat-card-title>
+      <mat-icon
+        fontIcon="tips_and_updates"
+        class="lightbulb-icon"
+        aria-hidden="true"
+      />
+    </mat-card-header>
+    <!-- Render HTML tags -->
+    <mat-card-content [innerHtml]="recipe.summary" />
+  </mat-card>
+
+  <!-- Ingredients -->
+  <mat-card class="recipe-ingredients-card">
+    <mat-card-header class="recipe-ingredients-header">
+      <mat-card-title>Ingredients</mat-card-title>
+    </mat-card-header>
+    <mat-divider class="ingredient-divider" />
+    <mat-card-content>
+      <div class="ingredient-grid">
+        @for (ingredient of recipe.ingredients; track ingredient.id) {
+        <p class="ingredient-amount">
+          {{ ingredient.amount }} {{ ingredient.unit }}
+        </p>
+        <p class="ingredient-name">
+          @for (word of ingredient.name.split(' '); track $index) {
+          <!-- Capitalize the ingredient names -->
+          @if (dictionary !== undefined &&
+          dictionary.hasOwnProperty(word.toLowerCase())) {
+          <span class="term" [matTooltip]="dictionary[word.toLowerCase()]"
+            >{{ word | titlecase }}
+          </span>
+          } @else {
+          <span>{{ word | titlecase }} </span>
+          } }
+        </p>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>
+
+<main>
+  <!-- Steps -->
+  <h2 class="steps-header">Steps</h2>
+  <!-- If applicable, split each instruction into separate sections -->
+  @for (instruction of recipe.instructions; track $index) {
+  <div class="instructions-container">
+    <h3 class="instruction-header">{{ instruction.name }}</h3>
+    <!-- Display each step in a grid -->
+    <div class="step-cards-container">
+      @for (step of instruction.steps; track step.number) {
+      <mat-card class="step-card">
+        <mat-card-content>
+          <!-- Step number & directions -->
+          <div class="step-container">
+            <h4 class="step-number">{{ step.number }}</h4>
+            <p>
+              @for (word of step.step.split(' '); track $index) {
+              <!-- Can't use the "in" operator -->
+              @if (dictionary !== undefined &&
+              dictionary.hasOwnProperty(word.toLowerCase())) {
+              <span class="term" [matTooltip]="dictionary[word.toLowerCase()]"
+                >{{ word }}
+              </span>
+              } @else {
+              <span>{{ word }} </span>
+              } }
+            </p>
+          </div>
+          @if (step.ingredients.length > 0) {
+          <mat-divider />
+
+          <!-- Ingredients per step -->
+          <div class="step-ingredients-container">
+            <h4 class="step-ingredients-header">Ingredients</h4>
+            <ul class="step-ingredients-list">
+              @for (ingredient of step.ingredients; track ingredient.id) {
+              <li class="step-ingredients-list-item">
+                <!-- Image instructions: https://spoonacular.com/food-api/docs#Show-Images -->
+                <!-- Image alts are redundant since there's text next to them -->
+                <img
+                  [src]="
+                    'https://spoonacular.com/cdn/ingredients_100x100/' +
+                    ingredient.image
+                  "
+                  alt=""
+                />
+                <p>{{ ingredient.name }}</p>
+              </li>
+              }
+            </ul>
+          </div>
+          } @if (step.equipment.length > 0) {
+          <mat-divider />
+
+          <!-- Equipment per step -->
+          <div class="step-equipment-container">
+            <h4 class="step-equipment-header">Equipment</h4>
+            <ul class="step-equipment-list">
+              @for (equipment of step.equipment; track equipment.id) {
+              <li class="step-equipment-list-item">
+                <img
+                  [src]="
+                    'https://spoonacular.com/cdn/equipment_100x100/' +
+                    equipment.image
+                  "
+                  alt=""
+                />
+                <p>{{ equipment.name }}</p>
+              </li>
+              }
+            </ul>
+          </div>
+          }
+        </mat-card-content>
+      </mat-card>
+      }
     </div>
-  </main>
+  </div>
+  }
+</main>
 
-  <mat-divider />
+<mat-divider />
 
-  <!-- spoonacular API attribution -->
-  <footer class="recipe-footer">
-    Powered by
-    <a
-      href="https://spoonacular.com/food-api"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      spoonacular
-    </a>
-  </footer>
-</ng-container>
+<!-- spoonacular API attribution -->
+<footer class="recipe-footer">
+  Powered by
+  <a
+    href="https://spoonacular.com/food-api"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    spoonacular
+  </a>
+</footer>
+}
