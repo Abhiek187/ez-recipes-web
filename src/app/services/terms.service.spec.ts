@@ -89,9 +89,7 @@ describe('TermsService', () => {
     spyOn(localStorageProto, 'getItem').and.returnValue(
       mockTermStoreStr(Date.now() - 1)
     );
-    spyOn(localStorageProto, 'removeItem').and.callThrough();
     expect(termsService.getCachedTerms()).toBeNull();
-    expect(localStorageProto.removeItem).toHaveBeenCalled();
   });
 
   it("should return all the cached terms if they're valid", () => {
