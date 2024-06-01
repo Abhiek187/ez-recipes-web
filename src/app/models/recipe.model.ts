@@ -82,7 +82,7 @@ type Recipe = {
   _id: string;
   id: number;
   name: string;
-  url: string;
+  url?: string;
   image: string;
   credit: string;
   sourceUrl: string;
