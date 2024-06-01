@@ -5,6 +5,7 @@
 <header class="recipe-header">
   <!-- Show the recipe name and a link to its source next to it -->
   <h1 class="recipe-name">{{ recipe.name | titlecase }}</h1>
+  @if (recipe.url !== undefined) {
   <a
     mat-icon-button
     class="recipe-link"
@@ -15,6 +16,7 @@
   >
     <mat-icon fontIcon="link" />
   </a>
+  }
 </header>
 
 <aside class="recipe-aside">

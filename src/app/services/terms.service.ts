@@ -42,11 +42,8 @@ export class TermsService {
     if (termStoreStr === null) return null;
     const termStore: TermStore = JSON.parse(termStoreStr);
 
-    // Delete the terms if they are expired
-    if (Date.now() >= termStore.expireAt) {
-      localStorage.removeItem(Constants.LocalStorage.terms);
-      return null;
-    }
+    // Replace the terms if they are expired
+    if (Date.now() >= termStore.expireAt) return null;
 
     return termStore.terms;
   }

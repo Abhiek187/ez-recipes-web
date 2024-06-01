@@ -71,6 +71,7 @@ export const CUISINES = [
   'Scottish',
   'South American',
   'Creole',
+  'Central American',
 ] as const;
 export type Cuisine = (typeof CUISINES)[number];
 export const isValidCuisine = (str: string): str is Cuisine => {
@@ -81,7 +82,7 @@ type Recipe = {
   _id: string;
   id: number;
   name: string;
-  url: string;
+  url?: string;
   image: string;
   credit: string;
   sourceUrl: string;
