@@ -79,7 +79,7 @@ export const isValidCuisine = (str: string): str is Cuisine => {
 };
 
 type Recipe = {
-  _id: string;
+  _id?: string;
   id: number;
   name: string;
   url?: string;

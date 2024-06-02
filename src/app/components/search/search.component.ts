@@ -267,7 +267,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
           const lastRecipe = recipes.at(-1);
           if (lastRecipe !== undefined) {
-            this.lastToken = lastRecipe.token ?? lastRecipe._id;
+            this.lastToken = lastRecipe.token ?? lastRecipe._id ?? null;
           } else {
             // Prevent subsequent calls if there are no more results
             this.lastToken = null;
