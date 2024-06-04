@@ -1,7 +1,12 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
-  HttpClientTestingModule,
+  HttpClient,
+  HttpErrorResponse,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import {
   HttpTestingController,
+  provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
@@ -28,7 +33,11 @@ describe('RecipeService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     });
     recipeService = TestBed.inject(RecipeService);
 

@@ -1,4 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -20,7 +24,10 @@ describe('AppComponent', () => {
         NoopAnimationsModule,
         RouterModule.forRoot([]),
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: false }),
-        HttpClientTestingModule,
+      ],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 

@@ -1,4 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import {
   ComponentFixture,
   fakeAsync,
@@ -35,7 +39,11 @@ describe('HomeComponent', () => {
   beforeEach(async () => {
     // Import all the necessary modules and components to test the app component
     await TestBed.configureTestingModule({
-      imports: [RouterModule.forRoot([]), HttpClientTestingModule],
+      imports: [RouterModule.forRoot([])],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
