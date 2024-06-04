@@ -1,36 +1,37 @@
 <mat-toolbar color="primary" class="toolbar">
+  @if (isSmallScreen) {
   <!-- Show a hamburger menu on small screens -->
-  <ng-container *ngIf="isSmallScreen">
-    <!-- All material icons are found at: https://fonts.google.com/icons -->
-    <button
-      mat-icon-button
-      class="menu-icon"
-      aria-label="Open menu"
-      (click)="snav.toggle()"
-    >
-      <mat-icon fontIcon="menu" />
-    </button>
-    <span>EZ Recipes</span>
-  </ng-container>
-  <!-- Show all the links side-by-side if there's enough screen space -->
-  <nav class="nav-links" *ngIf="!isSmallScreen">
-    <ng-container *ngFor="let nav of navItems">
-      <button
-        mat-button
-        color="accent"
-        [routerLink]="nav.path"
-        [routerLinkActive]="nav.path === '' ? '' : 'selected'"
-        [style]="{ 'font-size': nav.path === '' ? '20px' : '16px' }"
-      >
-        {{ nav.path === "" ? "EZ Recipes" : nav.title }}
-      </button>
-    </ng-container>
-  </nav>
-  <span class="spacer"></span>
-  <!-- Update the material icon to match the corresponding boolean value -->
+  <!-- All material icons are found at: https://fonts.google.com/icons -->
   <button
     mat-icon-button
-    *ngIf="isRecipePage"
+    class="menu-icon"
+    aria-label="Open menu"
+    (click)="snav.toggle()"
+  >
+    <mat-icon fontIcon="menu" />
+  </button>
+  <span>EZ Recipes</span>
+  } @else {
+  <!-- Show all the links side-by-side if there's enough screen space -->
+  <nav class="nav-links">
+    @for (nav of navItems; track nav.path) {
+    <button
+      mat-button
+      color="accent"
+      [routerLink]="nav.path"
+      [routerLinkActive]="nav.path === '' ? '' : 'selected'"
+      [style]="{ 'font-size': nav.path === '' ? '20px' : '16px' }"
+    >
+      {{ nav.path === "" ? "EZ Recipes" : nav.title }}
+    </button>
+    }
+  </nav>
+  }
+  <span class="spacer"></span>
+  <!-- Update the material icon to match the corresponding boolean value -->
+  @if (isRecipePage) {
+  <button
+    mat-icon-button
     class="favorite-icon"
     [attr.aria-label]="
       (isFavorite ? 'Unfavorite' : 'Favorite') + ' this recipe'
@@ -41,13 +42,13 @@
   </button>
   <button
     mat-icon-button
-    *ngIf="isRecipePage"
     class="share-icon"
     aria-label="Share this recipe"
     (click)="shareRecipe()"
   >
     <mat-icon fontIcon="share" />
   </button>
+  }
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
@@ -62,9 +63,11 @@
     fixedTopGap="56"
   >
     <mat-nav-list>
-      <a mat-list-item *ngFor="let nav of navItems" [routerLink]="nav.path">
+      @for (nav of navItems; track nav.path) {
+      <a mat-list-item [routerLink]="nav.path">
         {{ nav.title }}
       </a>
+      }
     </mat-nav-list>
   </mat-sidenav>
 

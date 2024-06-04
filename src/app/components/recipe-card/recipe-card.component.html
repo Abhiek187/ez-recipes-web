@@ -36,9 +36,9 @@
         </ng-template>
       </p>
 
-      <p *ngIf="calories !== undefined">
-        {{ calories.amount | number : "1.0-0" }} {{ calories.unit }}
-      </p>
+      @if (calories !== undefined) {
+      <p>{{ calories.amount | number : "1.0-0" }} {{ calories.unit }}</p>
+      }
     </span>
   </mat-card-content>
 </mat-card>

@@ -1,4 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 
@@ -19,11 +23,7 @@ describe('RecipeCardComponent', () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
-      imports: [
-        RecipeCardComponent,
-        HttpClientTestingModule,
-        RouterModule.forRoot([]),
-      ],
+      imports: [RecipeCardComponent, RouterModule.forRoot([])],
       providers: [
         {
           provide: RecipeService,
@@ -33,6 +33,8 @@ describe('RecipeCardComponent', () => {
           provide: Router,
           useValue: mockRouter,
         },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 
