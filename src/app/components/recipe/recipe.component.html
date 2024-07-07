@@ -80,10 +80,11 @@
     <h3 class="recipe-types">
       <b>Great for:</b> {{ recipe.types.join(", ") }}
     </h3>
-    }
+    } @if (recipe.culture.length > 0) {
     <h3 class="recipe-culture">
       <b>Cuisines:</b> {{ recipe.culture.join(", ") }}
     </h3>
+    }
 
     <div class="share-button-container">
       <div class="made-container">
