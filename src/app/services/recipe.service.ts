@@ -80,9 +80,12 @@ export class RecipeService {
     return new Observable((subscriber) => {
       setTimeout(
         () => {
-          this.mockError
-            ? subscriber.error(Error('A mock error occurred.'))
-            : subscriber.next(mockRecipe);
+          if (this.mockError) {
+            subscriber.error(Error('A mock error occurred.'));
+          } else {
+            subscriber.next(mockRecipe);
+          }
+
           subscriber.complete();
         },
         this.mockLoading ? 10_000 : 0
@@ -94,9 +97,12 @@ export class RecipeService {
     return new Observable((subscriber) => {
       setTimeout(
         () => {
-          this.mockError
-            ? subscriber.error(Error('A mock error occurred.'))
-            : subscriber.next(mockRecipes);
+          if (this.mockError) {
+            subscriber.error(Error('A mock error occurred.'));
+          } else {
+            subscriber.next(mockRecipes);
+          }
+
           subscriber.complete();
         },
         this.mockLoading ? 10_000 : 0
