@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,12 +18,12 @@ export class RecipeCardComponent implements OnInit {
   private recipeService = inject(RecipeService);
   private router = inject(Router);
 
-  @Input({ required: true }) recipe!: Recipe;
+  readonly recipe = input.required<Recipe>();
   calories?: Recipe['nutrients'][number];
   isFavorite = false;
 
   ngOnInit(): void {
-    this.calories = this.recipe.nutrients.find(
+    this.calories = this.recipe().nutrients.find(
       (nutrient) => nutrient.name === 'Calories'
     );
   }
@@ -36,9 +36,10 @@ export class RecipeCardComponent implements OnInit {
   }
 
   openRecipe() {
-    this.recipeService.setRecipe(this.recipe);
-    console.log(this.recipe);
-    this.router.navigate([`/recipe/${this.recipe.id}`]);
+    const recipe = this.recipe();
+    this.recipeService.setRecipe(recipe);
+    console.log(recipe);
+    this.router.navigate([`/recipe/${recipe.id}`]);
     // Scroll to the top so the recipe header can be viewed
     const sidenav = document.querySelector<HTMLElement>('.sidenav-content');
     sidenav?.scroll(0, 0);

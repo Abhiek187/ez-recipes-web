@@ -7,10 +7,10 @@
   (keydown.enter)="openRecipe()"
   (keydown.space)="openRecipe(); $event.preventDefault()"
 >
-  <img mat-card-image [src]="recipe.image" alt="" width="312" height="231" />
+  <img mat-card-image [src]="recipe().image" alt="" width="312" height="231" />
   <mat-card-content class="recipe-content">
     <span class="recipe-name-row">
-      <mat-card-title>{{ recipe.name }}</mat-card-title>
+      <mat-card-title>{{ recipe().name }}</mat-card-title>
       <button
         mat-icon-button
         class="recipe-favorite-icon"
@@ -26,13 +26,13 @@
       </button>
     </span>
     <span class="recipe-info-row">
-      <p [ngPlural]="recipe.time">
+      <p [ngPlural]="recipe().time">
         <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
         <ng-template ngPluralCase="1">
-          <b>Time:</b> {{ recipe.time }} minute
+          <b>Time:</b> {{ recipe().time }} minute
         </ng-template>
         <ng-template ngPluralCase="other">
-          <b>Time:</b> {{ recipe.time }} minutes
+          <b>Time:</b> {{ recipe().time }} minutes
         </ng-template>
       </p>
 
