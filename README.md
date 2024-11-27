@@ -96,7 +96,7 @@ Run `npm run lint` to lint the entire app using ESLint.
 
 ### Build
 
-Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory. Then run `python3 -m http.server -d dist/ez-recipes/ PORT` to serve the page over a simple HTTP server. (By default, `PORT` is 8000.)
+Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory. Then run `python3 -m http.server -d dist/ez-recipes/browser PORT` to serve the page over a simple HTTP server. (By default, `PORT` is 8000.)
 
 ### Further Help
 

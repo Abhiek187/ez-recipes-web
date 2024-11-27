@@ -8,7 +8,6 @@ import { TermsService } from 'src/app/services/terms.service';
 
 @Component({
   selector: 'app-glossary',
-  standalone: true,
   imports: [CommonModule, MatDividerModule, MatListModule],
   templateUrl: './glossary.component.html',
   styleUrl: './glossary.component.scss',
