@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -26,17 +26,15 @@ import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  private recipeService = inject(RecipeService);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+
   isLoading = false;
   private defaultLoadingMessage = '';
   loadingMessage = this.defaultLoadingMessage;
   recipeServiceSubscription?: Subscription;
   recentRecipes: Recipe[] = [];
-
-  constructor(
-    private recipeService: RecipeService,
-    private snackBar: MatSnackBar,
-    private router: Router
-  ) {}
 
   ngOnInit(): void {
     // Get all the recent recipes from IndexedDB

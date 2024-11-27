@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,11 +15,12 @@ import { RecipeService } from 'src/app/services/recipe.service';
   styleUrl: './recipe-card.component.scss',
 })
 export class RecipeCardComponent implements OnInit {
+  private recipeService = inject(RecipeService);
+  private router = inject(Router);
+
   @Input({ required: true }) recipe!: Recipe;
   calories?: Recipe['nutrients'][number];
   isFavorite = false;
-
-  constructor(private recipeService: RecipeService, private router: Router) {}
 
   ngOnInit(): void {
     this.calories = this.recipe.nutrients.find(

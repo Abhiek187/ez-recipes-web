@@ -6,7 +6,7 @@ import {
   trigger,
 } from '@angular/animations';
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -116,6 +116,12 @@ const calorieRangeValidator: ValidatorFn = (
     ]
 })
 export class SearchComponent implements OnInit, OnDestroy {
+  private recipeService = inject(RecipeService);
+  private snackBar = inject(MatSnackBar);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private location = inject(Location);
+
   filterFormNames = FilterForm;
   filterFormGroup = new FormGroup(
     {
@@ -165,14 +171,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   );
   readonly mealTypes = [...MEAL_TYPES].sort();
   readonly cuisines = [...CUISINES].sort();
-
-  constructor(
-    private recipeService: RecipeService,
-    private snackBar: MatSnackBar,
-    private route: ActivatedRoute,
-    private router: Router,
-    private location: Location
-  ) {}
 
   ngOnInit(): void {
     // Initialize the form based on the query parameters

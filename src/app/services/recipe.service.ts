@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { liveQuery } from 'dexie';
 import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
 
@@ -16,13 +16,13 @@ import recentRecipesDB from '../helpers/recent-recipes-db';
   providedIn: 'root',
 })
 export class RecipeService {
+  private http = inject(HttpClient);
+
   // Store the recipe object in the service so other components can reference it and observe changes
   private recipe = new BehaviorSubject<Recipe | null>(null);
   // Turn on to test loading & error messages
   private mockLoading = false;
   private mockError = false;
-
-  constructor(private http: HttpClient) {}
 
   onRecipeChange(): Observable<Recipe | null> {
     return this.recipe.asObservable();

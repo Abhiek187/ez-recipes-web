@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -32,6 +32,13 @@ import { TermsService } from 'src/app/services/terms.service';
     styleUrl: './recipe.component.scss'
 })
 export class RecipeComponent implements OnInit, OnDestroy {
+  private recipeService = inject(RecipeService);
+  private snackBar = inject(MatSnackBar);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private titleService = inject(Title);
+  private termsService = inject(TermsService);
+
   recipe: Recipe | null = null;
   isLoading = false;
   dictionary?: { [word: string]: string };
@@ -42,15 +49,6 @@ export class RecipeComponent implements OnInit, OnDestroy {
 
   // Nutrients that should be bold on the nutrition label
   nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
-
-  constructor(
-    private recipeService: RecipeService,
-    private snackBar: MatSnackBar,
-    private route: ActivatedRoute,
-    private router: Router,
-    private titleService: Title,
-    private termsService: TermsService
-  ) {}
 
   ngOnInit(): void {
     /* If the user wants to find a random recipe, the home page should handle fetching the recipe

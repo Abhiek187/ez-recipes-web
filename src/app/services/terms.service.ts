@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
@@ -12,7 +12,8 @@ import TermStore from '../models/term-store.model';
   providedIn: 'root',
 })
 export class TermsService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+
 
   // API methods
   getTerms(): Observable<Term[]> {

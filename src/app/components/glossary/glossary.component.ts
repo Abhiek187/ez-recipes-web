@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 
@@ -13,9 +13,9 @@ import { TermsService } from 'src/app/services/terms.service';
   styleUrl: './glossary.component.scss',
 })
 export class GlossaryComponent implements OnInit {
-  terms?: Term[];
+  private termsService = inject(TermsService);
 
-  constructor(private termsService: TermsService) {}
+  terms?: Term[];
 
   ngOnInit(): void {
     this.terms = this.termsService.getCachedTerms()?.toSorted((a, b) => {

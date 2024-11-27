@@ -1,4 +1,4 @@
-import { Injectable, NgModule } from '@angular/core';
+import { Injectable, NgModule, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import {
   Route,
@@ -41,9 +41,8 @@ export const routes: Record<string, Route> = {
 
 @Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
-  constructor(private readonly title: Title) {
-    super();
-  }
+  private readonly title = inject(Title);
+
 
   override updateTitle(routerState: RouterStateSnapshot) {
     // Prepend the title for each page with the app name

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
@@ -13,11 +13,11 @@ import { TermsService } from './services/terms.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
-  constructor(
-    private swUpdate: SwUpdate,
-    private snackBar: MatSnackBar,
-    private termsService: TermsService
-  ) {
+  private swUpdate = inject(SwUpdate);
+  private snackBar = inject(MatSnackBar);
+  private termsService = inject(TermsService);
+
+  constructor() {
     // Notify the user if a new version of the PWA is available
     this.swUpdate.versionUpdates
       .pipe(
