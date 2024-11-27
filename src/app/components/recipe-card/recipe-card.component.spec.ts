@@ -40,7 +40,7 @@ describe('RecipeCardComponent', () => {
 
     fixture = TestBed.createComponent(RecipeCardComponent);
     recipeCardComponent = fixture.componentInstance;
-    recipeCardComponent.recipe = mockRecipe; // input is required
+    fixture.componentRef.setInput('recipe', mockRecipe); // input is required
     rootElement = fixture.nativeElement;
     fixture.detectChanges();
   });
