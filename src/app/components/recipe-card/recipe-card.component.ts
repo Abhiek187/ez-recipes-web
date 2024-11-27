@@ -10,7 +10,6 @@ import { RecipeService } from 'src/app/services/recipe.service';
 
 @Component({
   selector: 'app-recipe-card',
-  standalone: true,
   imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './recipe-card.component.html',
   styleUrl: './recipe-card.component.scss',

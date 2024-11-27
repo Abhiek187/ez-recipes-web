@@ -133,14 +133,14 @@ $blue-400: #42a5f5;
 }
 
 .recipe-section {
+  margin: 10px;
+
   @media screen and (min-width: $side-width-breakpoint) {
     display: flex;
     justify-content: space-around;
     align-items: flex-start;
     gap: 10px;
   }
-
-  margin: 10px;
 
   .recipe-summary-card {
     background-color: $yellow-300;

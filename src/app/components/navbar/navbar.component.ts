@@ -16,7 +16,6 @@ import { routes } from 'src/app/app-routing.module';
 
 @Component({
   selector: 'app-navbar',
-  standalone: true,
   imports: [
     CommonModule,
     MatButtonModule,

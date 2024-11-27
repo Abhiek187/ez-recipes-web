@@ -8,7 +8,6 @@ import { TermsService } from './services/terms.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [NavbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
