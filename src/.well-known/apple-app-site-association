@@ -9,9 +9,21 @@
           {
             "/": "/recipe/*",
             "comment": "Maps the recipe pages on the web app to the recipe views on the iOS app"
+          },
+          {
+            "/": "/profile",
+            "?": {
+              "action": "*"
+            },
+            "comment": "Maps a continue action on the profile page to a profile action on the iOS app"
           }
         ]
       }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "UF6E5BVT98.com.abhiek.EZ-Recipes"
     ]
   }
 }
