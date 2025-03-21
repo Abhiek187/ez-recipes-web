@@ -44,10 +44,10 @@ The site can be visited at https://ez-recipes-web.onrender.com/.
 flowchart LR
 
 A(Checkout repository) -->|18.x, 20.x| B(Install Node.js)
-B --> C(Install dependencies:\nnpm ci)
-C --> D(Lint app:\nnpm run lint)
-D --> E(Build app:\nnpm run build --if-present)
-E --> F(Run Angular tests:\nnpm test)
+B --> C(Install dependencies:<br>npm ci)
+C --> D(Lint app:<br>npm run lint)
+D --> E(Build app:<br>npm run build --if-present)
+E --> F(Run Angular tests:<br>npm test)
 ```
 
 ### CodeQL
@@ -69,7 +69,7 @@ A(Merge PR to main) --> B(Auto-Deploy to Render)
 
 subgraph B [Auto-Deploy to Render]
 direction TB
-C(Install dependencies:\nnpm install) --> D(Build web app:\nnpm run build)
+C(Install dependencies:<br>npm install) --> D(Build web app:<br>npm run build)
 D --> E(Use Brotli compression)
 E --> F(Serve website over HTTPS on a global CDN)
 F --> G(Invalidate CDN cache)
