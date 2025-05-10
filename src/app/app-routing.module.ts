@@ -29,6 +29,14 @@ export const routes: Record<string, Route> = {
         (mod) => mod.GlossaryComponent
       ),
   },
+  profile: {
+    path: 'profile',
+    title: 'Profile',
+    loadComponent: () =>
+      import('./components/profile/profile.component').then(
+        (mod) => mod.ProfileComponent
+      ),
+  },
   // The default route should be listed between the static routes and wildcard routes
   home: { path: '', title: 'Home', component: HomeComponent },
   // Show a 404 page for any other route
@@ -42,7 +50,6 @@ export const routes: Record<string, Route> = {
 @Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
-
 
   override updateTitle(routerState: RouterStateSnapshot) {
     // Prepend the title for each page with the app name

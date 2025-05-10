@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   isSmallScreen: boolean;
   // Navigation links to show in the sidenav
-  navItems = [routes.home, routes.search, routes.glossary];
+  navItems = [routes.home, routes.search, routes.glossary, routes.profile];
 
   isRecipePage = false;
   isFavorite = false;
