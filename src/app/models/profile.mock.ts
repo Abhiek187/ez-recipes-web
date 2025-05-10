@@ -1,0 +1,14 @@
+import { Chef } from './profile.model';
+
+export const mockChef: Chef = {
+  uid: 'oJG5PZ8KIIfvQMDsQzOwDbu2m6O2',
+  email: 'test@email.com',
+  emailVerified: true,
+  ratings: { '641024': 5, '663849': 3 },
+  recentRecipes: {
+    '641024': '2024-10-17T02:54:07.471Z',
+    '663849': '2024-10-17T22:28:27.387Z',
+  },
+  favoriteRecipes: ['641024'],
+  token: 'e30.e30.e30',
+};

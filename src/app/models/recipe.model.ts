@@ -137,10 +137,24 @@ type Recipe = {
     }[];
   }[];
   token?: string; // searchSequenceToken for pagination
+  totalRatings?: number;
+  averageRating?: number;
+  views?: number;
 };
 
 export default Recipe;
 
-export interface RecipeWithTimestamp extends Recipe {
+export interface RecentRecipe extends Recipe {
   timestamp: number;
+  isFavorite: boolean;
 }
+
+export type RecipeUpdate = {
+  rating?: number;
+  view?: boolean;
+  isFavorite?: boolean;
+};
+
+export type Token = {
+  token?: string;
+};

@@ -310,6 +310,9 @@ abstract class MockRecipes {
         ],
       },
     ],
+    totalRatings: 2,
+    averageRating: 4.5,
+    views: 10,
   };
 
   /**
@@ -853,6 +856,9 @@ abstract class MockRecipes {
         ],
       },
     ],
+    totalRatings: 538,
+    averageRating: 4.714,
+    views: 1804,
   };
 
   /**
@@ -1300,6 +1306,9 @@ abstract class MockRecipes {
         ],
       },
     ],
+    totalRatings: 3,
+    averageRating: 3.5,
+    views: 25,
   };
 }
 

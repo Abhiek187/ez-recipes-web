@@ -10,6 +10,7 @@ type RecipeFilter = {
   healthy?: boolean;
   cheap?: boolean;
   sustainable?: boolean;
+  rating?: number;
   spiceLevel?: SpiceLevel[];
   type?: MealType[];
   culture?: Cuisine[];

@@ -147,7 +147,7 @@ export class RecipeService {
     // dexie's Observable type isn't the same as rxjs's Observable type
     return liveQuery(() =>
       recentRecipesDB.recipes
-        .orderBy(Constants.recentRecipesDB.indexes.timestamp)
+        .orderBy(Constants.recentRecipesDB.config.at(-1)!.indexes.timestamp)
         .reverse()
         .toArray()
     );
@@ -170,7 +170,7 @@ export class RecipeService {
 
         if (recipeCount >= Constants.recentRecipesDB.max) {
           const oldestRecipe = await recentRecipesDB.recipes
-            .orderBy(Constants.recentRecipesDB.indexes.timestamp)
+            .orderBy(Constants.recentRecipesDB.config.at(-1)!.indexes.timestamp)
             .first();
           await recentRecipesDB.recipes.delete(oldestRecipe!.id);
         }
@@ -178,6 +178,7 @@ export class RecipeService {
         await recentRecipesDB.recipes.add({
           ...recipe,
           timestamp: Date.now(),
+          isFavorite: false,
         });
       }
     );

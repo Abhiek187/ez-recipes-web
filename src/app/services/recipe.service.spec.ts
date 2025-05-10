@@ -12,7 +12,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes } from '../models/recipe.mock';
-import Recipe, { RecipeWithTimestamp } from '../models/recipe.model';
+import Recipe, { RecentRecipe } from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
@@ -24,10 +24,11 @@ describe('RecipeService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
 
-  const mockRecipesWithTimestamp: RecipeWithTimestamp[] = mockRecipes.map(
+  const mockRecipesWithTimestamp: RecentRecipe[] = mockRecipes.map(
     (recipe, index) => ({
       ...recipe,
       timestamp: index,
+      isFavorite: false,
     })
   );
 
