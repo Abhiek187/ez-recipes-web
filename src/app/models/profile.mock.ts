@@ -1,4 +1,5 @@
-import { Chef } from './profile.model';
+import { Chef, ChefEmailResponse, LoginResponse } from './profile.model';
+import { Token } from './recipe.model';
 
 export const mockChef: Chef = {
   uid: 'oJG5PZ8KIIfvQMDsQzOwDbu2m6O2',
@@ -11,4 +12,16 @@ export const mockChef: Chef = {
   },
   favoriteRecipes: ['641024'],
   token: 'e30.e30.e30',
+};
+
+export const mockLoginResponse = (emailVerified = true): LoginResponse => ({
+  uid: mockChef.uid,
+  token: mockChef.token,
+  emailVerified,
+});
+
+export const mockChefEmailResponse: ChefEmailResponse = {
+  kind: 'identitytoolkit#GetOobConfirmationCodeResponse',
+  email: mockChef.email,
+  token: mockChef.token,
 };

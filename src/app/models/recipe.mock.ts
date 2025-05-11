@@ -1,4 +1,5 @@
-import Recipe from './recipe.model';
+import { mockChef } from './profile.mock';
+import Recipe, { Token } from './recipe.model';
 
 // Abstract classes can hold static properties to group the mock recipes together
 abstract class MockRecipes {
@@ -1319,3 +1320,7 @@ export const mockRecipes = [
   MockRecipes.jambalayaStew,
   MockRecipes.chocolateCupcake,
 ];
+
+export const mockToken: Token = {
+  token: mockChef.token,
+};

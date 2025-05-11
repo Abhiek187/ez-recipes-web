@@ -3,9 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { liveQuery } from 'dexie';
 import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
 
-import Recipe from '../models/recipe.model';
+import Recipe, { RecipeUpdate, Token } from '../models/recipe.model';
 import { environment } from 'src/environments/environment';
-import { mockRecipe, mockRecipes } from '../models/recipe.mock';
+import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
 import RecipeError from '../models/recipe-error.model';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
@@ -17,6 +17,7 @@ import recentRecipesDB from '../helpers/recent-recipes-db';
 })
 export class RecipeService {
   private http = inject(HttpClient);
+  private readonly isMocking = !environment.production && environment.mock;
 
   // Store the recipe object in the service so other components can reference it and observe changes
   private recipe = new BehaviorSubject<Recipe | null>(null);
@@ -38,7 +39,7 @@ export class RecipeService {
 
   // API methods
   getRecipesWithFilter(filter: RecipeFilter): Observable<Recipe[]> {
-    if (!environment.production && environment.mock) {
+    if (this.isMocking) {
       return this.getMockRecipes();
     }
 
@@ -51,7 +52,7 @@ export class RecipeService {
 
   getRandomRecipe(): Observable<Recipe> {
     // Mock the network calls for easier debugging & no quotas
-    if (!environment.production && environment.mock) {
+    if (this.isMocking) {
       return this.getMockRecipe();
     }
 
@@ -66,13 +67,33 @@ export class RecipeService {
   }
 
   getRecipeById(id: string): Observable<Recipe> {
-    if (!environment.production && environment.mock) {
+    if (this.isMocking) {
       return this.getMockRecipe();
     }
 
     return this.http
       .get<Recipe>(`${environment.serverBaseUrl}${Constants.recipesPath}/${id}`)
       .pipe(catchError(this.handleError.bind(this)));
+  }
+
+  updateRecipe(
+    id: number,
+    fields: RecipeUpdate,
+    token?: string
+  ): Observable<Token> {
+    if (this.isMocking) {
+      return this.getMockToken();
+    }
+
+    return this.http.patch<Token>(
+      `${environment.serverBaseUrl}${Constants.recipesPath}/${id}`,
+      fields,
+      {
+        headers: {
+          ...(token !== undefined && this.authHeader(token)),
+        },
+      }
+    );
   }
 
   // Load a sample recipe to avoid hitting the API while testing the UI
@@ -101,6 +122,23 @@ export class RecipeService {
             subscriber.error(Error('A mock error occurred.'));
           } else {
             subscriber.next(mockRecipes);
+          }
+
+          subscriber.complete();
+        },
+        this.mockLoading ? 10_000 : 0
+      );
+    });
+  }
+
+  getMockToken(): Observable<Token> {
+    return new Observable((subscriber) => {
+      setTimeout(
+        () => {
+          if (this.mockError) {
+            subscriber.error(Error('A mock error occurred.'));
+          } else {
+            subscriber.next(mockToken);
           }
 
           subscriber.complete();
@@ -139,6 +177,12 @@ export class RecipeService {
     }
 
     return Object.prototype.hasOwnProperty.call(error, 'error');
+  }
+
+  private authHeader(token: string) {
+    return {
+      Authorization: `Bearer ${token}`,
+    };
   }
 
   // IndexedDB methods

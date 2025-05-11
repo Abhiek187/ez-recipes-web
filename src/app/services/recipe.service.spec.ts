@@ -11,8 +11,12 @@ import {
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from 'src/environments/environment';
-import { mockRecipe, mockRecipes } from '../models/recipe.mock';
-import Recipe, { RecentRecipe } from '../models/recipe.model';
+import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
+import Recipe, {
+  RecentRecipe,
+  RecipeUpdate,
+  Token,
+} from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
@@ -149,6 +153,7 @@ describe('RecipeService', () => {
       healthy: false,
       cheap: false,
       sustainable: false,
+      rating: 3,
       spiceLevel: ['none', 'mild'],
       type: ['snack', 'lunch'],
       culture: ['American', 'British'],
@@ -164,9 +169,9 @@ describe('RecipeService', () => {
     const req = httpTestingController.expectOne(
       `${testUrl}?query=${encodeURIComponent(testFilter.query!)}&min-cals=${
         testFilter.minCals
-      }&max-cals=${
-        testFilter.maxCals
-      }&vegetarian=&vegan=&gluten-free=&${testFilter.spiceLevel
+      }&max-cals=${testFilter.maxCals}&vegetarian=&vegan=&gluten-free=&rating=${
+        testFilter.rating
+      }&${testFilter.spiceLevel
         ?.map((spiceLevel) => `spice-level=${spiceLevel}`)
         .join('&')}&${testFilter.type
         ?.map((mealType) => `type=${encodeURIComponent(mealType)}`)
@@ -199,6 +204,55 @@ describe('RecipeService', () => {
     req.error(mockError);
   });
 
+  it('should update a recipe', () => {
+    // Check that updateRecipe returns a mock token
+    const id = 0;
+    const testUrl = `${Constants.recipesPath}/${id}`;
+    const recipeUpdate: RecipeUpdate = {
+      rating: 5,
+      view: true,
+      isFavorite: true,
+    };
+
+    httpClient
+      .patch<Token>(testUrl, recipeUpdate, {
+        headers: {
+          Authorization: mockToken.token ?? '',
+        },
+      })
+      .subscribe((data) => expect(data).toBe(mockToken));
+
+    const req = httpTestingController.expectOne(testUrl);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual(recipeUpdate);
+    expect(req.request.headers.get('Authorization')).toBe(
+      mockToken.token ?? ''
+    );
+    req.flush(mockToken);
+  });
+
+  it('should return an error if the update recipe API fails', () => {
+    // Check that updateRecipe returns an error if the request failed
+    const id = 0;
+    const testUrl = `${Constants.recipesPath}/${id}`;
+    const recipeUpdate: RecipeUpdate = {
+      rating: 5,
+      view: true,
+      isFavorite: true,
+    };
+    const mockError = new ProgressEvent('error');
+
+    httpClient.patch<Token>(testUrl, recipeUpdate).subscribe({
+      next: () => fail('should have failed with the network error'),
+      error: (error: HttpErrorResponse) => {
+        expect(error.error).toBe(mockError);
+      },
+    });
+
+    const req = httpTestingController.expectOne(testUrl);
+    req.error(mockError);
+  });
+
   it('should return a mock recipe', (done) => {
     // Check that getMockRecipe returns a mock recipe
     recipeService.getMockRecipe().subscribe((data) => {
@@ -211,6 +265,14 @@ describe('RecipeService', () => {
     // Check that getMockRecipes returns multiple mock recipes
     recipeService.getMockRecipes().subscribe((data) => {
       expect(data).toBe(mockRecipes);
+      done();
+    });
+  });
+
+  it('should return a mock token', (done) => {
+    // Check that getMockToken returns a mock token
+    recipeService.getMockToken().subscribe((data) => {
+      expect(data).toBe(mockToken);
       done();
     });
   });

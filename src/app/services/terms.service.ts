@@ -13,11 +13,11 @@ import TermStore from '../models/term-store.model';
 })
 export class TermsService {
   private http = inject(HttpClient);
-
+  private readonly isMocking = !environment.production && environment.mock;
 
   // API methods
   getTerms(): Observable<Term[]> {
-    if (!environment.production && environment.mock) {
+    if (this.isMocking) {
       return this.getMockTerms();
     }
 

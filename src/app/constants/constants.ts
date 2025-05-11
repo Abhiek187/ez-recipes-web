@@ -29,7 +29,8 @@ abstract class Constants {
 
   // IndexedDB
   static recentRecipesDB = {
-    name: 'RecentRecipesDB',
+    dbName: 'RecentRecipesDB',
+    tableName: 'recipes',
     max: 10,
     config: [
       {

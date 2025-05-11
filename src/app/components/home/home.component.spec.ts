@@ -131,7 +131,11 @@ describe('HomeComponent', () => {
 
   it('should show the recents section if there are recent recipes', () => {
     mockRecentRecipes(
-      mockRecipes.map((recipe) => ({ ...recipe, timestamp: mockTime }))
+      mockRecipes.map((recipe) => ({
+        ...recipe,
+        timestamp: mockTime,
+        isFavorite: false,
+      }))
     );
 
     const recentsSection =

@@ -7,16 +7,16 @@ class RecentRecipesDB extends Dexie {
   recipes!: Table<RecentRecipe, number>;
 
   constructor() {
-    const { name, config } = Constants.recentRecipesDB;
-    super(name);
+    const { dbName, tableName, config } = Constants.recentRecipesDB;
+    super(dbName);
 
     for (const { version, indexes, upgrade } of config) {
       this.version(version).stores({
-        recipes: Object.values(indexes).join(', '),
+        [tableName]: Object.values(indexes).join(', '),
       });
       if (upgrade !== undefined) {
         this.version(version).upgrade((tx) =>
-          tx.table<RecentRecipe>(name).toCollection().modify(upgrade)
+          tx.table<RecentRecipe>(tableName).toCollection().modify(upgrade)
         );
       }
     }
