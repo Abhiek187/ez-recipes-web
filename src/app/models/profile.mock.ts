@@ -1,5 +1,4 @@
 import { Chef, ChefEmailResponse, LoginResponse } from './profile.model';
-import { Token } from './recipe.model';
 
 export const mockChef: Chef = {
   uid: 'oJG5PZ8KIIfvQMDsQzOwDbu2m6O2',

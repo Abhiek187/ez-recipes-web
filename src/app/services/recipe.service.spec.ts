@@ -1,6 +1,4 @@
 import {
-  HttpClient,
-  HttpErrorResponse,
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
@@ -9,25 +7,28 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
-import Recipe, {
-  RecentRecipe,
-  RecipeUpdate,
-  Token,
-} from '../models/recipe.model';
+import Recipe, { RecentRecipe, RecipeUpdate } from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
 import recentRecipesDB from '../helpers/recent-recipes-db';
+import { mockChef } from '../models/profile.mock';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
-  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
 
+  const baseUrl = `${environment.serverBaseUrl}${Constants.recipesPath}`;
+  // Create mock ProgressEvent with type `error`, raised when something goes wrong
+  // at network level. e.g. Connection timeout, DNS error, offline, etc.
+  const mockError = new ProgressEvent('error');
+  const mockErrorMessage =
+    'An unexpected error occurred. The server may be down or there may be network issues. Please try again later.';
   const mockRecipesWithTimestamp: RecentRecipe[] = mockRecipes.map(
     (recipe, index) => ({
       ...recipe,
@@ -35,8 +36,6 @@ describe('RecipeService', () => {
       isFavorite: false,
     })
   );
-  const mockError = new ProgressEvent('error');
-  const failTest = () => fail('should have failed with the network error');
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -48,8 +47,7 @@ describe('RecipeService', () => {
     });
     recipeService = TestBed.inject(RecipeService);
 
-    // Inject the http service and test controller for each test
-    httpClient = TestBed.inject(HttpClient);
+    // Inject the http test controller for each test
     httpTestingController = TestBed.inject(HttpTestingController);
   });
 
@@ -69,80 +67,73 @@ describe('RecipeService', () => {
     expect(environment.mock).withContext('Turn off debug mode!').toBeFalse();
   });
 
-  it('should fetch a random recipe', () => {
+  it('should fetch a random recipe', async () => {
     // Check that the getRandomRecipe method returns a mock recipe
     // Make an HTTP GET request
-    const testUrl = `${Constants.recipesPath}/random`;
-    httpClient.get<Recipe>(testUrl).subscribe((data) =>
-      // When observable resolves, result should match test data
-      expect(data).toBe(mockRecipe)
-    );
+    const recipePromise = firstValueFrom(recipeService.getRandomRecipe());
 
     // The following `expectOne()` will match the request's URL.
     // If no requests or multiple requests matched that URL
     // `expectOne()` would throw.
-    const req = httpTestingController.expectOne(testUrl);
-
-    // Assert that the request is a GET.
-    expect(req.request.method).toBe('GET');
+    const req = httpTestingController.expectOne({
+      // Assert that the request is a GET.
+      method: 'GET',
+      url: `${baseUrl}/random`,
+    });
 
     // Respond with mock data, causing Observable to resolve.
     // Subscribe callback asserts that correct data was returned.
     req.flush(mockRecipe);
+
+    // When observable resolves, result should match test data
+    await expectAsync(recipePromise).toBeResolvedTo(mockRecipe);
   });
 
-  it('should return an error if the random recipe API fails', () => {
+  it('should return an error if the random recipe API fails', async () => {
     // Check that getRandomRecipe returns an error if the request failed
-    // Create mock ProgressEvent with type `error`, raised when something goes wrong
-    // at network level. e.g. Connection timeout, DNS error, offline, etc.
-    const testUrl = `${Constants.recipesPath}/random`;
+    const chefPromise = firstValueFrom(recipeService.getRandomRecipe());
 
-    httpClient.get<Recipe>(testUrl).subscribe({
-      next: () => failTest(),
-      error: (error: HttpErrorResponse) => {
-        expect(error.error).toBe(mockError);
-      },
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/random`,
     });
-
-    const req = httpTestingController.expectOne(testUrl);
 
     // Respond with mock error
     req.error(mockError);
+
+    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
-  it('should fetch a recipe by ID', () => {
+  it('should fetch a recipe by ID', async () => {
     // Check that get recipe by ID returns a mock recipe
-    const id = 0;
-    const testUrl = `${Constants.recipesPath}/${id}`;
+    const id = '0';
+    const recipePromise = firstValueFrom(recipeService.getRecipeById(id));
 
-    httpClient
-      .get<Recipe>(testUrl)
-      .subscribe((data) => expect(data).toBe(mockRecipe));
-
-    const req = httpTestingController.expectOne(testUrl);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockRecipe);
-  });
-
-  it('should return an error if the recipe ID API fails', () => {
-    // Check that getRandomRecipe returns an error if the request failed
-    const id = 0;
-    const testUrl = `${Constants.recipesPath}/${id}`;
-
-    httpClient.get<Recipe>(testUrl).subscribe({
-      next: () => failTest(),
-      error: (error: HttpErrorResponse) => {
-        expect(error.error).toBe(mockError);
-      },
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/${id}`,
     });
+    req.flush(mockRecipe);
 
-    const req = httpTestingController.expectOne(testUrl);
-    req.error(mockError);
+    await expectAsync(recipePromise).toBeResolvedTo(mockRecipe);
   });
 
-  it('should fetch recipes by filter', () => {
+  it('should return an error if the recipe ID API fails', async () => {
+    // Check that getRandomRecipe returns an error if the request failed
+    const id = '0';
+    const recipePromise = firstValueFrom(recipeService.getRecipeById(id));
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/${id}`,
+    });
+    req.error(mockError);
+
+    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
+  });
+
+  it('should fetch recipes by filter', async () => {
     // Check that getRecipesWithFilter returns an array of mock recipes
-    const testUrl = Constants.recipesPath;
     const testFilter: RecipeFilter = {
       query: 'vegan nuggets',
       minCals: 100,
@@ -158,18 +149,18 @@ describe('RecipeService', () => {
       type: ['snack', 'lunch'],
       culture: ['American', 'British'],
     };
+    const recipePromise = firstValueFrom(
+      recipeService.getRecipesWithFilter(testFilter)
+    );
 
-    httpClient
-      .get<Recipe[]>(testUrl, {
-        params: recipeFilterParams(testFilter),
-      })
-      .subscribe((data) => expect(data).toBe(mockRecipes));
-
-    // The query params should be serialized properly
-    const req = httpTestingController.expectOne(
-      `${testUrl}?query=${encodeURIComponent(testFilter.query!)}&min-cals=${
-        testFilter.minCals
-      }&max-cals=${testFilter.maxCals}&vegetarian=&vegan=&gluten-free=&rating=${
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      // The query params should be serialized properly
+      url: `${baseUrl}?query=${encodeURIComponent(
+        testFilter.query!
+      )}&min-cals=${testFilter.minCals}&max-cals=${
+        testFilter.maxCals
+      }&vegetarian=&vegan=&gluten-free=&rating=${
         testFilter.rating
       }&${testFilter.spiceLevel
         ?.map((spiceLevel) => `spice-level=${spiceLevel}`)
@@ -177,78 +168,76 @@ describe('RecipeService', () => {
         ?.map((mealType) => `type=${encodeURIComponent(mealType)}`)
         .join('&')}&${testFilter.culture
         ?.map((cuisine) => `culture=${encodeURIComponent(cuisine)}`)
-        .join('&')}`
+        .join('&')}`,
+    });
+    expect(req.request.params.toString()).toBe(
+      recipeFilterParams(testFilter).toString()
     );
-    expect(req.request.method).toBe('GET');
     req.flush(mockRecipes);
+
+    await expectAsync(recipePromise).toBeResolvedTo(mockRecipes);
   });
 
-  it('should return an error if the filter recipe API fails', () => {
+  it('should return an error if the filter recipe API fails', async () => {
     // Check that getRandomRecipe returns an error if the request failed
-    const testUrl = Constants.recipesPath;
     const testFilter: RecipeFilter = {};
+    const recipePromise = firstValueFrom(
+      recipeService.getRecipesWithFilter(testFilter)
+    );
 
-    httpClient
-      .get<Recipe[]>(testUrl, {
-        params: recipeFilterParams(testFilter),
-      })
-      .subscribe({
-        next: () => failTest(),
-        error: (error: HttpErrorResponse) => {
-          expect(error.error).toBe(mockError);
-        },
-      });
-
-    const req = httpTestingController.expectOne(testUrl);
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
     req.error(mockError);
+
+    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
   });
 
-  it('should update a recipe', () => {
+  it('should update a recipe', async () => {
     // Check that updateRecipe returns a mock token
     const id = 0;
-    const testUrl = `${Constants.recipesPath}/${id}`;
-    const recipeUpdate: RecipeUpdate = {
+    const fields: RecipeUpdate = {
       rating: 5,
       view: true,
       isFavorite: true,
     };
-
-    httpClient
-      .patch<Token>(testUrl, recipeUpdate, {
-        headers: {
-          Authorization: mockToken.token ?? '',
-        },
-      })
-      .subscribe((data) => expect(data).toBe(mockToken));
-
-    const req = httpTestingController.expectOne(testUrl);
-    expect(req.request.method).toBe('PATCH');
-    expect(req.request.body).toEqual(recipeUpdate);
-    expect(req.request.headers.get('Authorization')).toBe(
-      mockToken.token ?? ''
+    const recipePromise = firstValueFrom(
+      recipeService.updateRecipe(id, fields, mockChef.token)
     );
+
+    const req = httpTestingController.expectOne({
+      method: 'PATCH',
+      url: `${baseUrl}/${id}`,
+    });
+    expect(req.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`
+    );
+    expect(req.request.body).toBe(fields);
     req.flush(mockToken);
+
+    await expectAsync(recipePromise).toBeResolvedTo(mockToken);
   });
 
-  it('should return an error if the update recipe API fails', () => {
+  it('should return an error if the update recipe API fails', async () => {
     // Check that updateRecipe returns an error if the request failed
     const id = 0;
-    const testUrl = `${Constants.recipesPath}/${id}`;
-    const recipeUpdate: RecipeUpdate = {
-      rating: 5,
-      view: true,
-      isFavorite: true,
+    const fields: RecipeUpdate = {
+      isFavorite: false,
     };
+    const recipePromise = firstValueFrom(
+      recipeService.updateRecipe(id, fields)
+    );
 
-    httpClient.patch<Token>(testUrl, recipeUpdate).subscribe({
-      next: () => failTest(),
-      error: (error: HttpErrorResponse) => {
-        expect(error.error).toBe(mockError);
-      },
+    const req = httpTestingController.expectOne({
+      method: 'PATCH',
+      url: `${baseUrl}/${id}`,
     });
-
-    const req = httpTestingController.expectOne(testUrl);
+    expect(req.request.headers.get('Authorization')).toBeNull();
+    expect(req.request.body).toBe(fields);
     req.error(mockError);
+
+    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
   });
 
   it('should return a mock recipe', (done) => {

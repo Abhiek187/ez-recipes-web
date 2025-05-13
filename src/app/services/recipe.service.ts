@@ -85,15 +85,17 @@ export class RecipeService {
       return this.getMockToken();
     }
 
-    return this.http.patch<Token>(
-      `${environment.serverBaseUrl}${Constants.recipesPath}/${id}`,
-      fields,
-      {
-        headers: {
-          ...(token !== undefined && this.authHeader(token)),
-        },
-      }
-    );
+    return this.http
+      .patch<Token>(
+        `${environment.serverBaseUrl}${Constants.recipesPath}/${id}`,
+        fields,
+        {
+          headers: {
+            ...(token !== undefined && this.authHeader(token)),
+          },
+        }
+      )
+      .pipe(catchError(this.handleError.bind(this)));
   }
 
   // Load a sample recipe to avoid hitting the API while testing the UI

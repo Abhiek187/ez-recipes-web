@@ -1,6 +1,4 @@
 import {
-  HttpClient,
-  HttpErrorResponse,
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
@@ -9,9 +7,9 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 
 import { TermsService } from './terms.service';
-import Term from '../models/term.model';
 import Constants from '../constants/constants';
 import { mockTerms } from '../models/term.mock';
 import {
@@ -19,16 +17,16 @@ import {
   mockTermStore,
   mockTermStoreStr,
 } from '../models/term-store.mock';
+import { environment } from 'src/environments/environment';
 
 describe('TermsService', () => {
   let termsService: TermsService;
-  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
 
-  const testUrl = Constants.termsPath;
-  const localStorageProto = Object.getPrototypeOf(localStorage);
+  const baseUrl = `${environment.serverBaseUrl}${Constants.termsPath}`;
   const mockError = new ProgressEvent('error');
-  const failTest = () => fail('should have failed with the network error');
+  const mockErrorMessage = `Http failure response for ${baseUrl}: 0 `;
+  const localStorageProto = Object.getPrototypeOf(localStorage);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,7 +38,6 @@ describe('TermsService', () => {
     });
 
     termsService = TestBed.inject(TermsService);
-    httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
 
     // Mock dates to prevent tests from failing by a second
@@ -57,28 +54,30 @@ describe('TermsService', () => {
     expect(termsService).toBeTruthy();
   });
 
-  it('should fetch all the terms', () => {
+  it('should fetch all the terms', async () => {
     // Check that getTerms returns an array of mock terms
-    httpClient
-      .get<Term[]>(testUrl)
-      .subscribe((data) => expect(data).toBe(mockTerms));
+    const termsPromise = firstValueFrom(termsService.getTerms());
 
-    const req = httpTestingController.expectOne(testUrl);
-    expect(req.request.method).toBe('GET');
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
     req.flush(mockTerms);
+
+    await expectAsync(termsPromise).toBeResolvedTo(mockTerms);
   });
 
-  it('should return an error if the terms API fails', () => {
+  it('should return an error if the terms API fails', async () => {
     // Check that getTerms returns an error if the request failed
-    httpClient.get<Term[]>(testUrl).subscribe({
-      next: () => failTest(),
-      error: (error: HttpErrorResponse) => {
-        expect(error.error).toBe(mockError);
-      },
-    });
+    const termsPromise = firstValueFrom(termsService.getTerms());
 
-    const req = httpTestingController.expectOne(testUrl);
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
     req.error(mockError);
+
+    await expectAsync(termsPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
   it('should return the mock terms', (done) => {
