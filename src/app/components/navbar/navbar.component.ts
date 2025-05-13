@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 
 import { RecipeComponent } from '../recipe/recipe.component';
 import { routes } from 'src/app/app-routing.module';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -35,7 +36,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   isSmallScreen: boolean;
   // Navigation links to show in the sidenav
-  navItems = [routes.home, routes.search, routes.glossary, routes.profile];
+  navItems = environment.production
+    ? [routes.home, routes.search, routes.glossary]
+    : [routes.home, routes.search, routes.glossary, routes.profile];
 
   isRecipePage = false;
   isFavorite = false;

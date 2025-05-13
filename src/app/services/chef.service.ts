@@ -31,7 +31,7 @@ export class ChefService {
     }
 
     return this.http
-      .get<Chef>(`${environment.serverBaseUrl}/${Constants.chefsPath}`, {
+      .get<Chef>(`${environment.serverBaseUrl}${Constants.chefsPath}`, {
         headers: this.authHeader(token),
       })
       .pipe(catchError(this.handleError.bind(this)));
@@ -44,7 +44,7 @@ export class ChefService {
 
     return this.http
       .post<LoginResponse>(
-        `${environment.serverBaseUrl}/${Constants.chefsPath}`,
+        `${environment.serverBaseUrl}${Constants.chefsPath}`,
         credentials
       )
       .pipe(catchError(this.handleError.bind(this)));
@@ -59,7 +59,7 @@ export class ChefService {
     }
 
     return this.http.patch<ChefEmailResponse>(
-      `${environment.serverBaseUrl}/${Constants.chefsPath}`,
+      `${environment.serverBaseUrl}${Constants.chefsPath}`,
       fields,
       {
         headers: {
@@ -77,7 +77,7 @@ export class ChefService {
     }
 
     return this.http.delete<void>(
-      `${environment.serverBaseUrl}/${Constants.chefsPath}`,
+      `${environment.serverBaseUrl}${Constants.chefsPath}`,
       {
         headers: this.authHeader(token),
       }
@@ -90,7 +90,7 @@ export class ChefService {
     }
 
     return this.http.post<ChefEmailResponse>(
-      `${environment.serverBaseUrl}/${Constants.chefsPath}/verify`,
+      `${environment.serverBaseUrl}${Constants.chefsPath}/verify`,
       null, // no body
       { headers: this.authHeader(token) }
     );
@@ -103,7 +103,7 @@ export class ChefService {
 
     return this.http
       .post<LoginResponse>(
-        `${environment.serverBaseUrl}/${Constants.chefsPath}/login`,
+        `${environment.serverBaseUrl}${Constants.chefsPath}/login`,
         credentials
       )
       .pipe(catchError(this.handleError.bind(this)));
@@ -117,7 +117,7 @@ export class ChefService {
     }
 
     return this.http.post<void>(
-      `${environment.serverBaseUrl}/${Constants.chefsPath}/logout`,
+      `${environment.serverBaseUrl}${Constants.chefsPath}/logout`,
       null,
       {
         headers: this.authHeader(token),

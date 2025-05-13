@@ -27,6 +27,8 @@ describe('TermsService', () => {
 
   const testUrl = Constants.termsPath;
   const localStorageProto = Object.getPrototypeOf(localStorage);
+  const mockError = new ProgressEvent('error');
+  const failTest = () => fail('should have failed with the network error');
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -68,10 +70,8 @@ describe('TermsService', () => {
 
   it('should return an error if the terms API fails', () => {
     // Check that getTerms returns an error if the request failed
-    const mockError = new ProgressEvent('error');
-
     httpClient.get<Term[]>(testUrl).subscribe({
-      next: () => fail('should have failed with the network error'),
+      next: () => failTest(),
       error: (error: HttpErrorResponse) => {
         expect(error.error).toBe(mockError);
       },

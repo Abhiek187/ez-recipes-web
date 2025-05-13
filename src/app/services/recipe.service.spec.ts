@@ -35,6 +35,8 @@ describe('RecipeService', () => {
       isFavorite: false,
     })
   );
+  const mockError = new ProgressEvent('error');
+  const failTest = () => fail('should have failed with the network error');
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -94,10 +96,9 @@ describe('RecipeService', () => {
     // Create mock ProgressEvent with type `error`, raised when something goes wrong
     // at network level. e.g. Connection timeout, DNS error, offline, etc.
     const testUrl = `${Constants.recipesPath}/random`;
-    const mockError = new ProgressEvent('error');
 
     httpClient.get<Recipe>(testUrl).subscribe({
-      next: () => fail('should have failed with the network error'),
+      next: () => failTest(),
       error: (error: HttpErrorResponse) => {
         expect(error.error).toBe(mockError);
       },
@@ -127,10 +128,9 @@ describe('RecipeService', () => {
     // Check that getRandomRecipe returns an error if the request failed
     const id = 0;
     const testUrl = `${Constants.recipesPath}/${id}`;
-    const mockError = new ProgressEvent('error');
 
     httpClient.get<Recipe>(testUrl).subscribe({
-      next: () => fail('should have failed with the network error'),
+      next: () => failTest(),
       error: (error: HttpErrorResponse) => {
         expect(error.error).toBe(mockError);
       },
@@ -187,14 +187,13 @@ describe('RecipeService', () => {
     // Check that getRandomRecipe returns an error if the request failed
     const testUrl = Constants.recipesPath;
     const testFilter: RecipeFilter = {};
-    const mockError = new ProgressEvent('error');
 
     httpClient
       .get<Recipe[]>(testUrl, {
         params: recipeFilterParams(testFilter),
       })
       .subscribe({
-        next: () => fail('should have failed with the network error'),
+        next: () => failTest(),
         error: (error: HttpErrorResponse) => {
           expect(error.error).toBe(mockError);
         },
@@ -240,10 +239,9 @@ describe('RecipeService', () => {
       view: true,
       isFavorite: true,
     };
-    const mockError = new ProgressEvent('error');
 
     httpClient.patch<Token>(testUrl, recipeUpdate).subscribe({
-      next: () => fail('should have failed with the network error'),
+      next: () => failTest(),
       error: (error: HttpErrorResponse) => {
         expect(error.error).toBe(mockError);
       },
