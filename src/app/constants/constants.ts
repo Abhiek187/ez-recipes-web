@@ -1,3 +1,5 @@
+import { RecentRecipe } from '../models/recipe.model';
+
 abstract class Constants {
   static readonly loadingMessages = [
     'Prepping the ingredients... 🍱',
@@ -19,6 +21,7 @@ abstract class Constants {
   // APIs
   static readonly recipesPath = '/api/recipes';
   static readonly termsPath = '/api/terms';
+  static readonly chefsPath = '/api/chefs';
 
   static LocalStorage = class {
     static readonly terms = 'terms';
@@ -26,14 +29,30 @@ abstract class Constants {
 
   // IndexedDB
   static recentRecipesDB = {
-    name: 'RecentRecipesDB',
-    version: 1,
+    dbName: 'RecentRecipesDB',
+    tableName: 'recipes',
     max: 10,
-    // Primary key and indexes
-    indexes: {
-      id: 'id',
-      timestamp: 'timestamp',
-    },
+    config: [
+      {
+        version: 1,
+        // Primary key and indexes
+        indexes: {
+          id: 'id',
+          timestamp: 'timestamp',
+        },
+      },
+      {
+        version: 2,
+        indexes: {
+          id: 'id',
+          timestamp: 'timestamp',
+          isFavorite: 'isFavorite',
+        },
+        upgrade: (recentRecipe: RecentRecipe) => {
+          recentRecipe.isFavorite = false;
+        },
+      },
+    ],
   };
 }
 

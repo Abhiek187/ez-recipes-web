@@ -20,14 +20,14 @@ import Constants from 'src/app/constants/constants';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { mockRecipes } from 'src/app/models/recipe.mock';
 import { mockTime } from 'src/app/models/term-store.mock';
-import { RecipeWithTimestamp } from 'src/app/models/recipe.model';
+import { RecentRecipe } from 'src/app/models/recipe.model';
 
 describe('HomeComponent', () => {
   let homeComponent: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let rootElement: HTMLElement;
 
-  const mockRecentRecipes = (value: RecipeWithTimestamp[]) => {
+  const mockRecentRecipes = (value: RecentRecipe[]) => {
     spyOn(RecipeService.prototype, 'getRecentRecipes').and.returnValue(
       new Observable((subscriber) => {
         subscriber.next(value);
@@ -131,7 +131,11 @@ describe('HomeComponent', () => {
 
   it('should show the recents section if there are recent recipes', () => {
     mockRecentRecipes(
-      mockRecipes.map((recipe) => ({ ...recipe, timestamp: mockTime }))
+      mockRecipes.map((recipe) => ({
+        ...recipe,
+        timestamp: mockTime,
+        isFavorite: false,
+      }))
     );
 
     const recentsSection =

@@ -1,18 +1,25 @@
 import Dexie, { Table } from 'dexie';
 
-import { RecipeWithTimestamp } from '../models/recipe.model';
+import { RecentRecipe } from '../models/recipe.model';
 import Constants from '../constants/constants';
 
 class RecentRecipesDB extends Dexie {
-  recipes!: Table<RecipeWithTimestamp, number>;
+  recipes!: Table<RecentRecipe, number>;
 
   constructor() {
-    const { name, version, indexes } = Constants.recentRecipesDB;
-    super(name);
+    const { dbName, tableName, config } = Constants.recentRecipesDB;
+    super(dbName);
 
-    this.version(version).stores({
-      recipes: Object.values(indexes).join(', '),
-    });
+    for (const { version, indexes, upgrade } of config) {
+      this.version(version).stores({
+        [tableName]: Object.values(indexes).join(', '),
+      });
+      if (upgrade !== undefined) {
+        this.version(version).upgrade((tx) =>
+          tx.table<RecentRecipe>(tableName).toCollection().modify(upgrade)
+        );
+      }
+    }
     // No need to populate since recipes will stay in memory for now
   }
 }
