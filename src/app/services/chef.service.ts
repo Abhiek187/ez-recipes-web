@@ -58,30 +58,31 @@ export class ChefService {
       return this.getMockChefEmailResponse();
     }
 
-    return this.http.patch<ChefEmailResponse>(
-      `${environment.serverBaseUrl}${Constants.chefsPath}`,
-      fields,
-      {
-        headers: {
-          ...(token !== undefined && this.authHeader(token)),
-        },
-      }
-    );
+    return this.http
+      .patch<ChefEmailResponse>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}`,
+        fields,
+        {
+          headers: {
+            ...(token !== undefined && this.authHeader(token)),
+          },
+        }
+      )
+      .pipe(catchError(this.handleError.bind(this)));
   }
 
-  deleteChef(token: string): Observable<void> {
+  deleteChef(token: string): Observable<null> {
     if (this.isMocking) {
       return new Observable((subscriber) => {
-        subscriber.next();
+        subscriber.next(null);
       });
     }
 
-    return this.http.delete<void>(
-      `${environment.serverBaseUrl}${Constants.chefsPath}`,
-      {
+    return this.http
+      .delete<null>(`${environment.serverBaseUrl}${Constants.chefsPath}`, {
         headers: this.authHeader(token),
-      }
-    );
+      })
+      .pipe(catchError(this.handleError.bind(this)));
   }
 
   verifyEmail(token: string): Observable<ChefEmailResponse> {
@@ -89,11 +90,13 @@ export class ChefService {
       return this.getMockChefEmailResponse();
     }
 
-    return this.http.post<ChefEmailResponse>(
-      `${environment.serverBaseUrl}${Constants.chefsPath}/verify`,
-      null, // no body
-      { headers: this.authHeader(token) }
-    );
+    return this.http
+      .post<ChefEmailResponse>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/verify`,
+        null, // no body
+        { headers: this.authHeader(token) }
+      )
+      .pipe(catchError(this.handleError.bind(this)));
   }
 
   login(credentials: LoginCredentials): Observable<LoginResponse> {
@@ -109,20 +112,22 @@ export class ChefService {
       .pipe(catchError(this.handleError.bind(this)));
   }
 
-  logout(token: string): Observable<void> {
+  logout(token: string): Observable<null> {
     if (this.isMocking) {
       return new Observable((subscriber) => {
-        subscriber.next();
+        subscriber.next(null);
       });
     }
 
-    return this.http.post<void>(
-      `${environment.serverBaseUrl}${Constants.chefsPath}/logout`,
-      null,
-      {
-        headers: this.authHeader(token),
-      }
-    );
+    return this.http
+      .post<null>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/logout`,
+        null,
+        {
+          headers: this.authHeader(token),
+        }
+      )
+      .pipe(catchError(this.handleError.bind(this)));
   }
 
   // Mocks

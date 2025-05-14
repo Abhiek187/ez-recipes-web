@@ -219,6 +219,27 @@ describe('RecipeService', () => {
     await expectAsync(recipePromise).toBeResolvedTo(mockToken);
   });
 
+  it('should update a recipe without a token', async () => {
+    // Check that updateRecipe returns a mock token even without a token
+    const id = 0;
+    const fields: RecipeUpdate = {
+      view: true,
+    };
+    const recipePromise = firstValueFrom(
+      recipeService.updateRecipe(id, fields)
+    );
+
+    const req = httpTestingController.expectOne({
+      method: 'PATCH',
+      url: `${baseUrl}/${id}`,
+    });
+    expect(req.request.headers.get('Authorization')).toBeNull();
+    expect(req.request.body).toBe(fields);
+    req.flush({});
+
+    await expectAsync(recipePromise).toBeResolvedTo({});
+  });
+
   it('should return an error if the update recipe API fails', async () => {
     // Check that updateRecipe returns an error if the request failed
     const id = 0;
