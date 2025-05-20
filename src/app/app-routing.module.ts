@@ -37,6 +37,14 @@ export const routes: Record<string, Route> = {
         (mod) => mod.ProfileComponent
       ),
   },
+  login: {
+    path: 'login',
+    title: 'Login',
+    loadComponent: () =>
+      import('./components/login/login.component').then(
+        (mod) => mod.LoginComponent
+      ),
+  },
   // The default route should be listed between the static routes and wildcard routes
   home: { path: '', title: 'Home', component: HomeComponent },
   // Show a 404 page for any other route
