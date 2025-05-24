@@ -83,37 +83,43 @@ const calorieRangeValidator: ValidatorFn = (
 };
 
 @Component({
-    selector: 'app-search',
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatButtonModule,
-        MatCheckboxModule,
-        MatDividerModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatIconModule,
-        MatOptionModule,
-        MatProgressSpinnerModule,
-        MatSelectModule,
-        RecipeCardComponent,
-    ],
-    templateUrl: './search.component.html',
-    styleUrl: './search.component.scss',
-    animations: [
-        trigger('showHide', [
-            state('show', style({
-                height: '25px',
-                opacity: 1,
-            })),
-            state('hide', style({
-                height: '0px',
-                opacity: 0,
-            })),
-            transition('show => hide', [animate('0.2s ease-in-out')]),
-            transition('hide => show', [animate('0.2s ease-in-out')]),
-        ]),
-    ]
+  selector: 'app-search',
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatOptionModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    RecipeCardComponent,
+  ],
+  templateUrl: './search.component.html',
+  styleUrl: './search.component.scss',
+  animations: [
+    trigger('showHide', [
+      state(
+        'show',
+        style({
+          height: '25px',
+          opacity: 1,
+        })
+      ),
+      state(
+        'hide',
+        style({
+          height: '0px',
+          opacity: 0,
+        })
+      ),
+      transition('show => hide', [animate('0.2s ease-in-out')]),
+      transition('hide => show', [animate('0.2s ease-in-out')]),
+    ]),
+  ],
 })
 export class SearchComponent implements OnInit, OnDestroy {
   private recipeService = inject(RecipeService);
@@ -276,7 +282,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.searchRecipes(false);
   }
 
-  /* FormControls use null for missing values, but HttpParams doesn't except null values.
+  /* FormControls use null for missing values, but HttpParams doesn't accept null values.
    * So, convert all null values to undefined (aka remove them).
    */
   removeNullValues(filter: PartialNull<RecipeFilter>): RecipeFilter {

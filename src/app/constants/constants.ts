@@ -23,6 +23,9 @@ abstract class Constants {
   static readonly termsPath = '/api/terms';
   static readonly chefsPath = '/api/chefs';
 
+  static readonly emailCooldownSeconds = 30;
+  static readonly passwordMinLength = 8;
+
   static LocalStorage = class {
     static readonly terms = 'terms';
   };
