@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, of, throwError } from 'rxjs';
 
 import {
   Chef,
@@ -27,7 +27,7 @@ export class ChefService {
   // API methods
   getChef(token: string): Observable<Chef> {
     if (this.isMocking) {
-      return this.getMockChef();
+      return of(mockChef);
     }
 
     return this.http
@@ -39,7 +39,7 @@ export class ChefService {
 
   createChef(credentials: LoginCredentials): Observable<LoginResponse> {
     if (this.isMocking) {
-      return this.getMockLoginResponse();
+      return of(mockLoginResponse());
     }
 
     return this.http
@@ -55,7 +55,7 @@ export class ChefService {
     token?: string
   ): Observable<ChefEmailResponse> {
     if (this.isMocking) {
-      return this.getMockChefEmailResponse();
+      return of(mockChefEmailResponse);
     }
 
     return this.http
@@ -73,9 +73,7 @@ export class ChefService {
 
   deleteChef(token: string): Observable<null> {
     if (this.isMocking) {
-      return new Observable((subscriber) => {
-        subscriber.next(null);
-      });
+      return of(null);
     }
 
     return this.http
@@ -87,7 +85,7 @@ export class ChefService {
 
   verifyEmail(token: string): Observable<ChefEmailResponse> {
     if (this.isMocking) {
-      return this.getMockChefEmailResponse();
+      return of(mockChefEmailResponse);
     }
 
     return this.http
@@ -101,7 +99,7 @@ export class ChefService {
 
   login(credentials: LoginCredentials): Observable<LoginResponse> {
     if (this.isMocking) {
-      return this.getMockLoginResponse();
+      return of(mockLoginResponse());
     }
 
     return this.http
@@ -114,9 +112,7 @@ export class ChefService {
 
   logout(token: string): Observable<null> {
     if (this.isMocking) {
-      return new Observable((subscriber) => {
-        subscriber.next(null);
-      });
+      return of(null);
     }
 
     return this.http
@@ -128,25 +124,6 @@ export class ChefService {
         }
       )
       .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  // Mocks
-  getMockChef(): Observable<Chef> {
-    return new Observable((subscriber) => {
-      subscriber.next(mockChef);
-    });
-  }
-
-  getMockLoginResponse(emailVerified = true): Observable<LoginResponse> {
-    return new Observable((subscriber) => {
-      subscriber.next(mockLoginResponse(emailVerified));
-    });
-  }
-
-  getMockChefEmailResponse(): Observable<ChefEmailResponse> {
-    return new Observable((subscriber) => {
-      subscriber.next(mockChefEmailResponse);
-    });
   }
 
   // Helpers

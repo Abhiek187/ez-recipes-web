@@ -10,6 +10,57 @@ import {
 import { HomeComponent } from './components/home/home.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { RecipeComponent } from './components/recipe/recipe.component';
+import { authGuard } from './guards/auth.guard';
+import {
+  LoginComponent,
+  SignUpComponent,
+  ForgotPasswordComponent,
+  VerifyEmailComponent,
+  UpdateEmailComponent,
+  UpdatePasswordComponent,
+  DeleteAccountComponent,
+} from './components/profile';
+
+export const profileRoutes: Record<string, Route> = {
+  login: {
+    path: 'login',
+    title: 'Login',
+    component: LoginComponent,
+  },
+  signUp: {
+    path: 'sign-up',
+    title: 'Sign Up',
+    component: SignUpComponent,
+  },
+  forgotPassword: {
+    path: 'forgot-password',
+    title: 'Forgot Password',
+    component: ForgotPasswordComponent,
+  },
+  verifyEmail: {
+    path: 'verify-email',
+    title: 'Verify Email',
+    component: VerifyEmailComponent,
+  },
+  updateEmail: {
+    path: 'update-email',
+    title: 'Update Email',
+    component: UpdateEmailComponent,
+    canActivate: [authGuard],
+  },
+  updatePassword: {
+    path: 'update-password',
+    title: 'Update Password',
+    component: UpdatePasswordComponent,
+    canActivate: [authGuard],
+  },
+  deleteAccount: {
+    path: 'delete-account',
+    title: 'Delete Account',
+    component: DeleteAccountComponent,
+    canActivate: [authGuard],
+  },
+};
 
 export const routes: Record<string, Route> = {
   recipe: { path: 'recipe/:id', component: RecipeComponent },
@@ -36,6 +87,7 @@ export const routes: Record<string, Route> = {
       import('./components/profile/profile.component').then(
         (mod) => mod.ProfileComponent
       ),
+    children: Object.values(profileRoutes),
   },
   login: {
     path: 'login',
