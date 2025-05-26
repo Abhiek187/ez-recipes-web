@@ -59,6 +59,10 @@ export const profileRoutes: Record<string, Route> = {
       import('./components/profile').then((mod) => mod.UpdatePasswordComponent),
     canActivate: [devGuard, authGuard],
   },
+  changePassword: {
+    path: '.well-known/change-password',
+    redirectTo: 'profile/update-password',
+  },
   deleteAccount: {
     path: 'profile/delete-account',
     title: 'Delete Account',
