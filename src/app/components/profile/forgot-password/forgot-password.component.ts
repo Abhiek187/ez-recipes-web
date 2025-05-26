@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { profileRoutes } from 'src/app/app-routing.module';
-import { LoginCredentials } from 'src/app/models/profile.model';
+import { ChefUpdate, ChefUpdateType } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
 
 @Component({
@@ -41,43 +41,46 @@ export class ForgotPasswordComponent implements OnDestroy {
 
   private chefServiceSubscription?: Subscription;
 
-  showPassword = signal(false);
   isLoading = signal(false);
+  emailSent = signal(false);
 
   readonly formControls = {
-    username: 'username',
-    password: 'password',
+    email: 'email',
+  } as const;
+  readonly formErrors = {
+    required: 'required',
+    emailInvalid: 'email',
   } as const;
   formGroup = new FormGroup({
-    [this.formControls.username]: new FormControl('', [Validators.required]),
-    [this.formControls.password]: new FormControl('', [Validators.required]),
+    [this.formControls.email]: new FormControl('', [
+      Validators.required,
+      Validators.email,
+    ]),
   });
   readonly errors = {
-    required: (field: string) => `Error: ${field} is required`,
+    [this.formErrors.required]: (field: string) =>
+      `Error: ${field} is required`,
+    [this.formErrors.emailInvalid]: 'Error: Invalid email',
   } as const;
 
   ngOnDestroy(): void {
     this.chefServiceSubscription?.unsubscribe();
   }
 
-  togglePasswordVisibility() {
-    this.showPassword.set(!this.showPassword());
-  }
-
-  login() {
+  resetPassword() {
     this.isLoading.set(true);
-    const { username, password } = this.formGroup.value;
-    const loginCredentials: LoginCredentials = {
-      email: username ?? '',
-      password: password ?? '',
+    const { email } = this.formGroup.value;
+    const chefUpdate: ChefUpdate = {
+      type: ChefUpdateType.Password,
+      email: email ?? '',
     };
 
     this.chefServiceSubscription = this.chefService
-      .login(loginCredentials)
+      .updateChef(chefUpdate)
       .subscribe({
-        next: (loginResponse) => {
+        next: () => {
           this.isLoading.set(false);
-          console.log('Login successful', loginResponse);
+          this.emailSent.set(true);
         },
         error: (error) => {
           this.isLoading.set(false);
