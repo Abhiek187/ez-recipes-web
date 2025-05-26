@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import {
   ActivatedRouteSnapshot,
   CanActivateFn,
-  convertToParamMap,
   Router,
   RouterStateSnapshot,
   UrlCreationOptions,
@@ -18,24 +17,7 @@ import { profileRoutes } from '../app-routing.module';
 describe('authGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) =>
     TestBed.runInInjectionContext(() => authGuard(...guardParameters));
-  const route: ActivatedRouteSnapshot = {
-    url: [],
-    params: {},
-    queryParams: {},
-    fragment: null,
-    data: {},
-    outlet: '',
-    component: null,
-    routeConfig: null,
-    title: undefined,
-    root: new ActivatedRouteSnapshot(),
-    parent: null,
-    firstChild: null,
-    children: [],
-    pathFromRoot: [],
-    paramMap: convertToParamMap({}),
-    queryParamMap: convertToParamMap({}),
-  };
+  const route = new ActivatedRouteSnapshot();
   const state: RouterStateSnapshot = { url: '/mock/url', root: route };
 
   // SpyObj used to mock an injected service, Spy used to keep real implementation

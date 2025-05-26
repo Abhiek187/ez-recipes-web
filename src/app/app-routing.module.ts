@@ -13,6 +13,7 @@ import { SearchComponent } from './components/search/search.component';
 import { GlossaryComponent } from './components/glossary/glossary.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { authGuard } from './guards/auth.guard';
+import { devGuard } from './guards/dev.guard';
 
 // Child routes require router-outlet, but these routes are relative to the profile component
 export const profileRoutes: Record<string, Route> = {
@@ -21,45 +22,49 @@ export const profileRoutes: Record<string, Route> = {
     title: 'Login',
     loadComponent: () =>
       import('./components/profile').then((mod) => mod.LoginComponent),
+    canActivate: [devGuard],
   },
   signUp: {
     path: 'profile/sign-up',
     title: 'Sign Up',
     loadComponent: () =>
       import('./components/profile').then((mod) => mod.SignUpComponent),
+    canActivate: [devGuard],
   },
   forgotPassword: {
     path: 'profile/forgot-password',
     title: 'Forgot Password',
     loadComponent: () =>
       import('./components/profile').then((mod) => mod.ForgotPasswordComponent),
+    canActivate: [devGuard],
   },
   verifyEmail: {
     path: 'profile/verify-email',
     title: 'Verify Email',
     loadComponent: () =>
       import('./components/profile').then((mod) => mod.VerifyEmailComponent),
+    canActivate: [devGuard],
   },
   updateEmail: {
     path: 'profile/update-email',
     title: 'Update Email',
     loadComponent: () =>
       import('./components/profile').then((mod) => mod.UpdateEmailComponent),
-    canActivate: [authGuard],
+    canActivate: [devGuard, authGuard],
   },
   updatePassword: {
     path: 'profile/update-password',
     title: 'Update Password',
     loadComponent: () =>
       import('./components/profile').then((mod) => mod.UpdatePasswordComponent),
-    canActivate: [authGuard],
+    canActivate: [devGuard, authGuard],
   },
   deleteAccount: {
     path: 'profile/delete-account',
     title: 'Delete Account',
     loadComponent: () =>
       import('./components/profile').then((mod) => mod.DeleteAccountComponent),
-    canActivate: [authGuard],
+    canActivate: [devGuard, authGuard],
   },
 };
 
@@ -85,6 +90,7 @@ export const routes: Record<string, Route> = {
     path: 'profile',
     title: 'Profile',
     component: ProfileComponent,
+    canActivate: [devGuard],
   },
   ...profileRoutes,
   // The default route should be listed between the static routes and wildcard routes
