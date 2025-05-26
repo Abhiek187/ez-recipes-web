@@ -3,7 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 
 import { ChefService } from '../services/chef.service';
-import { profileRoutes, routes } from '../app-routing.module';
+import { profileRoutes } from '../app-routing.module';
 
 // If the user is authenticated, navigate to the route. Otherwise, redirect to the login page.
 export const authGuard: CanActivateFn = (_route, state) => {
@@ -16,13 +16,10 @@ export const authGuard: CanActivateFn = (_route, state) => {
     }),
     catchError(() => {
       return of(
-        router.createUrlTree(
-          ['/', routes.profile.path, profileRoutes.login.path],
-          {
-            // state.url contains the full path, whereas route.url only contains the child path
-            queryParams: { next: state.url },
-          }
-        )
+        router.createUrlTree([`/${profileRoutes.login.path}`], {
+          // state.url contains the full path, whereas route.url only contains the child path
+          queryParams: { next: state.url },
+        })
       );
     })
   );

@@ -9,94 +9,84 @@ import {
 
 import { HomeComponent } from './components/home/home.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { RecipeComponent } from './components/recipe/recipe.component';
+import { SearchComponent } from './components/search/search.component';
+import { GlossaryComponent } from './components/glossary/glossary.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { authGuard } from './guards/auth.guard';
-import {
-  LoginComponent,
-  SignUpComponent,
-  ForgotPasswordComponent,
-  VerifyEmailComponent,
-  UpdateEmailComponent,
-  UpdatePasswordComponent,
-  DeleteAccountComponent,
-} from './components/profile';
 
+// Child routes require router-outlet, but these routes are relative to the profile component
 export const profileRoutes: Record<string, Route> = {
   login: {
-    path: 'login',
+    path: 'profile/login',
     title: 'Login',
-    component: LoginComponent,
+    loadComponent: () =>
+      import('./components/profile').then((mod) => mod.LoginComponent),
   },
   signUp: {
-    path: 'sign-up',
+    path: 'profile/sign-up',
     title: 'Sign Up',
-    component: SignUpComponent,
+    loadComponent: () =>
+      import('./components/profile').then((mod) => mod.SignUpComponent),
   },
   forgotPassword: {
-    path: 'forgot-password',
+    path: 'profile/forgot-password',
     title: 'Forgot Password',
-    component: ForgotPasswordComponent,
+    loadComponent: () =>
+      import('./components/profile').then((mod) => mod.ForgotPasswordComponent),
   },
   verifyEmail: {
-    path: 'verify-email',
+    path: 'profile/verify-email',
     title: 'Verify Email',
-    component: VerifyEmailComponent,
+    loadComponent: () =>
+      import('./components/profile').then((mod) => mod.VerifyEmailComponent),
   },
   updateEmail: {
-    path: 'update-email',
+    path: 'profile/update-email',
     title: 'Update Email',
-    component: UpdateEmailComponent,
+    loadComponent: () =>
+      import('./components/profile').then((mod) => mod.UpdateEmailComponent),
     canActivate: [authGuard],
   },
   updatePassword: {
-    path: 'update-password',
+    path: 'profile/update-password',
     title: 'Update Password',
-    component: UpdatePasswordComponent,
+    loadComponent: () =>
+      import('./components/profile').then((mod) => mod.UpdatePasswordComponent),
     canActivate: [authGuard],
   },
   deleteAccount: {
-    path: 'delete-account',
+    path: 'profile/delete-account',
     title: 'Delete Account',
-    component: DeleteAccountComponent,
+    loadComponent: () =>
+      import('./components/profile').then((mod) => mod.DeleteAccountComponent),
     canActivate: [authGuard],
   },
 };
 
 export const routes: Record<string, Route> = {
-  recipe: { path: 'recipe/:id', component: RecipeComponent },
+  recipe: {
+    path: 'recipe/:id',
+    loadComponent: () =>
+      import('./components/recipe/recipe.component').then(
+        (mod) => mod.RecipeComponent
+      ),
+  },
   search: {
     path: 'search',
     title: 'Search',
-    loadComponent: () =>
-      import('./components/search/search.component').then(
-        (mod) => mod.SearchComponent
-      ),
+    component: SearchComponent,
   },
   glossary: {
     path: 'glossary',
     title: 'Glossary',
-    loadComponent: () =>
-      import('./components/glossary/glossary.component').then(
-        (mod) => mod.GlossaryComponent
-      ),
+    component: GlossaryComponent,
   },
   profile: {
     path: 'profile',
     title: 'Profile',
-    loadComponent: () =>
-      import('./components/profile/profile.component').then(
-        (mod) => mod.ProfileComponent
-      ),
-    children: Object.values(profileRoutes),
+    component: ProfileComponent,
   },
-  login: {
-    path: 'login',
-    title: 'Login',
-    loadComponent: () =>
-      import('./components/login/login.component').then(
-        (mod) => mod.LoginComponent
-      ),
-  },
+  ...profileRoutes,
   // The default route should be listed between the static routes and wildcard routes
   home: { path: '', title: 'Home', component: HomeComponent },
   // Show a 404 page for any other route

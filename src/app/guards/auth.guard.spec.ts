@@ -13,7 +13,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { authGuard } from './auth.guard';
 import { ChefService } from '../services/chef.service';
 import { mockChef } from '../models/profile.mock';
-import { profileRoutes, routes } from '../app-routing.module';
+import { profileRoutes } from '../app-routing.module';
 
 describe('authGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) =>
@@ -86,7 +86,7 @@ describe('authGuard', () => {
       expect(result).toBeInstanceOf(UrlTree);
       expect(result.queryParams).toEqual({ next: state.url });
       expect(createUrlTreeSpy).toHaveBeenCalledWith(
-        ['/', routes.profile.path, profileRoutes.login.path],
+        [`/${profileRoutes.login.path}`],
         {
           queryParams: { next: state.url },
         }

@@ -62,7 +62,13 @@
     <li>Rating recipes</li>
     <li>Syncing recipes across the web and mobile apps</li>
   </ul>
-  <button mat-raised-button color="accent" routerLink="/login">Login</button>
+  <button
+    mat-raised-button
+    color="accent"
+    [routerLink]="'/' + profileRoutes.login.path"
+  >
+    Login
+  </button>
   } @else {
   <mat-spinner diameter="50" class="profile-spinner" />
   <p>Getting your profile ready… 🧑‍🍳</p>

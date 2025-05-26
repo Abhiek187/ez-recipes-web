@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { mockChef } from 'src/app/models/profile.mock';
 import { AuthState } from 'src/app/models/profile.model';
+import { profileRoutes } from 'src/app/app-routing.module';
 
 @Component({
   selector: 'app-profile',
@@ -25,9 +26,12 @@ import { AuthState } from 'src/app/models/profile.model';
   styleUrl: './profile.component.scss',
 })
 export class ProfileComponent {
+  private router = inject(Router);
+
   AuthState = AuthState;
   authState = AuthState.Loading;
   chef = mockChef;
+  profileRoutes = profileRoutes;
 
   readonly totalRecipesFavorited = this.chef.favoriteRecipes.length;
   readonly totalRecipesViewed = Object.keys(this.chef.recentRecipes).length;
@@ -38,14 +42,14 @@ export class ProfileComponent {
   }
 
   changeEmail() {
-    console.log('Change email');
+    this.router.navigate([profileRoutes.updateEmail.path]);
   }
 
   changePassword() {
-    console.log('Change password');
+    this.router.navigate([profileRoutes.updatePassword.path]);
   }
 
   deleteAccount() {
-    console.log('Delete account');
+    this.router.navigate([profileRoutes.deleteAccount.path]);
   }
 }
