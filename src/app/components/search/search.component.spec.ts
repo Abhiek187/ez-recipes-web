@@ -141,7 +141,9 @@ describe('SearchComponent', () => {
     fixture.detectChanges();
 
     expect(form.valid).toBeFalse();
-    expect(form.controls.minCals.errors?.min).toBeTruthy();
+    expect(
+      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.min)
+    ).toBeTrue();
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
     expect(submitButton?.disabled).toBeTrue();
@@ -151,7 +153,9 @@ describe('SearchComponent', () => {
     fixture.detectChanges();
 
     expect(form.valid).toBeFalse();
-    expect(form.controls.maxCals.errors?.min).toBeTruthy();
+    expect(
+      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.min)
+    ).toBeTrue();
     expect(submitButton?.disabled).toBeTrue();
 
     form.reset();
@@ -167,7 +171,9 @@ describe('SearchComponent', () => {
     fixture.detectChanges();
 
     expect(form.valid).toBeFalse();
-    expect(form.controls.minCals.errors?.max).toBeTruthy();
+    expect(
+      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.max)
+    ).toBeTrue();
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
     expect(submitButton?.disabled).toBeTrue();
@@ -177,7 +183,9 @@ describe('SearchComponent', () => {
     fixture.detectChanges();
 
     expect(form.valid).toBeFalse();
-    expect(form.controls.maxCals.errors?.max).toBeTruthy();
+    expect(
+      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.max)
+    ).toBeTrue();
     expect(submitButton?.disabled).toBeTrue();
 
     form.reset();
@@ -194,7 +202,9 @@ describe('SearchComponent', () => {
     fixture.detectChanges();
 
     expect(form.valid).toBeFalse();
-    expect(form.errors?.range).toBeTruthy();
+    expect(
+      form.hasError(searchComponent.filterFormErrorNames.range)
+    ).toBeTrue();
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
     expect(submitButton?.disabled).toBeTrue();
@@ -213,9 +223,15 @@ describe('SearchComponent', () => {
     fixture.detectChanges();
 
     expect(form.valid).toBeFalse();
-    expect(form.errors?.range).toBeTruthy();
-    expect(form.controls.minCals.errors?.max).toBeTruthy();
-    expect(form.controls.maxCals.errors?.min).toBeTruthy();
+    expect(
+      form.hasError(searchComponent.filterFormErrorNames.range)
+    ).toBeTrue();
+    expect(
+      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.max)
+    ).toBeTrue();
+    expect(
+      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.min)
+    ).toBeTrue();
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
     expect(submitButton?.disabled).toBeTrue();

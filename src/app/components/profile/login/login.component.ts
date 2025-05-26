@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -35,6 +36,7 @@ import { profileRoutes } from 'src/app/app-routing.module';
 })
 export class LoginComponent implements OnDestroy {
   private chefService = inject(ChefService);
+  private snackBar = inject(MatSnackBar);
   profileRoutes = profileRoutes;
 
   private chefServiceSubscription?: Subscription;
@@ -58,7 +60,8 @@ export class LoginComponent implements OnDestroy {
     this.chefServiceSubscription?.unsubscribe();
   }
 
-  togglePasswordVisibility() {
+  togglePasswordVisibility(event: MouseEvent) {
+    event.preventDefault(); // don't submit the form
     this.showPassword.set(!this.showPassword());
   }
 
@@ -79,7 +82,7 @@ export class LoginComponent implements OnDestroy {
         },
         error: (error) => {
           this.isLoading.set(false);
-          console.error('Login failed', error);
+          this.snackBar.open(error.message, 'Dismiss');
         },
       });
   }

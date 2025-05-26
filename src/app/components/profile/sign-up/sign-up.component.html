@@ -1,1 +1,103 @@
-<p>sign-up works!</p>
+<form class="signup-form" [formGroup]="formGroup" (ngSubmit)="signUp()">
+  <h1>Sign Up</h1>
+  <span>
+    <h2>
+      Already have an account?
+      <a
+        [routerLink]="'/' + profileRoutes.login.path"
+        queryParamsHandling="preserve"
+      >
+        Sign In
+      </a>
+    </h2>
+  </span>
+
+  <div class="signup-fields">
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        [formControlName]="formControls.email"
+        type="email"
+        inputmode="email"
+        autocapitalize="none"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      @if (formGroup.controls.email.hasError(formErrors.required)) {
+      <mat-error>{{ errors.required(formControls.email) }}</mat-error>
+      } @else if (formGroup.controls.email.hasError(formErrors.emailInvalid)) {
+      <mat-error>{{ errors.email }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        [formControlName]="formControls.password"
+        [type]="showPassword() ? 'text' : 'password'"
+        autocapitalize="none"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="togglePasswordVisibility($event)"
+        [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+      >
+        <mat-icon>{{
+          showPassword() ? "visibility_off" : "visibility"
+        }}</mat-icon>
+      </button>
+      @if (formGroup.controls.password.hasError(formErrors.required)) {
+      <mat-error>{{ errors.required(formControls.password) }}</mat-error>
+      } @else if
+      (formGroup.controls.password.hasError(formErrors.passwordMinLength)) {
+      <mat-error>{{ errors.minlength }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Confirm Password</mat-label>
+      <input
+        matInput
+        [formControlName]="formControls.passwordConfirm"
+        [type]="showPasswordConfirm() ? 'text' : 'password'"
+        autocapitalize="none"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="togglePasswordConfirmVisibility($event)"
+        [attr.aria-label]="
+          showPasswordConfirm() ? 'Hide password' : 'Show password'
+        "
+      >
+        <mat-icon>{{
+          showPasswordConfirm() ? "visibility_off" : "visibility"
+        }}</mat-icon>
+      </button>
+      @if (formGroup.hasError(formErrors.passwordMismatch)) {
+      <mat-error>{{ errors.passwordMismatch }}</mat-error>
+      } @else {
+      <mat-hint>Password must be at least 8 characters long</mat-hint>
+      }
+    </mat-form-field>
+  </div>
+
+  <span class="submit-row">
+    <button
+      mat-raised-button
+      color="accent"
+      type="submit"
+      [disabled]="!formGroup.valid || isLoading()"
+    >
+      Sign Up
+    </button>
+    @if (isLoading()) {
+    <mat-spinner diameter="40" class="progress-spinner" />
+    }
+  </span>
+</form>

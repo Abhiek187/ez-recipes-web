@@ -16,8 +16,7 @@
   gap: 16px;
 
   .progress-spinner {
-    // Place next to the submit button, but keep the button centered
     position: absolute;
-    margin-left: calc(73.4px + 16px); // width of button + gap
+    margin-left: calc(73.4px + 16px);
   }
 }

@@ -67,6 +67,12 @@ const FilterForm = {
   type: 'type',
   culture: 'culture',
 } as const;
+const FilterFormError = {
+  min: 'min',
+  max: 'max',
+  range: 'range',
+  noResults: 'noResults',
+} as const;
 
 // Check that minCals doesn't exceed maxCals
 const calorieRangeValidator: ValidatorFn = (
@@ -78,7 +84,7 @@ const calorieRangeValidator: ValidatorFn = (
   return minCals?.value !== null &&
     maxCals?.value !== null &&
     minCals?.value > maxCals?.value
-    ? { range: true }
+    ? { [FilterFormError.range]: true }
     : null;
 };
 
@@ -129,6 +135,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private location = inject(Location);
 
   filterFormNames = FilterForm;
+  filterFormErrorNames = FilterFormError;
   filterFormGroup = new FormGroup(
     {
       [FilterForm.query]: new FormControl(''),
@@ -153,10 +160,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     { validators: calorieRangeValidator }
   );
   readonly Errors = {
-    min: 'Calories must be ≥ 0',
-    max: 'Calories must be ≤ 2000',
-    range: 'Max calories cannot exceed min calories',
-    noResults: 'No recipes found',
+    [FilterFormError.min]: 'Calories must be ≥ 0',
+    [FilterFormError.max]: 'Calories must be ≤ 2000',
+    [FilterFormError.range]: 'Max calories cannot exceed min calories',
+    [FilterFormError.noResults]: 'No recipes found',
   };
   readonly scrollListener = this.onScroll.bind(this);
 

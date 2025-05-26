@@ -1,11 +1,140 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
+
+import { profileRoutes } from 'src/app/app-routing.module';
+import Constants from 'src/app/constants/constants';
+import { LoginCredentials } from 'src/app/models/profile.model';
+import { ChefService } from 'src/app/services/chef.service';
+
+const formControls = {
+  email: 'email',
+  password: 'password',
+  passwordConfirm: 'passwordConfirm',
+} as const;
+const formErrors = {
+  required: 'required',
+  emailInvalid: 'email',
+  passwordMinLength: 'minlength', // Validator errors are all lowercase
+  passwordMismatch: 'passwordMismatch',
+} as const;
+
+// Check if the passwords match
+const passwordsMatchValidator: ValidatorFn = (control) => {
+  const password = control.get(formControls.password);
+  const passwordConfirm = control.get(formControls.passwordConfirm);
+
+  const error =
+    password?.value !== null &&
+    passwordConfirm?.value !== null &&
+    password?.value !== passwordConfirm?.value
+      ? {
+          [formErrors.passwordMismatch]: true,
+        }
+      : null;
+  // This is required to make mat-error visible under the confirm password field
+  passwordConfirm?.setErrors(error);
+  return error;
+};
 
 @Component({
   selector: 'app-sign-up',
-  imports: [],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    ReactiveFormsModule,
+    RouterModule,
+  ],
   templateUrl: './sign-up.component.html',
-  styleUrl: './sign-up.component.scss'
+  styleUrl: './sign-up.component.scss',
 })
-export class SignUpComponent {
+export class SignUpComponent implements OnDestroy {
+  private chefService = inject(ChefService);
+  private snackBar = inject(MatSnackBar);
+  profileRoutes = profileRoutes;
 
+  private chefServiceSubscription?: Subscription;
+
+  showPassword = signal(false);
+  showPasswordConfirm = signal(false);
+  isLoading = signal(false);
+
+  formControls = formControls;
+  formErrors = formErrors;
+  formGroup = new FormGroup(
+    {
+      [formControls.email]: new FormControl('', [
+        Validators.required,
+        Validators.email,
+      ]),
+      [formControls.password]: new FormControl('', [
+        Validators.required,
+        Validators.minLength(Constants.passwordMinLength),
+      ]),
+      [formControls.passwordConfirm]: new FormControl('', [
+        Validators.required,
+      ]),
+    },
+    { validators: passwordsMatchValidator }
+  );
+  readonly errors = {
+    [formErrors.required]: (field: string) => `Error: ${field} is required`,
+    [formErrors.emailInvalid]: 'Error: Invalid email',
+    [formErrors.passwordMinLength]: `Error: Password must be at least ${Constants.passwordMinLength} characters long`,
+    [formErrors.passwordMismatch]: 'Error: Passwords do not match',
+  } as const;
+
+  ngOnDestroy(): void {
+    this.chefServiceSubscription?.unsubscribe();
+  }
+
+  togglePasswordVisibility(event: MouseEvent) {
+    event.preventDefault();
+    this.showPassword.set(!this.showPassword());
+  }
+
+  togglePasswordConfirmVisibility(event: MouseEvent) {
+    event.preventDefault();
+    this.showPasswordConfirm.set(!this.showPasswordConfirm());
+  }
+
+  signUp() {
+    this.isLoading.set(true);
+    const { email, password } = this.formGroup.value;
+    const loginCredentials: LoginCredentials = {
+      email: email ?? '',
+      password: password ?? '',
+    };
+
+    this.chefServiceSubscription = this.chefService
+      .createChef(loginCredentials)
+      .subscribe({
+        next: (loginResponse) => {
+          this.isLoading.set(false);
+          console.log('Create chef successful', loginResponse);
+        },
+        error: (error) => {
+          this.isLoading.set(false);
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
+  }
 }
