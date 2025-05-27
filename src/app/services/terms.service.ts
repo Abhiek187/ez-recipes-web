@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import Term from '../models/term.model';
@@ -18,18 +18,12 @@ export class TermsService {
   // API methods
   getTerms(): Observable<Term[]> {
     if (this.isMocking) {
-      return this.getMockTerms();
+      return of(mockTerms);
     }
 
     return this.http
       .get<Term[]>(`${environment.serverBaseUrl}${Constants.termsPath}`)
       .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  getMockTerms(): Observable<Term[]> {
-    return new Observable((subscriber) => {
-      subscriber.next(mockTerms);
-    });
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

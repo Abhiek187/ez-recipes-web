@@ -17,19 +17,19 @@ import { RecipeService } from '../../services/recipe.service';
 import { TermsService } from 'src/app/services/terms.service';
 
 @Component({
-    selector: 'app-recipe',
-    imports: [
-        CommonModule,
-        MatButtonModule,
-        MatCardModule,
-        MatChipsModule,
-        MatDividerModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        MatTooltipModule,
-    ],
-    templateUrl: './recipe.component.html',
-    styleUrl: './recipe.component.scss'
+  selector: 'app-recipe',
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatChipsModule,
+    MatDividerModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+  ],
+  templateUrl: './recipe.component.html',
+  styleUrl: './recipe.component.scss',
 })
 export class RecipeComponent implements OnInit, OnDestroy {
   private recipeService = inject(RecipeService);

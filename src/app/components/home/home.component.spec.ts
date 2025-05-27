@@ -12,7 +12,7 @@ import {
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { Observable as DObservable } from 'dexie';
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HomeComponent } from './home.component';
@@ -29,9 +29,7 @@ describe('HomeComponent', () => {
 
   const mockRecentRecipes = (value: RecentRecipe[]) => {
     spyOn(RecipeService.prototype, 'getRecentRecipes').and.returnValue(
-      new Observable((subscriber) => {
-        subscriber.next(value);
-      }) as unknown as DObservable
+      of(value) as unknown as DObservable
     );
     fixture.detectChanges();
   };

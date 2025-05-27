@@ -1,0 +1,37 @@
+.profile-container {
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.profile-unauth-header {
+  margin-bottom: 0;
+}
+
+.profile-unauth-perks {
+  font-size: 16px;
+  align-self: start;
+
+  li {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+.profile-spinner {
+  margin-bottom: 16px;
+}

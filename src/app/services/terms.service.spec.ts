@@ -80,14 +80,6 @@ describe('TermsService', () => {
     await expectAsync(termsPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
-  it('should return the mock terms', (done) => {
-    // Check that getMockTerms returns an array of mock terms
-    termsService.getMockTerms().subscribe((data) => {
-      expect(data).toBe(mockTerms);
-      done();
-    });
-  });
-
   it('should return null if no terms are stored in localStorage', () => {
     spyOn(localStorageProto, 'getItem').and.returnValue(null);
     expect(termsService.getCachedTerms()).toBeNull();

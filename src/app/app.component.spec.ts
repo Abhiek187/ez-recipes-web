@@ -7,7 +7,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 
 import { AppComponent } from './app.component';
 import { TermsService } from './services/terms.service';
@@ -34,11 +34,7 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     appComponent = fixture.componentInstance;
 
-    spyOn(TermsService.prototype, 'getTerms').and.returnValue(
-      new Observable((subscriber) => {
-        subscriber.next(mockTerms);
-      })
-    );
+    spyOn(TermsService.prototype, 'getTerms').and.returnValue(of(mockTerms));
   });
 
   it('should create the app', () => {
