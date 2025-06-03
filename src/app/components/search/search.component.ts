@@ -5,7 +5,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   AbstractControl,
@@ -91,7 +91,6 @@ const calorieRangeValidator: ValidatorFn = (
 @Component({
   selector: 'app-search',
   imports: [
-    CommonModule,
     MatButtonModule,
     MatCheckboxModule,
     MatDividerModule,
@@ -102,8 +101,8 @@ const calorieRangeValidator: ValidatorFn = (
     MatProgressSpinnerModule,
     MatSelectModule,
     ReactiveFormsModule,
-    RecipeCardComponent,
-  ],
+    RecipeCardComponent
+],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
   animations: [

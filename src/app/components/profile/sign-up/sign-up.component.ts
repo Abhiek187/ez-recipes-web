@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import {
   FormControl,
@@ -54,15 +54,14 @@ const passwordsMatchValidator: ValidatorFn = (control) => {
 @Component({
   selector: 'app-sign-up',
   imports: [
-    CommonModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    RouterModule,
-  ],
+    RouterModule
+],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
 })

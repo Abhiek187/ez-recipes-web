@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import {
   FormControl,
@@ -22,15 +22,14 @@ import { profileRoutes } from 'src/app/app-routing.module';
 @Component({
   selector: 'app-login',
   imports: [
-    CommonModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    RouterModule,
-  ],
+    RouterModule
+],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })

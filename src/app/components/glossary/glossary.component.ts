@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, inject } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
@@ -8,7 +8,7 @@ import { TermsService } from 'src/app/services/terms.service';
 
 @Component({
   selector: 'app-glossary',
-  imports: [CommonModule, MatDividerModule, MatListModule],
+  imports: [MatDividerModule, MatListModule],
   templateUrl: './glossary.component.html',
   styleUrl: './glossary.component.scss',
 })

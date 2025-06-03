@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -16,12 +16,11 @@ import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
 @Component({
   selector: 'app-home',
   imports: [
-    CommonModule,
     MatButtonModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    RecipeCardComponent,
-  ],
+    RecipeCardComponent
+],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
