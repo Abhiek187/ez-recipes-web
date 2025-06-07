@@ -1,4 +1,3 @@
-
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import {
   ReactiveFormsModule,
@@ -28,8 +27,8 @@ import { ChefService } from 'src/app/services/chef.service';
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    RouterModule
-],
+    RouterModule,
+  ],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })

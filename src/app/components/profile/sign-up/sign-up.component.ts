@@ -1,4 +1,3 @@
-
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import {
   FormControl,
@@ -60,8 +59,8 @@ const passwordsMatchValidator: ValidatorFn = (control) => {
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    RouterModule
-],
+    RouterModule,
+  ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
 })

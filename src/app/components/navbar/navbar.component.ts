@@ -1,5 +1,4 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-
 import { Component, OnDestroy, OnInit, Type, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,8 +22,8 @@ import { environment } from 'src/environments/environment';
     MatListModule,
     MatSidenavModule,
     MatToolbarModule,
-    RouterModule
-],
+    RouterModule,
+  ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
