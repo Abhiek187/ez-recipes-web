@@ -43,7 +43,7 @@ export const profileRoutes: Record<string, Route> = {
     title: 'Verify Email',
     loadComponent: () =>
       import('./components/profile').then((mod) => mod.VerifyEmailComponent),
-    canActivate: [devGuard],
+    canActivate: [devGuard, authGuard],
   },
   updateEmail: {
     path: 'profile/update-email',
