@@ -9,7 +9,9 @@ import { Router, RouterModule } from '@angular/router';
 
 import { mockChef } from 'src/app/models/profile.mock';
 import { AuthState } from 'src/app/models/profile.model';
-import { profileRoutes } from 'src/app/app-routing.module';
+import { profileRoutes, routes } from 'src/app/app-routing.module';
+import Constants from 'src/app/constants/constants';
+import { ChefService } from 'src/app/services/chef.service';
 
 @Component({
   selector: 'app-profile',
@@ -27,6 +29,7 @@ import { profileRoutes } from 'src/app/app-routing.module';
 })
 export class ProfileComponent {
   private router = inject(Router);
+  private chefService = inject(ChefService);
 
   AuthState = AuthState;
   authState = AuthState.Loading;
@@ -38,7 +41,13 @@ export class ProfileComponent {
   readonly totalRecipesRated = Object.keys(this.chef.ratings).length;
 
   logout() {
-    console.log('Logout');
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token !== null) {
+      this.chefService.logout(token);
+    }
+    // Assume the user should be signed out since there's no auth token
+    localStorage.removeItem(Constants.LocalStorage.token);
+    this.router.navigate([routes.profile.path]);
   }
 
   changeEmail() {
