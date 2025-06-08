@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { profileRoutes } from 'src/app/app-routing.module';
@@ -67,6 +67,7 @@ const passwordsMatchValidator: ValidatorFn = (control) => {
 export class SignUpComponent implements OnDestroy {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
   profileRoutes = profileRoutes;
 
   private chefServiceSubscription?: Subscription;
@@ -81,7 +82,7 @@ export class SignUpComponent implements OnDestroy {
     {
       [formControls.email]: new FormControl('', [
         Validators.required,
-        Validators.email,
+        Validators.email, // more relaxed than the server's RFC 5322 validation check
       ]),
       [formControls.password]: new FormControl('', [
         Validators.required,
@@ -125,9 +126,15 @@ export class SignUpComponent implements OnDestroy {
     this.chefServiceSubscription = this.chefService
       .createChef(loginCredentials)
       .subscribe({
-        next: (loginResponse) => {
+        next: ({ uid, token, emailVerified }) => {
           this.isLoading.set(false);
-          console.log('Create chef successful', loginResponse);
+          localStorage.setItem(Constants.LocalStorage.token, token);
+
+          if (!emailVerified) {
+            // Should always be true
+            this.chefService.verifyEmail(token);
+            this.router.navigate([profileRoutes.verifyEmail.path]);
+          }
         },
         error: (error) => {
           this.isLoading.set(false);
