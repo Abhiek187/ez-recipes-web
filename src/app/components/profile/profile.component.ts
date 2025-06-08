@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
-import { Router, RouterModule } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { mockChef } from 'src/app/models/profile.mock';
-import { AuthState } from 'src/app/models/profile.model';
+import { AuthState, ProfileAction } from 'src/app/models/profile.model';
 import { profileRoutes, routes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
@@ -27,9 +28,11 @@ import { ChefService } from 'src/app/services/chef.service';
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private chefService = inject(ChefService);
+  private snackBar = inject(MatSnackBar);
 
   AuthState = AuthState;
   authState = AuthState.Loading;
@@ -39,6 +42,27 @@ export class ProfileComponent {
   readonly totalRecipesFavorited = this.chef.favoriteRecipes.length;
   readonly totalRecipesViewed = Object.keys(this.chef.recentRecipes).length;
   readonly totalRecipesRated = Object.keys(this.chef.ratings).length;
+
+  ngOnInit(): void {
+    const action = this.route.snapshot.queryParamMap.get('action');
+
+    switch (action) {
+      case ProfileAction.VerifyEmail:
+        this.snackBar.open('Email verified successfully!', 'Dismiss');
+        break;
+      case ProfileAction.ChangeEmail:
+        this.snackBar.open(
+          'Email updated successfully! Please sign in again.',
+          'Dismiss'
+        );
+        break;
+      case ProfileAction.ResetPassword:
+        this.snackBar.open(
+          'Password updated successfully! Please sign in again.',
+          'Dismiss'
+        );
+    }
+  }
 
   logout() {
     const token = localStorage.getItem(Constants.LocalStorage.token);
