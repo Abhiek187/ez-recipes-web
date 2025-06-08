@@ -28,7 +28,8 @@ describe('RecipeService', () => {
   // at network level. e.g. Connection timeout, DNS error, offline, etc.
   const mockError = new ProgressEvent('error');
   const mockErrorMessage =
-    'An unexpected error occurred. The server may be down or there may be network issues. Please try again later.';
+    'An unexpected error occurred. The server may be down or there may be network issues. ' +
+    'Please try again later.';
   const mockRecipesWithTimestamp: RecentRecipe[] = mockRecipes.map(
     (recipe, index) => ({
       ...recipe,

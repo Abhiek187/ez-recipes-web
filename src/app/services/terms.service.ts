@@ -1,12 +1,13 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, of, throwError } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import Term from '../models/term.model';
 import { mockTerms } from '../models/term.mock';
 import Constants from '../constants/constants';
 import TermStore from '../models/term-store.model';
+import handleError from '../helpers/handleError';
 
 @Injectable({
   providedIn: 'root',
@@ -23,12 +24,7 @@ export class TermsService {
 
     return this.http
       .get<Term[]>(`${environment.serverBaseUrl}${Constants.termsPath}`)
-      .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    console.error(error);
-    return throwError(() => new Error(error.message));
+      .pipe(catchError(handleError));
   }
 
   // localStorage methods

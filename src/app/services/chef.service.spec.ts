@@ -29,8 +29,9 @@ describe('ChefService', () => {
 
   const baseUrl = `${environment.serverBaseUrl}${Constants.chefsPath}`;
   const mockError = new ProgressEvent('error');
-  const mockErrorMessage = (url: string) =>
-    `Http failure response for ${url}: 0 `;
+  const mockErrorMessage =
+    'An unexpected error occurred. The server may be down or there may be network issues. ' +
+    'Please try again later.';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -77,9 +78,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(
-      mockErrorMessage(baseUrl)
-    );
+    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
   it('should create a chef', async () => {
@@ -113,9 +112,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(
-      mockErrorMessage(baseUrl)
-    );
+    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
   it('should update a chef', async () => {
@@ -172,9 +169,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(
-      mockErrorMessage(baseUrl)
-    );
+    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
   it('should delete a chef', async () => {
@@ -201,9 +196,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(
-      mockErrorMessage(baseUrl)
-    );
+    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
   it('should verify an email', async () => {
@@ -231,9 +224,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(
-      mockErrorMessage(`${baseUrl}/verify`)
-    );
+    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
   it('should login', async () => {
@@ -267,9 +258,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(
-      mockErrorMessage(`${baseUrl}/login`)
-    );
+    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
   });
 
   it('should logout', async () => {
@@ -297,8 +286,6 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(
-      mockErrorMessage(`${baseUrl}/logout`)
-    );
+    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
   });
 });

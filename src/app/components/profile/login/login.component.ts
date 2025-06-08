@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 
 import { ChefService } from 'src/app/services/chef.service';
 import { LoginCredentials } from 'src/app/models/profile.model';
-import { profileRoutes } from 'src/app/app-routing.module';
+import { profileRoutes, routes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
 
 @Component({
@@ -103,7 +103,7 @@ export class LoginComponent implements OnDestroy {
             if (redirectUrl !== null) {
               this.router.navigateByUrl(redirectUrl);
             } else {
-              this.router.navigate([profileRoutes.profile.path]);
+              this.router.navigate([routes.profile.path]);
             }
           }
         },
