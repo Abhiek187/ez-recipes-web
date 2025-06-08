@@ -77,26 +77,16 @@ export class LoginComponent implements OnDestroy {
     this.chefServiceSubscription = this.chefService
       .login(loginCredentials)
       .subscribe({
-        next: ({ uid, token, emailVerified }) => {
+        next: ({ token, emailVerified }) => {
           this.isLoading.set(false);
           localStorage.setItem(Constants.LocalStorage.token, token);
 
           // Check if the user signed up, but didn't verify their email yet
           if (!emailVerified) {
             // Don't update the chef's verified status until they click the redirect link
-            this.chefService.verifyEmail(token);
+            this.chefService.verifyEmail(token).subscribe();
             this.router.navigate([profileRoutes.verifyEmail.path]);
           } else {
-            // Fetch the rest of the chef's profile
-            this.chefService.getChef(token).subscribe({
-              next: (chef) => {
-                console.log('Chef profile:', chef);
-              },
-              error: (error) => {
-                console.error('Error fetching chef:', error);
-              },
-            });
-
             // If a redirect URL is present in the query params, navigate to it
             // Otherwise, navigate to the profile page
             const redirectUrl = this.route.snapshot.queryParamMap.get('next');

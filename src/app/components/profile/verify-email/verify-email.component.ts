@@ -47,7 +47,7 @@ export class VerifyEmailComponent {
   resendVerificationEmail() {
     const token = localStorage.getItem(Constants.LocalStorage.token);
     if (token !== null) {
-      this.chefService.verifyEmail(token);
+      this.chefService.verifyEmail(token).subscribe();
     }
     this.enableResend.set(false);
   }
@@ -55,7 +55,7 @@ export class VerifyEmailComponent {
   logout() {
     const token = localStorage.getItem(Constants.LocalStorage.token);
     if (token !== null) {
-      this.chefService.logout(token);
+      this.chefService.logout(token).subscribe();
     }
     // Assume the user should be signed out since there's no auth token
     localStorage.removeItem(Constants.LocalStorage.token);

@@ -126,13 +126,13 @@ export class SignUpComponent implements OnDestroy {
     this.chefServiceSubscription = this.chefService
       .createChef(loginCredentials)
       .subscribe({
-        next: ({ uid, token, emailVerified }) => {
+        next: ({ token, emailVerified }) => {
           this.isLoading.set(false);
           localStorage.setItem(Constants.LocalStorage.token, token);
 
           if (!emailVerified) {
             // Should always be true
-            this.chefService.verifyEmail(token);
+            this.chefService.verifyEmail(token).subscribe();
             this.router.navigate([profileRoutes.verifyEmail.path]);
           }
         },
