@@ -8,8 +8,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { VerifyEmailComponent } from './verify-email.component';
 
 describe('VerifyEmailComponent', () => {
-  let component: VerifyEmailComponent;
+  let verifyEmailComponent: VerifyEmailComponent;
   let fixture: ComponentFixture<VerifyEmailComponent>;
+  let rootElement: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -21,11 +22,12 @@ describe('VerifyEmailComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(VerifyEmailComponent);
-    component = fixture.componentInstance;
+    verifyEmailComponent = fixture.componentInstance;
+    rootElement = fixture.nativeElement;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(verifyEmailComponent).toBeTruthy();
   });
 });

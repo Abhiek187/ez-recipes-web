@@ -9,8 +9,9 @@ import { RouterModule } from '@angular/router';
 import { SignUpComponent } from './sign-up.component';
 
 describe('SignUpComponent', () => {
-  let component: SignUpComponent;
+  let signUpComponent: SignUpComponent;
   let fixture: ComponentFixture<SignUpComponent>;
+  let rootElement: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -22,11 +23,12 @@ describe('SignUpComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(SignUpComponent);
-    component = fixture.componentInstance;
+    signUpComponent = fixture.componentInstance;
+    rootElement = fixture.nativeElement;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(signUpComponent).toBeTruthy();
   });
 });

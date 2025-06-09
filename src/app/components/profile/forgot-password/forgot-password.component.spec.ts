@@ -9,8 +9,9 @@ import { RouterModule } from '@angular/router';
 import { ForgotPasswordComponent } from './forgot-password.component';
 
 describe('ForgotPasswordComponent', () => {
-  let component: ForgotPasswordComponent;
+  let forgotPasswordComponent: ForgotPasswordComponent;
   let fixture: ComponentFixture<ForgotPasswordComponent>;
+  let rootElement: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -22,11 +23,12 @@ describe('ForgotPasswordComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(ForgotPasswordComponent);
-    component = fixture.componentInstance;
+    forgotPasswordComponent = fixture.componentInstance;
+    rootElement = fixture.nativeElement;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(forgotPasswordComponent).toBeTruthy();
   });
 });
