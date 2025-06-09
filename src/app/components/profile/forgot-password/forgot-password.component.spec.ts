@@ -5,11 +5,11 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
+import { of } from 'rxjs';
 
 import { ForgotPasswordComponent } from './forgot-password.component';
 import { ChefService } from 'src/app/services/chef.service';
 import { ChefUpdateType } from 'src/app/models/profile.model';
-import { of } from 'rxjs';
 import { mockChefEmailResponse } from 'src/app/models/profile.mock';
 
 describe('ForgotPasswordComponent', () => {

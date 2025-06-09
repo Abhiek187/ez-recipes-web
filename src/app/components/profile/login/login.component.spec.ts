@@ -11,7 +11,6 @@ import { LoginComponent } from './login.component';
 describe('LoginComponent', () => {
   let loginComponent: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let rootElement: HTMLElement;
 
   beforeEach(async () => {
@@ -31,5 +30,10 @@ describe('LoginComponent', () => {
 
   it('should create', () => {
     expect(loginComponent).toBeTruthy();
+    expect(rootElement.textContent).toContain('Login');
+    expect(rootElement.textContent).toContain('Sign Up');
+    expect(rootElement.textContent).toContain('Username');
+    expect(rootElement.textContent).toContain('Password');
+    expect(rootElement.textContent).toContain('Forgot Password?');
   });
 });

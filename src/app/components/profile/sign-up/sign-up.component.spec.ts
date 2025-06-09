@@ -11,7 +11,6 @@ import { SignUpComponent } from './sign-up.component';
 describe('SignUpComponent', () => {
   let signUpComponent: SignUpComponent;
   let fixture: ComponentFixture<SignUpComponent>;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let rootElement: HTMLElement;
 
   beforeEach(async () => {
@@ -31,5 +30,13 @@ describe('SignUpComponent', () => {
 
   it('should create', () => {
     expect(signUpComponent).toBeTruthy();
+    expect(rootElement.textContent).toContain('Sign Up');
+    expect(rootElement.textContent).toContain('Sign In');
+    expect(rootElement.textContent).toContain('Email');
+    expect(rootElement.textContent).toContain('Password');
+    expect(rootElement.textContent).toContain('Confirm Password');
+    expect(rootElement.textContent).toContain(
+      'Password must be at least 8 characters long'
+    );
   });
 });
