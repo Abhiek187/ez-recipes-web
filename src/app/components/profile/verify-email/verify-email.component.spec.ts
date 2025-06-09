@@ -10,6 +10,7 @@ import { VerifyEmailComponent } from './verify-email.component';
 describe('VerifyEmailComponent', () => {
   let verifyEmailComponent: VerifyEmailComponent;
   let fixture: ComponentFixture<VerifyEmailComponent>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let rootElement: HTMLElement;
 
   beforeEach(async () => {

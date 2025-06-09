@@ -11,6 +11,7 @@ import { SignUpComponent } from './sign-up.component';
 describe('SignUpComponent', () => {
   let signUpComponent: SignUpComponent;
   let fixture: ComponentFixture<SignUpComponent>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let rootElement: HTMLElement;
 
   beforeEach(async () => {

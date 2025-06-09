@@ -19,7 +19,7 @@ export class VerifyEmailComponent {
   private chefService = inject(ChefService);
   private router = inject(Router);
 
-  email = signal('test@example.com');
+  email = signal('test@example.com'); // TODO: replace with actual email
   // Throttle the number of times the user can resend the verification email to satisfy API limits
   enableResend = signal(false);
   secondsRemaining = signal(Constants.emailCooldownSeconds);
