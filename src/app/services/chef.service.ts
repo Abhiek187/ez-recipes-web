@@ -1,6 +1,6 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, Observable, of, throwError } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 
 import {
   Chef,
@@ -16,6 +16,7 @@ import {
   mockChefEmailResponse,
   mockLoginResponse,
 } from '../models/profile.mock';
+import handleError from '../helpers/handleError';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +35,7 @@ export class ChefService {
       .get<Chef>(`${environment.serverBaseUrl}${Constants.chefsPath}`, {
         headers: this.authHeader(token),
       })
-      .pipe(catchError(this.handleError.bind(this)));
+      .pipe(catchError(handleError));
   }
 
   createChef(credentials: LoginCredentials): Observable<LoginResponse> {
@@ -47,7 +48,7 @@ export class ChefService {
         `${environment.serverBaseUrl}${Constants.chefsPath}`,
         credentials
       )
-      .pipe(catchError(this.handleError.bind(this)));
+      .pipe(catchError(handleError));
   }
 
   updateChef(
@@ -68,7 +69,7 @@ export class ChefService {
           },
         }
       )
-      .pipe(catchError(this.handleError.bind(this)));
+      .pipe(catchError(handleError));
   }
 
   deleteChef(token: string): Observable<null> {
@@ -80,7 +81,7 @@ export class ChefService {
       .delete<null>(`${environment.serverBaseUrl}${Constants.chefsPath}`, {
         headers: this.authHeader(token),
       })
-      .pipe(catchError(this.handleError.bind(this)));
+      .pipe(catchError(handleError));
   }
 
   verifyEmail(token: string): Observable<ChefEmailResponse> {
@@ -94,7 +95,7 @@ export class ChefService {
         null, // no body
         { headers: this.authHeader(token) }
       )
-      .pipe(catchError(this.handleError.bind(this)));
+      .pipe(catchError(handleError));
   }
 
   login(credentials: LoginCredentials): Observable<LoginResponse> {
@@ -107,7 +108,7 @@ export class ChefService {
         `${environment.serverBaseUrl}${Constants.chefsPath}/login`,
         credentials
       )
-      .pipe(catchError(this.handleError.bind(this)));
+      .pipe(catchError(handleError));
   }
 
   logout(token: string): Observable<null> {
@@ -123,15 +124,10 @@ export class ChefService {
           headers: this.authHeader(token),
         }
       )
-      .pipe(catchError(this.handleError.bind(this)));
+      .pipe(catchError(handleError));
   }
 
   // Helpers
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    console.error(error);
-    return throwError(() => new Error(error.message));
-  }
-
   private authHeader(token: string) {
     return {
       Authorization: `Bearer ${token}`,

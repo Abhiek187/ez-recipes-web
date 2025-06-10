@@ -1,1 +1,38 @@
-<p>verify-email works!</p>
+<div class="verify-email-container">
+  <h2>You're Almost There!</h2>
+  <h3>
+    We just need to verify your email before you can put on the chef's hat.<br />
+    Check your email for a magic link sent to <b>{{ email() }}</b
+    ><br /><br />
+
+    ⚠️ We will delete accounts from our system if they're not verified within 1
+    week.
+  </h3>
+
+  <div class="verify-email-retry">
+    <p>Didn't receive an email?</p>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="resendVerificationEmail()"
+      [disabled]="!enableResend()"
+    >
+      Resend
+    </button>
+    <span class="verify-email-clock">
+      <mat-icon fontIcon="schedule" />
+      {{ minutesRemaining() | number : "2.0-0" }}:{{
+        secondsRemaining() % 60 | number : "2.0-0"
+      }}
+    </span>
+  </div>
+
+  <button
+    mat-raised-button
+    color="accent"
+    class="logout-button"
+    (click)="logout()"
+  >
+    Logout
+  </button>
+</div>

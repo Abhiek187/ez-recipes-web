@@ -1,42 +1,31 @@
-<!-- Temp buttons to control the auth state -->
-<mat-radio-group (change)="authState = $event.value">
-  <mat-radio-button [value]="AuthState.Unauthenticated">
-    Unauthenticated
-  </mat-radio-button>
-  <mat-radio-button [value]="AuthState.Authenticated">
-    Authenticated
-  </mat-radio-button>
-  <mat-radio-button [value]="AuthState.Loading">Loading</mat-radio-button>
-</mat-radio-group>
-
 <div class="profile-container">
-  @if (authState === AuthState.Authenticated) {
-  <h1>Chef {{ chef.email }}</h1>
+  @if (authState() === AuthState.Authenticated && chef() !== undefined) {
+  <h1>Chef {{ chef()?.email }}</h1>
   <span class="profile-stats">
-    <span [ngPlural]="totalRecipesFavorited">
+    <span [ngPlural]="totalRecipesFavorited()">
       <ng-template ngPluralCase="1">
-        {{ totalRecipesFavorited }} favorite
+        {{ totalRecipesFavorited() }} favorite
       </ng-template>
       <ng-template ngPluralCase="other">
-        {{ totalRecipesFavorited }} favorites
+        {{ totalRecipesFavorited() }} favorites
       </ng-template>
     </span>
     <mat-divider [vertical]="true" />
-    <span [ngPlural]="totalRecipesViewed">
+    <span [ngPlural]="totalRecipesViewed()">
       <ng-template ngPluralCase="1">
-        {{ totalRecipesViewed }} recipe viewed
+        {{ totalRecipesViewed() }} recipe viewed
       </ng-template>
       <ng-template ngPluralCase="other">
-        {{ totalRecipesViewed }} recipes viewed
+        {{ totalRecipesViewed() }} recipes viewed
       </ng-template>
     </span>
     <mat-divider [vertical]="true" />
-    <span [ngPlural]="totalRecipesRated">
+    <span [ngPlural]="totalRecipesRated()">
       <ng-template ngPluralCase="1">
-        {{ totalRecipesRated }} rating</ng-template
+        {{ totalRecipesRated() }} rating</ng-template
       >
       <ng-template ngPluralCase="other">
-        {{ totalRecipesRated }} ratings
+        {{ totalRecipesRated() }} ratings
       </ng-template>
     </span>
   </span>
@@ -52,7 +41,7 @@
       Delete Account
     </button>
   </div>
-  } @else if (authState === AuthState.Unauthenticated) {
+  } @else if (authState() === AuthState.Unauthenticated) {
   <h2 class="profile-unauth-header">
     Signing up for an account is free and gives you great perks, including:
   </h2>

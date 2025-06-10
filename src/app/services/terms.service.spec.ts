@@ -25,7 +25,9 @@ describe('TermsService', () => {
 
   const baseUrl = `${environment.serverBaseUrl}${Constants.termsPath}`;
   const mockError = new ProgressEvent('error');
-  const mockErrorMessage = `Http failure response for ${baseUrl}: 0 `;
+  const mockErrorMessage =
+    'An unexpected error occurred. The server may be down or there may be network issues. ' +
+    'Please try again later.';
   const localStorageProto = Object.getPrototypeOf(localStorage);
 
   beforeEach(() => {

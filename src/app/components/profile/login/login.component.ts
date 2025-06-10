@@ -1,4 +1,3 @@
-
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import {
   FormControl,
@@ -12,12 +11,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { ChefService } from 'src/app/services/chef.service';
 import { LoginCredentials } from 'src/app/models/profile.model';
-import { profileRoutes } from 'src/app/app-routing.module';
+import { profileRoutes, routes } from 'src/app/app-routing.module';
+import Constants from 'src/app/constants/constants';
 
 @Component({
   selector: 'app-login',
@@ -28,14 +28,16 @@ import { profileRoutes } from 'src/app/app-routing.module';
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    RouterModule
-],
+    RouterModule,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent implements OnDestroy {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
   profileRoutes = profileRoutes;
 
   private chefServiceSubscription?: Subscription;
@@ -75,9 +77,25 @@ export class LoginComponent implements OnDestroy {
     this.chefServiceSubscription = this.chefService
       .login(loginCredentials)
       .subscribe({
-        next: (loginResponse) => {
+        next: ({ token, emailVerified }) => {
           this.isLoading.set(false);
-          console.log('Login successful', loginResponse);
+          localStorage.setItem(Constants.LocalStorage.token, token);
+
+          // Check if the user signed up, but didn't verify their email yet
+          if (!emailVerified) {
+            // Don't update the chef's verified status until they click the redirect link
+            this.chefService.verifyEmail(token).subscribe();
+            this.router.navigate([profileRoutes.verifyEmail.path]);
+          } else {
+            // If a redirect URL is present in the query params, navigate to it
+            // Otherwise, navigate to the profile page
+            const redirectUrl = this.route.snapshot.queryParamMap.get('next');
+            if (redirectUrl !== null) {
+              this.router.navigateByUrl(redirectUrl);
+            } else {
+              this.router.navigate([routes.profile.path]);
+            }
+          }
         },
         error: (error) => {
           this.isLoading.set(false);

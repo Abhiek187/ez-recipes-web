@@ -3,7 +3,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 
 import { NavbarComponent } from './navbar.component';
-import { routes } from 'src/app/app-routing.module';
 
 describe('NavbarComponent', () => {
   let navbarComponent: NavbarComponent;
@@ -32,8 +31,9 @@ describe('NavbarComponent', () => {
     const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
     expect(menuIcon).toBeNull();
     expect(rootElement.textContent).toContain('EZ Recipes');
-    expect(rootElement.textContent).toContain(routes.search.title);
-    expect(rootElement.textContent).toContain(routes.glossary.title);
+    for (const route of navbarComponent.navItems) {
+      expect(rootElement.textContent).toContain(route.title);
+    }
 
     // The favorite and share buttons should be hidden by default on the home page
     const favoriteIcon =
@@ -54,9 +54,9 @@ describe('NavbarComponent', () => {
     const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
     expect(menuIcon).not.toBeNull();
     expect(rootElement.textContent).toContain('EZ Recipes');
-    expect(rootElement.textContent).toContain(routes.home.title);
-    expect(rootElement.textContent).toContain(routes.search.title);
-    expect(rootElement.textContent).toContain(routes.glossary.title);
+    for (const route of navbarComponent.navItems) {
+      expect(rootElement.textContent).toContain(route.title);
+    }
 
     // The favorite and share buttons should be hidden by default on the home page
     const favoriteIcon =

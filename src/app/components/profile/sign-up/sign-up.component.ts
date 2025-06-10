@@ -1,4 +1,3 @@
-
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import {
   FormControl,
@@ -13,10 +12,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { profileRoutes } from 'src/app/app-routing.module';
+import { profileRoutes, routes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
 import { LoginCredentials } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
@@ -60,14 +59,16 @@ const passwordsMatchValidator: ValidatorFn = (control) => {
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    RouterModule
-],
+    RouterModule,
+  ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
 })
 export class SignUpComponent implements OnDestroy {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
   profileRoutes = profileRoutes;
 
   private chefServiceSubscription?: Subscription;
@@ -82,7 +83,7 @@ export class SignUpComponent implements OnDestroy {
     {
       [formControls.email]: new FormControl('', [
         Validators.required,
-        Validators.email,
+        Validators.email, // more relaxed than the server's RFC 5322 validation check
       ]),
       [formControls.password]: new FormControl('', [
         Validators.required,
@@ -126,9 +127,22 @@ export class SignUpComponent implements OnDestroy {
     this.chefServiceSubscription = this.chefService
       .createChef(loginCredentials)
       .subscribe({
-        next: (loginResponse) => {
+        next: ({ token, emailVerified }) => {
           this.isLoading.set(false);
-          console.log('Create chef successful', loginResponse);
+          localStorage.setItem(Constants.LocalStorage.token, token);
+
+          if (!emailVerified) {
+            // Should always be true
+            this.chefService.verifyEmail(token).subscribe();
+            this.router.navigate([profileRoutes.verifyEmail.path]);
+          } else {
+            const redirectUrl = this.route.snapshot.queryParamMap.get('next');
+            if (redirectUrl !== null) {
+              this.router.navigateByUrl(redirectUrl);
+            } else {
+              this.router.navigate([routes.profile.path]);
+            }
+          }
         },
         error: (error) => {
           this.isLoading.set(false);
