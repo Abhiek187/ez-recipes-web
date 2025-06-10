@@ -12,10 +12,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { profileRoutes } from 'src/app/app-routing.module';
+import { profileRoutes, routes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
 import { LoginCredentials } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
@@ -68,6 +68,7 @@ export class SignUpComponent implements OnDestroy {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   profileRoutes = profileRoutes;
 
   private chefServiceSubscription?: Subscription;
@@ -134,6 +135,13 @@ export class SignUpComponent implements OnDestroy {
             // Should always be true
             this.chefService.verifyEmail(token).subscribe();
             this.router.navigate([profileRoutes.verifyEmail.path]);
+          } else {
+            const redirectUrl = this.route.snapshot.queryParamMap.get('next');
+            if (redirectUrl !== null) {
+              this.router.navigateByUrl(redirectUrl);
+            } else {
+              this.router.navigate([routes.profile.path]);
+            }
           }
         },
         error: (error) => {
