@@ -3,6 +3,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import Constants from 'src/app/constants/constants';
@@ -17,6 +18,7 @@ import { routes } from 'src/app/app-routing.module';
 })
 export class VerifyEmailComponent implements OnInit {
   private chefService = inject(ChefService);
+  private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
   email = signal('...');
@@ -57,7 +59,11 @@ export class VerifyEmailComponent implements OnInit {
   resendVerificationEmail() {
     const token = localStorage.getItem(Constants.LocalStorage.token);
     if (token !== null) {
-      this.chefService.verifyEmail(token).subscribe();
+      this.chefService.verifyEmail(token).subscribe({
+        error: (error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
     }
     this.enableResend.set(false);
   }
