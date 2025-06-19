@@ -121,6 +121,8 @@ describe('LoginComponent', () => {
     expect(mockChefService.verifyEmail).toHaveBeenCalledWith(
       mockLoginResponse(false).token
     );
-    expect(navigateSpy).toHaveBeenCalledWith([profileRoutes.verifyEmail.path]);
+    expect(navigateSpy).toHaveBeenCalledWith([profileRoutes.verifyEmail.path], {
+      state: { email: mockEmail },
+    });
   });
 });

@@ -85,13 +85,18 @@ export class LoginComponent implements OnDestroy {
           if (!emailVerified) {
             // Don't update the chef's verified status until they click the redirect link
             this.chefService.verifyEmail(token).subscribe();
-            this.router.navigate([profileRoutes.verifyEmail.path]);
+            this.router.navigate([profileRoutes.verifyEmail.path], {
+              state: { email: username },
+            });
           } else {
             // If a redirect URL is present in the query params, navigate to it
             // Otherwise, navigate to the profile page
             const redirectUrl = this.route.snapshot.queryParamMap.get('next');
             if (redirectUrl !== null) {
-              this.router.navigateByUrl(redirectUrl);
+              this.router.navigateByUrl(redirectUrl, {
+                // Several pages require the chef's email
+                state: { email: username },
+              });
             } else {
               this.router.navigate([routes.profile.path]);
             }

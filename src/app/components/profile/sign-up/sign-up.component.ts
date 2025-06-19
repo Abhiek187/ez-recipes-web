@@ -134,11 +134,15 @@ export class SignUpComponent implements OnDestroy {
           if (!emailVerified) {
             // Should always be true
             this.chefService.verifyEmail(token).subscribe();
-            this.router.navigate([profileRoutes.verifyEmail.path]);
+            this.router.navigate([profileRoutes.verifyEmail.path], {
+              state: { email },
+            });
           } else {
             const redirectUrl = this.route.snapshot.queryParamMap.get('next');
             if (redirectUrl !== null) {
-              this.router.navigateByUrl(redirectUrl);
+              this.router.navigateByUrl(redirectUrl, {
+                state: { email },
+              });
             } else {
               this.router.navigate([routes.profile.path]);
             }
