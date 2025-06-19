@@ -110,10 +110,18 @@ export class ProfileComponent implements OnInit {
   }
 
   changePassword() {
-    this.router.navigate([profileRoutes.updatePassword.path]);
+    this.router.navigate([profileRoutes.updatePassword.path], {
+      state: {
+        email: this.chef()?.email,
+      },
+    });
   }
 
   deleteAccount() {
-    this.router.navigate([profileRoutes.deleteAccount.path]);
+    this.router.navigate([profileRoutes.deleteAccount.path], {
+      state: {
+        email: this.chef()?.email,
+      },
+    });
   }
 }

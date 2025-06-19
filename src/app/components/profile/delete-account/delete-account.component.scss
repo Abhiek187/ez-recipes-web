@@ -1,0 +1,18 @@
+.delete-account-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 16px;
+}
+
+.submit-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+
+  .progress-spinner {
+    position: absolute;
+    margin-left: calc(145px + 16px);
+  }
+}

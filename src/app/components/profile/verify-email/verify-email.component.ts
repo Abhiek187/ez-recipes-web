@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import Constants from 'src/app/constants/constants';
@@ -15,11 +16,12 @@ import { routes } from 'src/app/app-routing.module';
   templateUrl: './verify-email.component.html',
   styleUrl: './verify-email.component.scss',
 })
-export class VerifyEmailComponent {
+export class VerifyEmailComponent implements OnInit {
   private chefService = inject(ChefService);
+  private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
-  email = signal('test@example.com'); // TODO: replace with actual email
+  email = signal('...');
   // Throttle the number of times the user can resend the verification email to satisfy API limits
   enableResend = signal(false);
   secondsRemaining = signal(Constants.emailCooldownSeconds);
@@ -44,10 +46,24 @@ export class VerifyEmailComponent {
     });
   }
 
+  ngOnInit(): void {
+    /* State may not be available if navigating directly to this page,
+     * but the the guard functions should redirect the user in this case
+     */
+    const email = this.router.lastSuccessfulNavigation?.extras?.state?.email;
+    if (typeof email === 'string') {
+      this.email.set(email);
+    }
+  }
+
   resendVerificationEmail() {
     const token = localStorage.getItem(Constants.LocalStorage.token);
     if (token !== null) {
-      this.chefService.verifyEmail(token).subscribe();
+      this.chefService.verifyEmail(token).subscribe({
+        error: (error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
     }
     this.enableResend.set(false);
   }
