@@ -104,13 +104,23 @@ describe('ProfileComponent', () => {
     changeEmailButton.click();
     expect(navigateSpy).toHaveBeenCalledWith([profileRoutes.updateEmail.path]);
     changePasswordButton.click();
-    expect(navigateSpy).toHaveBeenCalledWith([
-      profileRoutes.updatePassword.path,
-    ]);
+    expect(navigateSpy).toHaveBeenCalledWith(
+      [profileRoutes.updatePassword.path],
+      {
+        state: {
+          email: mockChef.email,
+        },
+      }
+    );
     deleteAccountButton.click();
-    expect(navigateSpy).toHaveBeenCalledWith([
-      profileRoutes.deleteAccount.path,
-    ]);
+    expect(navigateSpy).toHaveBeenCalledWith(
+      [profileRoutes.deleteAccount.path],
+      {
+        state: {
+          email: mockChef.email,
+        },
+      }
+    );
 
     logoutButton.click();
     fixture.detectChanges();

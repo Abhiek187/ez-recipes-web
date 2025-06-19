@@ -92,14 +92,10 @@ export class UpdatePasswordComponent implements OnInit, OnDestroy {
   } as const;
 
   ngOnInit(): void {
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token === null) return;
-
-    this.chefService.getChef(token).subscribe({
-      next: ({ email }) => {
-        this.chefEmail.set(email);
-      },
-    });
+    const email = this.router.lastSuccessfulNavigation?.extras?.state?.email;
+    if (typeof email === 'string') {
+      this.chefEmail.set(email);
+    }
   }
 
   ngOnDestroy(): void {

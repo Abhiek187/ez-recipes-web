@@ -4,7 +4,7 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, UrlTree } from '@angular/router';
 import { of } from 'rxjs';
 
 import { DeleteAccountComponent } from './delete-account.component';
@@ -20,11 +20,7 @@ describe('DeleteAccountComponent', () => {
   let mockChefService: jasmine.SpyObj<ChefService>;
 
   beforeEach(async () => {
-    mockChefService = jasmine.createSpyObj('ChefService', [
-      'getChef',
-      'deleteChef',
-    ]);
-    mockChefService.getChef.and.returnValue(of(mockChef));
+    mockChefService = jasmine.createSpyObj('ChefService', ['deleteChef']);
 
     await TestBed.configureTestingModule({
       imports: [DeleteAccountComponent],
@@ -44,6 +40,15 @@ describe('DeleteAccountComponent', () => {
     spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
 
     router = TestBed.inject(Router);
+    spyOnProperty(router, 'lastSuccessfulNavigation').and.returnValue({
+      extras: { state: { email: mockChef.email } },
+      id: 0,
+      initialUrl: new UrlTree(),
+      extractedUrl: new UrlTree(),
+      trigger: 'imperative',
+      previousNavigation: null,
+      abort: () => {},
+    });
     fixture = TestBed.createComponent(DeleteAccountComponent);
     deleteAccountComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
@@ -62,6 +67,24 @@ describe('DeleteAccountComponent', () => {
     expect(usernameField?.autocapitalize).toBe('none');
     expect(usernameField?.autocomplete).toBe('off');
     expect(usernameField?.spellcheck).toBeFalse();
+  });
+
+  it("should disable account deletion if the username isn't provided", () => {
+    const form = deleteAccountComponent.formGroup;
+    form.controls.username.setValue(null);
+    fixture.detectChanges();
+
+    expect(form.valid).toBeFalse();
+    expect(
+      form.controls.username.hasError(
+        deleteAccountComponent.formErrors.required
+      )
+    ).toBeTrue();
+
+    const submitButton = rootElement
+      .querySelector('.submit-row')
+      ?.querySelector('button');
+    expect(submitButton?.disabled).toBeTrue();
   });
 
   it("should disable account deletion if the username doesn't match", () => {

@@ -4,7 +4,7 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, UrlTree } from '@angular/router';
 import { of } from 'rxjs';
 
 import { UpdatePasswordComponent } from './update-password.component';
@@ -21,11 +21,7 @@ describe('UpdatePasswordComponent', () => {
   let mockChefService: jasmine.SpyObj<ChefService>;
 
   beforeEach(async () => {
-    mockChefService = jasmine.createSpyObj('ChefService', [
-      'getChef',
-      'updateChef',
-    ]);
-    mockChefService.getChef.and.returnValue(of(mockChef));
+    mockChefService = jasmine.createSpyObj('ChefService', ['updateChef']);
 
     await TestBed.configureTestingModule({
       imports: [UpdatePasswordComponent],
@@ -45,6 +41,15 @@ describe('UpdatePasswordComponent', () => {
     spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
 
     router = TestBed.inject(Router);
+    spyOnProperty(router, 'lastSuccessfulNavigation').and.returnValue({
+      extras: { state: { email: mockChef.email } },
+      id: 0,
+      initialUrl: new UrlTree(),
+      extractedUrl: new UrlTree(),
+      trigger: 'imperative',
+      previousNavigation: null,
+      abort: () => {},
+    });
     fixture = TestBed.createComponent(UpdatePasswordComponent);
     updatePasswordComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;

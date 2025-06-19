@@ -29,6 +29,7 @@ const formControls = {
   username: 'username',
 } as const;
 const formErrors = {
+  required: 'required',
   usernameMismatch: 'usernameMismatch',
 } as const;
 
@@ -78,14 +79,10 @@ export class DeleteAccountComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token === null) return;
-
-    this.chefService.getChef(token).subscribe({
-      next: ({ email }) => {
-        this.chefUsername.set(email);
-      },
-    });
+    const email = this.router.lastSuccessfulNavigation?.extras?.state?.email;
+    if (typeof email === 'string') {
+      this.chefUsername.set(email);
+    }
   }
 
   ngOnDestroy(): void {
