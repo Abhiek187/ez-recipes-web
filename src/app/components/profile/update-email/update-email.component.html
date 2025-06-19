@@ -1,1 +1,45 @@
-<p>update-email works!</p>
+@if (emailSent()) {
+<h3 class="update-email-confirm">
+  We sent an email to <b>{{ formGroup.controls.email.value }}</b
+  >. Follow the instructions to change your email.
+</h3>
+} @else {
+<form
+  class="update-email-form"
+  [formGroup]="formGroup"
+  (ngSubmit)="updateEmail()"
+>
+  <h1>Change Email</h1>
+  <mat-form-field>
+    <mat-label>New Email</mat-label>
+    <input
+      matInput
+      [formControlName]="formControls.email"
+      type="email"
+      inputmode="email"
+      autocapitalize="none"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    @if (formGroup.controls.email.hasError(formErrors.required)) {
+    <mat-error>{{ errors.required }}</mat-error>
+    } @else if (formGroup.controls.email.hasError(formErrors.emailInvalid)) {
+    <mat-error>{{ errors.email }}</mat-error>
+    }
+  </mat-form-field>
+
+  <span class="submit-row">
+    <button
+      mat-raised-button
+      color="accent"
+      type="submit"
+      [disabled]="!formGroup.valid || isLoading()"
+    >
+      Submit
+    </button>
+    @if (isLoading()) {
+    <mat-spinner diameter="40" class="progress-spinner" />
+    }
+  </span>
+</form>
+}

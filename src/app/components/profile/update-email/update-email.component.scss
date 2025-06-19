@@ -1,0 +1,22 @@
+.update-email-confirm,
+.update-email-form {
+  margin: 16px;
+}
+
+.update-email-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.submit-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+
+  .progress-spinner {
+    position: absolute;
+    margin-left: calc(73.4px + 16px);
+  }
+}
