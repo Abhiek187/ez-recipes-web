@@ -1,4 +1,3 @@
-import { UpdatePasswordComponent } from './update-password.component';
 import {
   provideHttpClient,
   withInterceptorsFromDi,
@@ -8,6 +7,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 
+import { UpdatePasswordComponent } from './update-password.component';
 import { mockChef, mockChefEmailResponse } from 'src/app/models/profile.mock';
 import { ChefUpdateType } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';

@@ -1,1 +1,35 @@
-<p>delete-account works!</p>
+<form
+  class="delete-account-form"
+  [formGroup]="formGroup"
+  (ngSubmit)="deleteAccount()"
+>
+  <h1>Are You Sure?</h1>
+  <h2>You will lose access to your favorite recipes.</h2>
+  <h3>Enter your username to confirm.</h3>
+  <mat-form-field>
+    <mat-label>Username</mat-label>
+    <input
+      matInput
+      [formControlName]="formControls.username"
+      type="email"
+      inputmode="email"
+      autocapitalize="none"
+      autocomplete="off"
+      spellcheck="false"
+    />
+  </mat-form-field>
+
+  <span class="submit-row">
+    <button
+      mat-raised-button
+      color="warn"
+      type="submit"
+      [disabled]="!formGroup.valid || isLoading()"
+    >
+      Delete Account
+    </button>
+    @if (isLoading()) {
+    <mat-spinner diameter="40" class="progress-spinner" />
+    }
+  </span>
+</form>
