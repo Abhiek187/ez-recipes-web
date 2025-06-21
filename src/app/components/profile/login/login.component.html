@@ -44,9 +44,9 @@
         (click)="togglePasswordVisibility($event)"
         [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
       >
-        <mat-icon>{{
-          showPassword() ? "visibility_off" : "visibility"
-        }}</mat-icon>
+        <mat-icon
+          [fontIcon]="showPassword() ? 'visibility_off' : 'visibility'"
+        />
       </button>
       @if (formGroup.controls.password.invalid) {
       <mat-error>{{ errors.required(formControls.password) }}</mat-error>
