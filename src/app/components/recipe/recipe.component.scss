@@ -63,10 +63,21 @@ $blue-400: #42a5f5;
       }
     }
 
-    .recipe-time {
-      text-align: center;
-      font-weight: normal;
-      margin-bottom: 0;
+    .recipe-time-container {
+      display: flex;
+      justify-content: space-between;
+
+      .recipe-time {
+        text-align: center;
+        font-weight: normal;
+        margin-bottom: 0;
+      }
+
+      .recipe-views {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
     }
 
     .recipe-types,

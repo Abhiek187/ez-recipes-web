@@ -66,15 +66,21 @@
       }
     </mat-chip-set>
 
-    <h2 class="recipe-time" [ngPlural]="recipe.time">
-      <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
-      <ng-template ngPluralCase="1">
-        <b>Time:</b> {{ recipe.time }} minute
-      </ng-template>
-      <ng-template ngPluralCase="other">
-        <b>Time:</b> {{ recipe.time }} minutes
-      </ng-template>
-    </h2>
+    <div class="recipe-time-container">
+      <h2 class="recipe-time" [ngPlural]="recipe.time">
+        <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
+        <ng-template ngPluralCase="1">
+          <b>Time:</b> {{ recipe.time }} minute
+        </ng-template>
+        <ng-template ngPluralCase="other">
+          <b>Time:</b> {{ recipe.time }} minutes
+        </ng-template>
+      </h2>
+      <div class="recipe-views">
+        <mat-icon fontIcon="visibility" aria-label="views" />
+        {{ recipe.views ?? 0 | shorthand }}
+      </div>
+    </div>
 
     @if (recipe.types.length > 0) {
     <h3 class="recipe-types">

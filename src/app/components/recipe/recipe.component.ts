@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 import Recipe from '../../models/recipe.model';
 import { RecipeService } from '../../services/recipe.service';
 import { TermsService } from 'src/app/services/terms.service';
+import { ShorthandPipe } from '../../pipes/shorthand.pipe';
 
 @Component({
   selector: 'app-recipe',
@@ -27,6 +28,7 @@ import { TermsService } from 'src/app/services/terms.service';
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    ShorthandPipe,
   ],
   templateUrl: './recipe.component.html',
   styleUrl: './recipe.component.scss',
