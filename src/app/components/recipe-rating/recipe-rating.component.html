@@ -1,0 +1,31 @@
+<div class="recipe-rating" [attr.aria-label]="ratingLabel()">
+  @for (i of RATINGS; track i) {
+  <button
+    matButton
+    class="rating-button"
+    (click)="handleRate.emit(i)"
+    (mouseenter)="onHoverStart(i)"
+    (mouseleave)="onHoverEnd()"
+    [disabled]="!enabled"
+    [attr.aria-label]="starRatingInputLabel(i)"
+    [style]="{
+      color:
+        hoveringStar() !== undefined || myRating() !== undefined
+          ? '#E65100'
+          : '#FFA000'
+    }"
+  >
+    <mat-icon [fontIcon]="starIcon(i)" />
+  </button>
+  }
+  <p class="rating-text">
+    @if (averageRating() !== undefined) {
+    <!-- Round rating to 1 decimal place -->
+    ({{ averageRating() | number : "1.0-1" }}/5,
+    {{ totalRatings() | shorthand }}
+    {{ totalRatings() === 1 ? "rating" : "ratings" }}) } @else { ({{
+      totalRatings() | shorthand
+    }}
+    ratings) }
+  </p>
+</div>

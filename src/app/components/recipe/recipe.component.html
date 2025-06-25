@@ -82,6 +82,13 @@
       </div>
     </div>
 
+    <app-recipe-rating
+      [averageRating]="recipe.averageRating"
+      [totalRatings]="recipe.totalRatings ?? 0"
+      [myRating]=""
+      (handleRate)="onRate($event)"
+    />
+
     @if (recipe.types.length > 0) {
     <h3 class="recipe-types">
       <b>Great for:</b> {{ recipe.types.join(", ") }}

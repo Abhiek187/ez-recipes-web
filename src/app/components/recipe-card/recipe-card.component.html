@@ -25,6 +25,12 @@
         />
       </button>
     </span>
+    <app-recipe-rating
+      [averageRating]="recipe().averageRating"
+      [totalRatings]="recipe().totalRatings ?? 0"
+      [myRating]=""
+      (handleRate)="onRate($event)"
+    />
     <span class="recipe-info-row">
       <p [ngPlural]="recipe().time">
         <!-- Pluralize the recipe time (if a recipe only takes a minute) -->

@@ -16,6 +16,7 @@ import Recipe from '../../models/recipe.model';
 import { RecipeService } from '../../services/recipe.service';
 import { TermsService } from 'src/app/services/terms.service';
 import { ShorthandPipe } from '../../pipes/shorthand.pipe';
+import { RecipeRatingComponent } from '../recipe-rating/recipe-rating.component';
 
 @Component({
   selector: 'app-recipe',
@@ -28,6 +29,7 @@ import { ShorthandPipe } from '../../pipes/shorthand.pipe';
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    RecipeRatingComponent,
     ShorthandPipe,
   ],
   templateUrl: './recipe.component.html',
@@ -153,6 +155,10 @@ export class RecipeComponent implements OnInit, OnDestroy {
     this.snackBar.open('Nice! Hope it was tasty!', undefined, {
       duration: 2000, // automatically dismiss after 2 seconds
     });
+  }
+
+  onRate(rating: number) {
+    console.log('clicked rating:', rating);
   }
 
   getRandomRecipe() {

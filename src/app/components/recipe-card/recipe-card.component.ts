@@ -7,10 +7,17 @@ import { Router } from '@angular/router';
 
 import Recipe from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
+import { RecipeRatingComponent } from '../recipe-rating/recipe-rating.component';
 
 @Component({
   selector: 'app-recipe-card',
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    RecipeRatingComponent,
+  ],
   templateUrl: './recipe-card.component.html',
   styleUrl: './recipe-card.component.scss',
 })
@@ -33,6 +40,10 @@ export class RecipeCardComponent implements OnInit {
     event.stopPropagation();
     // Placeholder for the heart button
     this.isFavorite = !this.isFavorite;
+  }
+
+  onRate(rating: number) {
+    console.log('clicked rating:', rating);
   }
 
   openRecipe() {
