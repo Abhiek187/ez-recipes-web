@@ -28,7 +28,8 @@
     <app-recipe-rating
       [averageRating]="recipe().averageRating ?? null"
       [totalRatings]="recipe().totalRatings ?? 0"
-      [myRating]=""
+      [myRating]="chef()?.ratings?.[recipe().id]"
+      [enabled]="chef() !== undefined"
       (handleRate)="onRate($event)"
     />
     <span class="recipe-info-row">

@@ -3,11 +3,14 @@ import { Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
-import Recipe from 'src/app/models/recipe.model';
+import Recipe, { RecipeUpdate } from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { RecipeRatingComponent } from '../recipe-rating/recipe-rating.component';
+import { ChefService } from 'src/app/services/chef.service';
+import Constants from 'src/app/constants/constants';
 
 @Component({
   selector: 'app-recipe-card',
@@ -23,11 +26,14 @@ import { RecipeRatingComponent } from '../recipe-rating/recipe-rating.component'
 })
 export class RecipeCardComponent implements OnInit {
   private recipeService = inject(RecipeService);
+  private chefService = inject(ChefService);
   private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
 
   readonly recipe = input.required<Recipe>();
   calories?: Recipe['nutrients'][number];
   isFavorite = false;
+  chef = this.chefService.chef;
 
   ngOnInit(): void {
     this.calories = this.recipe().nutrients.find(
@@ -43,7 +49,41 @@ export class RecipeCardComponent implements OnInit {
   }
 
   onRate(rating: number) {
-    console.log('clicked rating:', rating);
+    const recipeId = this.recipe().id;
+    const recipeUpdate: RecipeUpdate = {
+      rating,
+    };
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+
+    if (this.chefService.chef() === undefined || token === null) {
+      this.snackBar.open(
+        'You must be signed in to rate this recipe',
+        'Dismiss'
+      );
+      return;
+    }
+
+    this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
+      next: ({ token }) => {
+        this.chefService.chef.update(
+          (chef) =>
+            chef && {
+              ...chef,
+              ratings: {
+                ...chef?.ratings,
+                [recipeId]: rating,
+              },
+            }
+        );
+
+        if (token !== undefined) {
+          localStorage.setItem(Constants.LocalStorage.token, token);
+        }
+      },
+      error: (error) => {
+        this.snackBar.open(error.message, 'Dismiss');
+      },
+    });
   }
 
   openRecipe() {

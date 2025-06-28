@@ -12,11 +12,13 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import Recipe from '../../models/recipe.model';
+import Recipe, { RecipeUpdate } from '../../models/recipe.model';
 import { RecipeService } from '../../services/recipe.service';
 import { TermsService } from 'src/app/services/terms.service';
 import { ShorthandPipe } from '../../pipes/shorthand.pipe';
 import { RecipeRatingComponent } from '../recipe-rating/recipe-rating.component';
+import { ChefService } from 'src/app/services/chef.service';
+import Constants from 'src/app/constants/constants';
 
 @Component({
   selector: 'app-recipe',
@@ -37,6 +39,7 @@ import { RecipeRatingComponent } from '../recipe-rating/recipe-rating.component'
 })
 export class RecipeComponent implements OnInit, OnDestroy {
   private recipeService = inject(RecipeService);
+  private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -46,6 +49,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
   recipe: Recipe | null = null;
   isLoading = false;
   dictionary?: { [word: string]: string };
+  chef = this.chefService.chef;
 
   recipeChangeSubscription?: Subscription;
   routerSubscription?: Subscription;
@@ -151,7 +155,49 @@ export class RecipeComponent implements OnInit, OnDestroy {
   }
 
   onRate(rating: number) {
-    console.log('clicked rating:', rating);
+    const recipeId = this.recipe?.id;
+    const recipeUpdate: RecipeUpdate = {
+      rating,
+    };
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+
+    if (
+      this.chefService.chef() === undefined ||
+      recipeId === undefined ||
+      token === null
+    ) {
+      this.snackBar.open(
+        'You must be signed in to rate this recipe',
+        'Dismiss'
+      );
+      return;
+    }
+
+    this.isLoading = true;
+    this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
+      next: ({ token }) => {
+        this.chefService.chef.update(
+          (chef) =>
+            chef && {
+              ...chef,
+              ratings: {
+                ...chef?.ratings,
+                [recipeId]: rating,
+              },
+            }
+        );
+
+        if (token !== undefined) {
+          localStorage.setItem(Constants.LocalStorage.token, token);
+        }
+      },
+      error: (error) => {
+        this.snackBar.open(error.message, 'Dismiss');
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
+    });
   }
 
   getRandomRecipe() {

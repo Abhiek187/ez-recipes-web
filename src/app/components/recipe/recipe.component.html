@@ -85,7 +85,7 @@
     <app-recipe-rating
       [averageRating]="recipe.averageRating ?? null"
       [totalRatings]="recipe.totalRatings ?? 0"
-      [myRating]=""
+      [myRating]="chef()?.ratings?.[recipe.id]"
       (handleRate)="onRate($event)"
     />
 
