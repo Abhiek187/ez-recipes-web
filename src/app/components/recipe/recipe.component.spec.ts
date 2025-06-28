@@ -142,10 +142,7 @@ describe('RecipeComponent', () => {
       expect(recipeCulture?.textContent).toContain(culture);
     }
 
-    // The "I Made This!" and "Show Me Another Recipe!" buttons should be present
-    const madeContainer =
-      rootElement.querySelector<HTMLDivElement>('.made-container');
-    expect(madeContainer?.textContent).toContain('I Made This!');
+    // The "Show Me Another Recipe!" button should be present
     const showRecipeContainer = rootElement.querySelector<HTMLDivElement>(
       '.show-recipe-container'
     );

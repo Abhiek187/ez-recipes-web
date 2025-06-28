@@ -150,13 +150,6 @@ export class RecipeComponent implements OnInit, OnDestroy {
       });
   }
 
-  addPreparation() {
-    // Placeholder for the "I Made This!" button
-    this.snackBar.open('Nice! Hope it was tasty!', undefined, {
-      duration: 2000, // automatically dismiss after 2 seconds
-    });
-  }
-
   onRate(rating: number) {
     console.log('clicked rating:', rating);
   }
