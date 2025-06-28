@@ -83,7 +83,7 @@
     </div>
 
     <app-recipe-rating
-      [averageRating]="recipe.averageRating"
+      [averageRating]="recipe.averageRating ?? null"
       [totalRatings]="recipe.totalRatings ?? 0"
       [myRating]=""
       (handleRate)="onRate($event)"

@@ -14,7 +14,7 @@ describe('RecipeRatingComponent', () => {
     myRating,
     hoveringStar,
   }: {
-    averageRating?: number;
+    averageRating: number | null;
     totalRatings: number;
     myRating?: number;
     hoveringStar?: number;
@@ -119,7 +119,7 @@ describe('RecipeRatingComponent', () => {
   it('should omit the average rating if not available', () => {
     // Given no ratings
     initializeRecipeRating({
-      averageRating: undefined,
+      averageRating: null,
       totalRatings: 0,
     });
 

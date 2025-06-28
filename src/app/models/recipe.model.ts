@@ -136,9 +136,10 @@ type Recipe = {
       }[];
     }[];
   }[];
+  // Newly added fields are undefined for existing recipes
   token?: string; // searchSequenceToken for pagination
   totalRatings?: number;
-  averageRating?: number;
+  averageRating?: number | null;
   views?: number;
 };
 

@@ -12,7 +12,7 @@ import { ShorthandPipe } from '../../pipes/shorthand.pipe';
   styleUrl: './recipe-rating.component.scss',
 })
 export class RecipeRatingComponent {
-  readonly averageRating = input.required<number | undefined>();
+  readonly averageRating = input.required<number | null>();
   readonly totalRatings = input.required<number>();
   readonly myRating = input<number>();
   readonly enabled = input(true);
@@ -46,7 +46,7 @@ export class RecipeRatingComponent {
   ratingLabel() {
     if (this.myRating() !== undefined) {
       return `Your rating: ${this.myRating()} out of 5 stars`;
-    } else if (this.averageRating() !== undefined) {
+    } else if (this.averageRating() !== null) {
       return `Average rating: ${this.averageRating()} out of 5 stars`;
     } else {
       return 'No ratings available';

@@ -19,7 +19,7 @@
   </button>
   }
   <p class="rating-text">
-    @if (averageRating() !== undefined) {
+    @if (averageRating() !== null) {
     <!-- Round rating to 1 decimal place -->
     ({{ averageRating() | number : "1.0-1" }}/5,
     {{ totalRatings() | shorthand }}
