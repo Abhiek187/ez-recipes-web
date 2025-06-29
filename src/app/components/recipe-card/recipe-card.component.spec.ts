@@ -8,27 +8,20 @@ import { Router, RouterModule } from '@angular/router';
 
 import { RecipeCardComponent } from './recipe-card.component';
 import { mockRecipe } from 'src/app/models/recipe.mock';
-import { RecipeService } from 'src/app/services/recipe.service';
 
 describe('RecipeCardComponent', () => {
   let recipeCardComponent: RecipeCardComponent;
   let fixture: ComponentFixture<RecipeCardComponent>;
   let rootElement: HTMLElement;
 
-  let mockRecipeService: jasmine.SpyObj<RecipeService>;
   let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
-    mockRecipeService = jasmine.createSpyObj('RecipeService', ['setRecipe']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       imports: [RecipeCardComponent, RouterModule.forRoot([])],
       providers: [
-        {
-          provide: RecipeService,
-          useValue: mockRecipeService,
-        },
         {
           provide: Router,
           useValue: mockRouter,
@@ -92,7 +85,6 @@ describe('RecipeCardComponent', () => {
     // Check that the correct recipe is set and navigated to
     const recipeCard = rootElement.querySelector<HTMLElement>('.recipe-card');
     recipeCard?.click();
-    expect(mockRecipeService.setRecipe).toHaveBeenCalledWith(mockRecipe);
     expect(mockRouter.navigate).toHaveBeenCalledWith([
       `/recipe/${mockRecipe.id}`,
     ]);

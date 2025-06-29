@@ -61,8 +61,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       .getRandomRecipe()
       .subscribe({
         next: (recipe: Recipe) => {
-          this.recipeService.setRecipe(recipe);
-          console.log(recipe);
           this.router.navigate([`/recipe/${recipe.id}`]);
         },
         error: (error: Error) => {

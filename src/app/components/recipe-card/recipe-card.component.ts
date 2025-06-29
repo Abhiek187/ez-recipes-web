@@ -84,8 +84,7 @@ export class RecipeCardComponent {
 
   openRecipe() {
     const recipe = this.recipe();
-    this.recipeService.setRecipe(recipe);
-    console.log(recipe);
+    this.recipeService.recipe.set(recipe);
     this.router.navigate([`/recipe/${recipe.id}`]);
     // Scroll to the top so the recipe header can be viewed
     const sidenav = document.querySelector<HTMLElement>('.sidenav-content');

@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -46,46 +53,46 @@ export class RecipeComponent implements OnInit, OnDestroy {
   private titleService = inject(Title);
   private termsService = inject(TermsService);
 
-  recipe = signal<Recipe | null>(null);
+  recipe = this.recipeService.recipe;
+  chef = this.chefService.chef;
   isLoading = signal(false);
   dictionary = signal<{ [word: string]: string } | undefined>(undefined);
-  chef = this.chefService.chef;
 
-  recipeChangeSubscription?: Subscription;
   routerSubscription?: Subscription;
   getRecipeSubscription?: Subscription;
 
   // Nutrients that should be bold on the nutrition label
   readonly nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
 
-  ngOnInit(): void {
+  constructor() {
     /* If the user wants to find a random recipe, the home page should handle fetching the recipe
      * and passing it to the recipe component. If the user navigates to the recipe page directly,
      * the recipe component should fetch the recipe instead.
      *
      * This allows the URL to remain constant, for ease of shareability.
      */
-    this.recipeChangeSubscription = this.recipeService
-      .onRecipeChange()
-      .subscribe((recipe: Recipe | null) => {
-        this.updateRecipe(recipe);
-        const recipeId = this.route.snapshot.paramMap.get('id');
+    // effect can only be called in a constructor, not in ngOnInit
+    effect(() => {
+      this.updateRecipe(this.recipe());
+      const recipeId = this.route.snapshot.paramMap.get('id');
 
-        /* If the ID of the recipe passed in doesn't match the recipe ID in the URL, get the recipe
-         * from the URL param. (This shouldn't happen normally.)
-         */
-        if (
-          this.recipe() === null ||
-          this.recipe()?.id?.toString() !== recipeId
-        ) {
-          if (recipeId !== null) {
-            this.getRecipe(recipeId);
-          } else {
-            // No recipe ID was found (shouldn't happen normally)
-          }
+      /* If the ID of the recipe passed in doesn't match the recipe ID in the URL, get the recipe
+       * from the URL param. (This shouldn't happen normally.)
+       */
+      if (
+        this.recipe() === null ||
+        this.recipe()?.id?.toString() !== recipeId
+      ) {
+        if (recipeId !== null) {
+          this.getRecipe(recipeId);
+        } else {
+          // No recipe ID was found (shouldn't happen normally)
         }
-      });
+      }
+    });
+  }
 
+  ngOnInit(): void {
     // Respond to navigating forward and backward by loading the correct recipe
     this.routerSubscription = this.router.events.subscribe((event) => {
       if (
@@ -117,15 +124,13 @@ export class RecipeComponent implements OnInit, OnDestroy {
      * page, the correct recipe is fetched. Otherwise, the home page can continue fetching the
      * correct recipe.
      */
-    this.recipeChangeSubscription?.unsubscribe();
     this.routerSubscription?.unsubscribe();
-    this.recipeService.resetRecipe();
+    this.recipeService.recipe.set(null);
     this.getRecipeSubscription?.unsubscribe();
   }
 
   updateRecipe(recipe: Recipe | null) {
     // Helper method to perform common actions after updating the recipe property
-    this.recipe.set(recipe);
     const prefix = 'EZ Recipes | ';
     this.titleService.setTitle(
       prefix +
@@ -147,10 +152,6 @@ export class RecipeComponent implements OnInit, OnDestroy {
     this.getRecipeSubscription = this.recipeService
       .getRecipeById(id)
       .subscribe({
-        next: (recipe: Recipe) => {
-          this.recipeService.setRecipe(recipe);
-          console.log(recipe);
-        },
         error: (error: Error) => {
           this.snackBar.open(error.message, 'Dismiss');
         },
@@ -215,8 +216,6 @@ export class RecipeComponent implements OnInit, OnDestroy {
       .getRandomRecipe()
       .subscribe({
         next: (recipe: Recipe) => {
-          this.updateRecipe(recipe);
-          console.log(recipe);
           // Change the URL without reloading the component
           this.router.navigate([`/recipe/${recipe.id}`]);
         },
