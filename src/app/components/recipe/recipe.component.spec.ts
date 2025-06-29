@@ -13,6 +13,7 @@ import { RouterModule } from '@angular/router';
 
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
+import { ShorthandPipe } from 'src/app/pipes/shorthand.pipe';
 
 describe('RecipeComponent', () => {
   let recipeComponent: RecipeComponent;
@@ -58,7 +59,7 @@ describe('RecipeComponent', () => {
     const recipeLink =
       rootElement.querySelector<HTMLAnchorElement>('.recipe-link');
     expect(recipeLink).not.toBeNull();
-    expect(recipeLink?.href).toBe(recipeComponent.recipe()!.url);
+    expect(recipeLink?.href).toBe(recipeComponent.recipe()?.url);
     expect(recipeLink?.ariaLabel).toBe('Open recipe source');
     expectLinkToOpenInNewTab(recipeLink!);
   });
@@ -68,12 +69,12 @@ describe('RecipeComponent', () => {
     // Check the recipe image and caption
     const recipeImage =
       rootElement.querySelector<HTMLImageElement>('.recipe-image');
-    expect(recipeImage?.src).toBe(recipeComponent.recipe()!.image);
-    expect(recipeImage?.alt).toBe(recipeComponent.recipe()!.name);
+    expect(recipeImage?.src).toBe(recipeComponent.recipe()?.image);
+    expect(recipeImage?.alt).toBe(recipeComponent.recipe()?.name);
     const recipeCaption =
       rootElement.querySelector<HTMLElement>('.recipe-caption');
     expect(recipeCaption?.textContent).toContain(
-      recipeComponent.recipe()!.credit
+      recipeComponent.recipe()?.credit
     );
     const recipeCaptionLink =
       recipeCaption?.firstElementChild as HTMLAnchorElement;
@@ -92,32 +93,32 @@ describe('RecipeComponent', () => {
         capitalize(recipeComponent.recipe()!.spiceLevel)
       );
     }
-    if (recipeComponent.recipe()!.isVegetarian) {
+    if (recipeComponent.recipe()?.isVegetarian) {
       expect(recipePills?.textContent).toContain('Vegetarian');
     } else {
       expect(recipePills?.textContent).not.toContain('Vegetarian');
     }
-    if (recipeComponent.recipe()!.isVegan) {
+    if (recipeComponent.recipe()?.isVegan) {
       expect(recipePills?.textContent).toContain('Vegan');
     } else {
       expect(recipePills?.textContent).not.toContain('Vegan');
     }
-    if (recipeComponent.recipe()!.isGlutenFree) {
+    if (recipeComponent.recipe()?.isGlutenFree) {
       expect(recipePills?.textContent).toContain('Gluten-Free');
     } else {
       expect(recipePills?.textContent).not.toContain('Gluten-Free');
     }
-    if (recipeComponent.recipe()!.isHealthy) {
+    if (recipeComponent.recipe()?.isHealthy) {
       expect(recipePills?.textContent).toContain('Healthy');
     } else {
       expect(recipePills?.textContent).not.toContain('Healthy');
     }
-    if (recipeComponent.recipe()!.isCheap) {
+    if (recipeComponent.recipe()?.isCheap) {
       expect(recipePills?.textContent).toContain('Cheap');
     } else {
       expect(recipePills?.textContent).not.toContain('Cheap');
     }
-    if (recipeComponent.recipe()!.isSustainable) {
+    if (recipeComponent.recipe()?.isSustainable) {
       expect(recipePills?.textContent).toContain('Sustainable');
     } else {
       expect(recipePills?.textContent).not.toContain('Sustainable');
@@ -127,7 +128,15 @@ describe('RecipeComponent', () => {
     const recipeTime =
       rootElement.querySelector<HTMLHeadingElement>('.recipe-time');
     expect(recipeTime?.textContent).toContain(
-      `${recipeComponent.recipe()!.time} minutes`
+      `${recipeComponent.recipe()?.time} minutes`
+    );
+    // The recipe views should be in shorthand
+    const recipeViews =
+      rootElement.querySelector<HTMLDivElement>('.recipe-views');
+    const shorthandPipe = new ShorthandPipe();
+    expect(recipeComponent.recipe()?.views).not.toBeUndefined();
+    expect(recipeViews?.textContent).toContain(
+      shorthandPipe.transform(recipeComponent.recipe()!.views!)
     );
 
     // The recipe types & culture should be listed if applicable
@@ -155,11 +164,11 @@ describe('RecipeComponent', () => {
       rootElement.querySelector<HTMLElement>('.nutrition-card');
     expect(nutritionCard?.textContent).toContain('Nutrition Facts');
     expect(nutritionCard?.textContent).toContain(
-      recipeComponent.recipe()!.healthScore
+      recipeComponent.recipe()?.healthScore
     );
     // Servings should be plural if > 1
     expect(nutritionCard?.textContent).toContain(
-      `${recipeComponent.recipe()!.servings} servings`
+      `${recipeComponent.recipe()?.servings} servings`
     );
 
     // Each nutrient should be displayed
@@ -181,7 +190,7 @@ describe('RecipeComponent', () => {
     );
     expect(recipeSummaryCard?.textContent).toContain('Summary');
     expect(recipeSummaryCard?.innerHTML).toContain(
-      recipeComponent.recipe()!.summary
+      recipeComponent.recipe()?.summary
     );
 
     const lightBulbIcon =
