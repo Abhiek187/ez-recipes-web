@@ -132,17 +132,17 @@
       color="accent"
       type="submit"
       class="submit-button"
-      [disabled]="!filterFormGroup.valid || isLoading"
+      [disabled]="!filterFormGroup.valid || isLoading()"
     >
       Apply
     </button>
-    @if (isLoading) {
+    @if (isLoading()) {
     <mat-spinner diameter="40" class="progress-spinner" />
     }
   </span>
-  @if (isLoading) {
-  <p class="loading-message">{{ loadingMessage }}</p>
-  } @if (noRecipesFound) {
+  @if (isLoading()) {
+  <p class="loading-message">{{ loadingMessage() }}</p>
+  } @if (noRecipesFound()) {
   <p class="no-results-error">
     <mat-icon fontIcon="error" />{{ Errors.noResults }}
   </p>
@@ -150,18 +150,18 @@
 </form>
 
 <!-- Results -->
-@if (recipes.length > 0) {
+@if (recipes().length > 0) {
 <section class="results">
   <mat-divider class="results-divider" />
   <h1 class="results-title">Results</h1>
   <ul class="results-list">
-    @for (recipe of recipes; track recipe.id) {
+    @for (recipe of recipes(); track recipe.id) {
     <li>
       <app-recipe-card [recipe]="recipe" />
     </li>
     }
   </ul>
-  @if (isLoading) {
+  @if (isLoading()) {
   <mat-spinner diameter="40" class="progress-spinner" />
   }
 </section>

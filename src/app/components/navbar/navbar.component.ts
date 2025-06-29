@@ -1,5 +1,12 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnDestroy, OnInit, Type, inject } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  Type,
+  inject,
+  signal,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -32,27 +39,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private titleService = inject(Title);
   private snackBar = inject(MatSnackBar);
 
-  isSmallScreen: boolean;
+  // Detect breakpoint changes so the template can respond
+  isSmallScreen = signal(this.breakpointObserver.isMatched(Breakpoints.XSmall));
   // Navigation links to show in the sidenav
-  navItems = environment.production
+  readonly navItems = environment.production
     ? [routes.home, routes.search, routes.glossary]
     : [routes.home, routes.search, routes.glossary, routes.profile];
 
-  isRecipePage = false;
-  isFavorite = false;
+  isRecipePage = signal(false);
+  isFavorite = signal(false);
   breakpointSubscription?: Subscription;
-
-  constructor() {
-    // Detect breakpoint changes so the template can respond
-    this.isSmallScreen = this.breakpointObserver.isMatched(Breakpoints.XSmall);
-  }
 
   ngOnInit(): void {
     this.breakpointSubscription = this.breakpointObserver
       .observe(Breakpoints.XSmall)
       .subscribe(() => {
-        this.isSmallScreen = this.breakpointObserver.isMatched(
-          Breakpoints.XSmall
+        this.isSmallScreen.set(
+          this.breakpointObserver.isMatched(Breakpoints.XSmall)
         );
       });
   }
@@ -63,12 +66,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onRouterOutletActivate(event: Type<Component>) {
     // Check if the recipe component is shown in the router outlet
-    this.isRecipePage = event instanceof RecipeComponent;
+    this.isRecipePage.set(event instanceof RecipeComponent);
   }
 
   toggleFavoriteRecipe() {
     // Placeholder for the heart button
-    this.isFavorite = !this.isFavorite;
+    this.isFavorite.update((isFavorite) => !isFavorite);
   }
 
   async shareRecipe() {

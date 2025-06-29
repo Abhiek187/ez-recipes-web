@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 
@@ -14,14 +14,15 @@ import { TermsService } from 'src/app/services/terms.service';
 export class GlossaryComponent implements OnInit {
   private termsService = inject(TermsService);
 
-  terms?: Term[];
+  terms = signal<Term[] | undefined>(undefined);
 
   ngOnInit(): void {
-    this.terms = this.termsService.getCachedTerms()?.toSorted((a, b) => {
+    const sortedTerms = this.termsService.getCachedTerms()?.toSorted((a, b) => {
       // Sort all the terms alphabetically for ease of reference
       if (a.word < b.word) return -1;
       else if (a.word > b.word) return 1;
       else return 0;
     });
+    this.terms.set(sortedTerms);
   }
 }

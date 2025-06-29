@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -46,9 +46,9 @@ export class RecipeComponent implements OnInit, OnDestroy {
   private titleService = inject(Title);
   private termsService = inject(TermsService);
 
-  recipe: Recipe | null = null;
-  isLoading = false;
-  dictionary?: { [word: string]: string };
+  recipe = signal<Recipe | null>(null);
+  isLoading = signal(false);
+  dictionary = signal<{ [word: string]: string } | undefined>(undefined);
   chef = this.chefService.chef;
 
   recipeChangeSubscription?: Subscription;
@@ -56,7 +56,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
   getRecipeSubscription?: Subscription;
 
   // Nutrients that should be bold on the nutrition label
-  nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
+  readonly nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
 
   ngOnInit(): void {
     /* If the user wants to find a random recipe, the home page should handle fetching the recipe
@@ -74,7 +74,10 @@ export class RecipeComponent implements OnInit, OnDestroy {
         /* If the ID of the recipe passed in doesn't match the recipe ID in the URL, get the recipe
          * from the URL param. (This shouldn't happen normally.)
          */
-        if (this.recipe === null || this.recipe.id.toString() !== recipeId) {
+        if (
+          this.recipe() === null ||
+          this.recipe()?.id?.toString() !== recipeId
+        ) {
           if (recipeId !== null) {
             this.getRecipe(recipeId);
           } else {
@@ -99,12 +102,14 @@ export class RecipeComponent implements OnInit, OnDestroy {
 
     const terms = this.termsService.getCachedTerms();
     // Make it easier to lookup words and their definitions (O(n) time instead of O(n^2) time)
-    this.dictionary = terms?.reduce<{
-      [word: string]: string;
-    }>((dict, term) => {
-      dict[term.word] = term.definition;
-      return dict;
-    }, {});
+    this.dictionary.set(
+      terms?.reduce<{
+        [word: string]: string;
+      }>((dict, term) => {
+        dict[term.word] = term.definition;
+        return dict;
+      }, {})
+    );
   }
 
   ngOnDestroy(): void {
@@ -120,12 +125,12 @@ export class RecipeComponent implements OnInit, OnDestroy {
 
   updateRecipe(recipe: Recipe | null) {
     // Helper method to perform common actions after updating the recipe property
-    this.recipe = recipe;
+    this.recipe.set(recipe);
     const prefix = 'EZ Recipes | ';
     this.titleService.setTitle(
       prefix +
-        (this.recipe?.name ??
-          (this.isLoading ? 'Loading...' : 'Recipe Not Found'))
+        (this.recipe()?.name ??
+          (this.isLoading() ? 'Loading...' : 'Recipe Not Found'))
     );
 
     if (recipe !== null) {
@@ -137,7 +142,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
 
   getRecipe(id: string) {
     // Get a recipe by ID
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     this.getRecipeSubscription = this.recipeService
       .getRecipeById(id)
@@ -150,13 +155,13 @@ export class RecipeComponent implements OnInit, OnDestroy {
           this.snackBar.open(error.message, 'Dismiss');
         },
         complete: () => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
       });
   }
 
   onRate(rating: number) {
-    const recipeId = this.recipe?.id;
+    const recipeId = this.recipe()?.id;
     const recipeUpdate: RecipeUpdate = {
       rating,
     };
@@ -174,7 +179,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
       next: ({ token }) => {
         this.chefService.chef.update(
@@ -196,14 +201,14 @@ export class RecipeComponent implements OnInit, OnDestroy {
         this.snackBar.open(error.message, 'Dismiss');
       },
       complete: () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
       },
     });
   }
 
   getRandomRecipe() {
     // Show the progress spinner while the recipe is loading
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     // Show a random, low-effort recipe
     this.getRecipeSubscription = this.recipeService
@@ -220,7 +225,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
           this.snackBar.open(error.message, 'Dismiss');
         },
         complete: () => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
       });
   }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,17 +28,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
-  isLoading = false;
-  private defaultLoadingMessage = '';
-  loadingMessage = this.defaultLoadingMessage;
+  isLoading = signal(false);
+  private readonly defaultLoadingMessage = '';
+  loadingMessage = signal(this.defaultLoadingMessage);
   recipeServiceSubscription?: Subscription;
-  recentRecipes: Recipe[] = [];
+  recentRecipes = signal<Recipe[]>([]);
 
   ngOnInit(): void {
     // Get all the recent recipes from IndexedDB
     this.recipeService.getRecentRecipes().subscribe({
       next: (recipes: Recipe[]) => {
-        this.recentRecipes = recipes;
+        this.recentRecipes.set(recipes);
       },
       error: (error: Error) => {
         this.snackBar.open(error.message, 'Dismiss');
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getRandomRecipe() {
     // Show the progress spinner while the recipe is loading
-    this.isLoading = true;
+    this.isLoading.set(true);
     const timer = this.showLoadingMessages();
 
     // Show a random, low-effort recipe
@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.snackBar.open(error.message, 'Dismiss');
         },
         complete: () => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           clearInterval(timer);
         },
       });
@@ -78,10 +78,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   showLoadingMessages() {
     // Don't show any messages initially if the recipe loads quickly
-    this.loadingMessage = this.defaultLoadingMessage;
+    this.loadingMessage.set(this.defaultLoadingMessage);
 
     return setInterval(() => {
-      this.loadingMessage = getRandomElement(Constants.loadingMessages);
+      this.loadingMessage.set(getRandomElement(Constants.loadingMessages));
     }, 3000);
   }
 }

@@ -1,6 +1,6 @@
-@if (terms !== undefined) {
+@if (terms() !== undefined) {
 <mat-list>
-  @for (term of terms; track term._id) {
+  @for (term of terms(); track term._id) {
   <mat-list-item class="term-list">
     <span class="term-line">
       <b>{{ term.word }}</b> — {{ term.definition }}

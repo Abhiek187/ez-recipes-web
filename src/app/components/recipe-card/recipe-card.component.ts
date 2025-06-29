@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, input } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,28 +24,24 @@ import Constants from 'src/app/constants/constants';
   templateUrl: './recipe-card.component.html',
   styleUrl: './recipe-card.component.scss',
 })
-export class RecipeCardComponent implements OnInit {
+export class RecipeCardComponent {
   private recipeService = inject(RecipeService);
   private chefService = inject(ChefService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
 
   readonly recipe = input.required<Recipe>();
-  calories?: Recipe['nutrients'][number];
-  isFavorite = false;
+  readonly calories = computed(() =>
+    this.recipe().nutrients.find((nutrient) => nutrient.name === 'Calories')
+  );
+  isFavorite = signal(false);
   chef = this.chefService.chef;
-
-  ngOnInit(): void {
-    this.calories = this.recipe().nutrients.find(
-      (nutrient) => nutrient.name === 'Calories'
-    );
-  }
 
   toggleFavoriteRecipe(event: MouseEvent) {
     // Don't trigger the card's click event
     event.stopPropagation();
     // Placeholder for the heart button
-    this.isFavorite = !this.isFavorite;
+    this.isFavorite.update((isFavorite) => !isFavorite);
   }
 
   onRate(rating: number) {

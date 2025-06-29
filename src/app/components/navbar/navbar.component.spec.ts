@@ -41,14 +41,14 @@ describe('NavbarComponent', () => {
     const shareIcon =
       rootElement.querySelector<HTMLButtonElement>('.share-icon');
 
-    expect(navbarComponent.isRecipePage).toBeFalse();
+    expect(navbarComponent.isRecipePage()).toBeFalse();
     expect(favoriteIcon).toBeNull();
     expect(shareIcon).toBeNull();
   });
 
   it('should display the hamburger menu on small screens', () => {
     // Check that the navbar contains the app name and a hamburger icon
-    navbarComponent.isSmallScreen = true;
+    navbarComponent.isSmallScreen.set(true);
     fixture.detectChanges();
 
     const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
@@ -64,14 +64,14 @@ describe('NavbarComponent', () => {
     const shareIcon =
       rootElement.querySelector<HTMLButtonElement>('.share-icon');
 
-    expect(navbarComponent.isRecipePage).toBeFalse();
+    expect(navbarComponent.isRecipePage()).toBeFalse();
     expect(favoriteIcon).toBeNull();
     expect(shareIcon).toBeNull();
   });
 
   it('should toggle the sidenav when clicking the hamburger icon', () => {
     // Check that the sidenav appears and disappears when clicking the hamburger icon
-    navbarComponent.isSmallScreen = true;
+    navbarComponent.isSmallScreen.set(true);
     fixture.detectChanges();
 
     const sidenav = rootElement.querySelector<HTMLDivElement>('.sidenav');
@@ -94,16 +94,16 @@ describe('NavbarComponent', () => {
 
   it('should toggle isFavorite', () => {
     // Check that the toggleFavoriteRecipe method toggles the isFavorite property
-    const oldIsFavorite = navbarComponent.isFavorite;
+    const oldIsFavorite = navbarComponent.isFavorite();
     navbarComponent.toggleFavoriteRecipe();
 
-    const newIsFavorite = navbarComponent.isFavorite;
+    const newIsFavorite = navbarComponent.isFavorite();
     expect(newIsFavorite).not.toBe(oldIsFavorite);
   });
 
   it('should show the correct heart icon', () => {
     // Check that the heart icon is filled when favoriting and isn't filled when unfavoriting
-    navbarComponent.isRecipePage = true;
+    navbarComponent.isRecipePage.set(true);
     fixture.detectChanges();
 
     const favoriteButton =
@@ -128,7 +128,7 @@ describe('NavbarComponent', () => {
   it('should call shareRecipe after clicking the share button', () => {
     // Check that shareRecipe is called after clicking the share button
     spyOn(navbarComponent, 'shareRecipe');
-    navbarComponent.isRecipePage = true;
+    navbarComponent.isRecipePage.set(true);
     fixture.detectChanges();
 
     const shareIcon =

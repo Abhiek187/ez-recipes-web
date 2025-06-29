@@ -77,7 +77,7 @@ describe('HomeComponent', () => {
     ).toBeDefined();
 
     // The spinner should be hidden
-    expect(homeComponent.isLoading).toBeFalse();
+    expect(homeComponent.isLoading()).toBeFalse();
     expect(rootElement.querySelector('.progress-spinner')).toBeNull();
   });
 
@@ -98,7 +98,7 @@ describe('HomeComponent', () => {
 
   it('should show a spinner while loading', () => {
     // Check that the material spinner shows when isLoading is true
-    homeComponent.isLoading = true;
+    homeComponent.isLoading.set(true);
     fixture.detectChanges();
 
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
@@ -114,9 +114,9 @@ describe('HomeComponent', () => {
     // The loading message should start blank, then show a random message after some time
     fixture.detectChanges();
     homeComponent.showLoadingMessages();
-    expect(homeComponent.loadingMessage).toBe('');
+    expect(homeComponent.loadingMessage()).toBe('');
     jasmine.clock().tick(3000);
-    expect(Constants.loadingMessages).toContain(homeComponent.loadingMessage);
+    expect(Constants.loadingMessages).toContain(homeComponent.loadingMessage());
   });
 
   it("shouldn't show the recents section if there aren't any recent recipes", () => {

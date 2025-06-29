@@ -6,7 +6,7 @@ import {
   trigger,
 } from '@angular/animations';
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -170,12 +170,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   valueChangeSubscription?: Subscription;
   recipeServiceSubscription?: Subscription;
 
-  isLoading = false;
-  private defaultLoadingMessage = '';
-  loadingMessage = this.defaultLoadingMessage;
-  noRecipesFound = false;
-  recipes: Recipe[] = [];
-  lastToken: string | null = null;
+  isLoading = signal(false);
+  private readonly defaultLoadingMessage = '';
+  loadingMessage = signal(this.defaultLoadingMessage);
+  noRecipesFound = signal(false);
+  recipes = signal<Recipe[]>([]);
+  lastToken = signal<string | null>(null);
 
   // Exclude unknown cases and sort for ease of reference
   readonly spiceLevels = SPICE_LEVELS.filter(
@@ -252,9 +252,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   private searchRecipes(paginate: boolean) {
     const recipeFilter = this.removeNullValues({
       ...this.filterFormGroup.value,
-      ...(paginate && { token: this.lastToken }),
+      ...(paginate && { token: this.lastToken() }),
     });
-    this.isLoading = true;
+    this.isLoading.set(true);
     const timer = !paginate ? this.showLoadingMessages() : undefined;
 
     this.recipeServiceSubscription = this.recipeService
@@ -262,23 +262,23 @@ export class SearchComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (recipes: Recipe[]) => {
           // Append results if paginating, replace otherwise
-          this.recipes = paginate ? this.recipes.concat(recipes) : recipes;
+          this.recipes.set(paginate ? this.recipes().concat(recipes) : recipes);
           // Don't show an error if there are no more paginated results
-          this.noRecipesFound = !paginate && recipes.length === 0;
+          this.noRecipesFound.set(!paginate && recipes.length === 0);
 
           const lastRecipe = recipes.at(-1);
           if (lastRecipe !== undefined) {
-            this.lastToken = lastRecipe.token ?? lastRecipe._id ?? null;
+            this.lastToken.set(lastRecipe.token ?? lastRecipe._id ?? null);
           } else {
             // Prevent subsequent calls if there are no more results
-            this.lastToken = null;
+            this.lastToken.set(null);
           }
         },
         error: (error: Error) => {
           this.snackBar.open(error.message, 'Dismiss');
         },
         complete: () => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           clearInterval(timer);
         },
       });
@@ -298,10 +298,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   showLoadingMessages() {
-    this.loadingMessage = this.defaultLoadingMessage;
+    this.loadingMessage.set(this.defaultLoadingMessage);
 
     return setInterval(() => {
-      this.loadingMessage = getRandomElement(Constants.loadingMessages);
+      this.loadingMessage.set(getRandomElement(Constants.loadingMessages));
     }, 3000);
   }
 
@@ -314,8 +314,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (
       target.offsetHeight + Math.ceil(target.scrollTop) >=
         target.scrollHeight &&
-      this.lastToken !== null &&
-      !this.isLoading
+      this.lastToken() !== null &&
+      !this.isLoading()
     ) {
       this.searchRecipes(true);
     }

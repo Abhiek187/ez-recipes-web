@@ -48,7 +48,7 @@ describe('RecipeCardComponent', () => {
   it('should create a recipe card', () => {
     // All elements should be visible on the recipe card
     expect(recipeCardComponent).toBeTruthy();
-    expect(recipeCardComponent.calories).toEqual(
+    expect(recipeCardComponent.calories()).toEqual(
       mockRecipe.nutrients.find((nutrient) => nutrient.name === 'Calories')
     );
 
@@ -66,26 +66,26 @@ describe('RecipeCardComponent', () => {
       `Time: ${mockRecipe.time} minutes`
     );
     expect(recipeContent?.textContent).toContain(
-      `${Math.round(recipeCardComponent.calories!.amount)} ${
-        recipeCardComponent.calories?.unit
+      `${Math.round(recipeCardComponent.calories()!.amount)} ${
+        recipeCardComponent.calories()?.unit
       }`
     );
   });
 
   it('should toggle isFavorite', () => {
     // Check that isFavorite toggles when the heart button is clicked
-    expect(recipeCardComponent.isFavorite).toBeFalse();
+    expect(recipeCardComponent.isFavorite()).toBeFalse();
 
     const favoriteButton = rootElement.querySelector<HTMLButtonElement>(
       '.recipe-favorite-icon'
     );
     favoriteButton?.click();
     fixture.detectChanges();
-    expect(recipeCardComponent.isFavorite).toBeTrue();
+    expect(recipeCardComponent.isFavorite()).toBeTrue();
 
     favoriteButton?.click();
     fixture.detectChanges();
-    expect(recipeCardComponent.isFavorite).toBeFalse();
+    expect(recipeCardComponent.isFavorite()).toBeFalse();
   });
 
   it('should open the selected recipe', () => {

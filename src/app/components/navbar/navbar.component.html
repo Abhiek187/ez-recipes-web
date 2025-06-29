@@ -1,5 +1,5 @@
 <mat-toolbar color="primary" class="toolbar">
-  @if (isSmallScreen) {
+  @if (isSmallScreen()) {
   <!-- Show a hamburger menu on small screens -->
   <!-- All material icons are found at: https://fonts.google.com/icons -->
   <button
@@ -29,16 +29,16 @@
   }
   <span class="spacer"></span>
   <!-- Update the material icon to match the corresponding boolean value -->
-  @if (isRecipePage) {
+  @if (isRecipePage()) {
   <button
     mat-icon-button
     class="favorite-icon"
     [attr.aria-label]="
-      (isFavorite ? 'Unfavorite' : 'Favorite') + ' this recipe'
+      (isFavorite() ? 'Unfavorite' : 'Favorite') + ' this recipe'
     "
     (click)="toggleFavoriteRecipe()"
   >
-    <mat-icon [fontIcon]="isFavorite ? 'favorite' : 'favorite_border'" />
+    <mat-icon [fontIcon]="isFavorite() ? 'favorite' : 'favorite_border'" />
   </button>
   <button
     mat-icon-button
@@ -58,7 +58,7 @@
   <mat-sidenav
     #snav
     class="sidenav"
-    [mode]="isSmallScreen ? 'over' : 'side'"
+    [mode]="isSmallScreen() ? 'over' : 'side'"
     [fixedInViewport]="true"
     fixedTopGap="56"
   >
