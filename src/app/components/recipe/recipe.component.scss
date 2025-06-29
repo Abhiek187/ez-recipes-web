@@ -66,6 +66,8 @@ $blue-400: #42a5f5;
     .recipe-time-container {
       display: flex;
       justify-content: space-between;
+      margin-left: 16px;
+      margin-right: 16px;
 
       .recipe-time {
         text-align: center;

@@ -1,12 +1,6 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -70,26 +64,27 @@ export class RecipeComponent implements OnInit, OnDestroy {
      * the recipe component should fetch the recipe instead.
      *
      * This allows the URL to remain constant, for ease of shareability.
+     *
+     * toObservable = effect for specific signals
+     * toObservable/effect can only be called in a constructor, not in ngOnInit
      */
-    // effect can only be called in a constructor, not in ngOnInit
-    effect(() => {
-      this.updateRecipe(this.recipe());
-      const recipeId = this.route.snapshot.paramMap.get('id');
+    toObservable(this.recipe)
+      .pipe(takeUntilDestroyed())
+      .subscribe((recipe: Recipe | null) => {
+        this.updateRecipe(recipe);
+        const recipeId = this.route.snapshot.paramMap.get('id');
 
-      /* If the ID of the recipe passed in doesn't match the recipe ID in the URL, get the recipe
-       * from the URL param. (This shouldn't happen normally.)
-       */
-      if (
-        this.recipe() === null ||
-        this.recipe()?.id?.toString() !== recipeId
-      ) {
-        if (recipeId !== null) {
-          this.getRecipe(recipeId);
-        } else {
-          // No recipe ID was found (shouldn't happen normally)
+        /* If the ID of the recipe passed in doesn't match the recipe ID in the URL, get the recipe
+         * from the URL param. (This shouldn't happen normally.)
+         */
+        if (recipe === null || recipe?.id?.toString() !== recipeId) {
+          if (recipeId !== null) {
+            this.getRecipe(recipeId);
+          } else {
+            // No recipe ID was found (shouldn't happen normally)
+          }
         }
-      }
-    });
+      });
   }
 
   ngOnInit(): void {
@@ -129,23 +124,57 @@ export class RecipeComponent implements OnInit, OnDestroy {
     this.getRecipeSubscription?.unsubscribe();
   }
 
-  updateRecipe(recipe: Recipe | null) {
+  private updateRecipe(recipe: Recipe | null) {
     // Helper method to perform common actions after updating the recipe property
     const prefix = 'EZ Recipes | ';
     this.titleService.setTitle(
       prefix +
-        (this.recipe()?.name ??
-          (this.isLoading() ? 'Loading...' : 'Recipe Not Found'))
+        (recipe?.name ?? (this.isLoading() ? 'Loading...' : 'Recipe Not Found'))
     );
 
     if (recipe !== null) {
+      // If logged in, save recipe to chef's profile. Otherwise, save to temporary storage.
       this.recipeService.saveRecentRecipe(recipe).catch((error: Error) => {
         console.error('Failed to save recipe to recents:', error.message);
       });
+      this.updateRecipeViews(recipe);
     }
   }
 
-  getRecipe(id: string) {
+  private updateRecipeViews(recipe: Recipe) {
+    // Recipe view updates can occur in the background without impacting the UX
+    const recipeUpdate: RecipeUpdate = {
+      view: true,
+    };
+    const token =
+      localStorage.getItem(Constants.LocalStorage.token) ?? undefined;
+
+    this.recipeService.updateRecipe(recipe.id, recipeUpdate, token).subscribe({
+      next: ({ token }) => {
+        this.chefService.chef.update(
+          (chef) =>
+            chef && {
+              ...chef,
+              recentRecipes: {
+                ...chef?.recentRecipes,
+                [recipe.id]: new Date().toISOString(),
+              },
+            }
+        );
+
+        if (token !== undefined) {
+          localStorage.setItem(Constants.LocalStorage.token, token);
+        }
+      },
+      error: (error) => {
+        console.error(
+          `Failed to update the recipe view count: ${error.message}`
+        );
+      },
+    });
+  }
+
+  private getRecipe(id: string) {
     // Get a recipe by ID
     this.isLoading.set(true);
 
