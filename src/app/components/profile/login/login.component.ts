@@ -78,7 +78,6 @@ export class LoginComponent implements OnDestroy {
       .login(loginCredentials)
       .subscribe({
         next: ({ token, emailVerified }) => {
-          this.isLoading.set(false);
           localStorage.setItem(Constants.LocalStorage.token, token);
 
           // Check if the user signed up, but didn't verify their email yet
@@ -103,8 +102,10 @@ export class LoginComponent implements OnDestroy {
           }
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
+          this.isLoading.set(false);
         },
       });
   }

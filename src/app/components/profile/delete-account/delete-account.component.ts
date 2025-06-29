@@ -102,15 +102,15 @@ export class DeleteAccountComponent implements OnInit, OnDestroy {
       .deleteChef(token)
       .subscribe({
         next: () => {
-          this.isLoading.set(false);
-
           localStorage.removeItem(Constants.LocalStorage.token);
           this.snackBar.open('Your account has been deleted.', 'Dismiss');
           this.router.navigate([routes.profile.path]);
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
+          this.isLoading.set(false);
         },
       });
   }

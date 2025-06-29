@@ -128,7 +128,6 @@ export class SignUpComponent implements OnDestroy {
       .createChef(loginCredentials)
       .subscribe({
         next: ({ token, emailVerified }) => {
-          this.isLoading.set(false);
           localStorage.setItem(Constants.LocalStorage.token, token);
 
           if (!emailVerified) {
@@ -149,8 +148,10 @@ export class SignUpComponent implements OnDestroy {
           }
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
+          this.isLoading.set(false);
         },
       });
   }

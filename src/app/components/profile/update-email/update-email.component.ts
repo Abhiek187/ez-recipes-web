@@ -77,7 +77,6 @@ export class UpdateEmailComponent implements OnDestroy {
       .updateChef(fields, token)
       .subscribe({
         next: ({ token }) => {
-          this.isLoading.set(false);
           this.emailSent.set(true);
 
           if (token !== undefined) {
@@ -85,8 +84,10 @@ export class UpdateEmailComponent implements OnDestroy {
           }
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
+          this.isLoading.set(false);
         },
       });
   }

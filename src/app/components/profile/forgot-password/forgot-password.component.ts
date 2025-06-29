@@ -77,12 +77,13 @@ export class ForgotPasswordComponent implements OnDestroy {
       .updateChef(chefUpdate)
       .subscribe({
         next: () => {
-          this.isLoading.set(false);
           this.emailSent.set(true);
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
+          this.isLoading.set(false);
         },
       });
   }

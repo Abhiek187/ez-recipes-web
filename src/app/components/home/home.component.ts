@@ -61,17 +61,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       .getRandomRecipe()
       .subscribe({
         next: (recipe: Recipe) => {
-          this.isLoading = false;
-          clearInterval(timer);
           this.recipeService.setRecipe(recipe);
           console.log(recipe);
           this.router.navigate([`/recipe/${recipe.id}`]);
         },
         error: (error: Error) => {
           // Show a snackbar explaining that an error occurred
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
           this.isLoading = false;
           clearInterval(timer);
-          this.snackBar.open(error.message, 'Dismiss');
         },
       });
   }

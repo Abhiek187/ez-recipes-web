@@ -131,8 +131,6 @@ export class UpdatePasswordComponent implements OnInit, OnDestroy {
       .updateChef(fields, token)
       .subscribe({
         next: () => {
-          this.isLoading.set(false);
-
           // The token will be revoked, so sign out the user
           localStorage.removeItem(Constants.LocalStorage.token);
           this.snackBar.open(
@@ -142,8 +140,10 @@ export class UpdatePasswordComponent implements OnInit, OnDestroy {
           this.router.navigate([profileRoutes.login.path]);
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
+          this.isLoading.set(false);
         },
       });
   }

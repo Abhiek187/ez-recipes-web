@@ -101,8 +101,8 @@ const calorieRangeValidator: ValidatorFn = (
     MatProgressSpinnerModule,
     MatSelectModule,
     ReactiveFormsModule,
-    RecipeCardComponent
-],
+    RecipeCardComponent,
+  ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
   animations: [
@@ -261,8 +261,6 @@ export class SearchComponent implements OnInit, OnDestroy {
       .getRecipesWithFilter(recipeFilter)
       .subscribe({
         next: (recipes: Recipe[]) => {
-          this.isLoading = false;
-          clearInterval(timer);
           // Append results if paginating, replace otherwise
           this.recipes = paginate ? this.recipes.concat(recipes) : recipes;
           // Don't show an error if there are no more paginated results
@@ -277,9 +275,11 @@ export class SearchComponent implements OnInit, OnDestroy {
           }
         },
         error: (error: Error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
           this.isLoading = false;
           clearInterval(timer);
-          this.snackBar.open(error.message, 'Dismiss');
         },
       });
   }

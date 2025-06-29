@@ -143,13 +143,14 @@ export class RecipeComponent implements OnInit, OnDestroy {
       .getRecipeById(id)
       .subscribe({
         next: (recipe: Recipe) => {
-          this.isLoading = false;
           this.recipeService.setRecipe(recipe);
           console.log(recipe);
         },
         error: (error: Error) => {
-          this.isLoading = false;
           this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
+          this.isLoading = false;
         },
       });
   }
@@ -209,7 +210,6 @@ export class RecipeComponent implements OnInit, OnDestroy {
       .getRandomRecipe()
       .subscribe({
         next: (recipe: Recipe) => {
-          this.isLoading = false;
           this.updateRecipe(recipe);
           console.log(recipe);
           // Change the URL without reloading the component
@@ -217,8 +217,10 @@ export class RecipeComponent implements OnInit, OnDestroy {
         },
         error: (error: Error) => {
           // Show a snackbar explaining that an error occurred
-          this.isLoading = false;
           this.snackBar.open(error.message, 'Dismiss');
+        },
+        complete: () => {
+          this.isLoading = false;
         },
       });
   }
