@@ -6,13 +6,14 @@
     (click)="onClick($event, i)"
     (mouseenter)="onHoverStart(i)"
     (mouseleave)="onHoverEnd()"
-    [disabled]="!enabled"
+    [disabled]="!enabled()"
     [attr.aria-label]="starRatingInputLabel(i)"
     [style]="{
-      color:
-        hoveringStar() !== undefined || myRating() !== undefined
-          ? ORANGE_900
-          : AMBER_700
+      color: !enabled()
+        ? null
+        : hoveringStar() !== undefined || myRating() !== undefined
+        ? ORANGE_900
+        : AMBER_700
     }"
   >
     <mat-icon [fontIcon]="starIcon(i)" />

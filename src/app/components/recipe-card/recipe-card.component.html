@@ -22,7 +22,7 @@
       >
         <mat-icon
           [fontIcon]="isFavorite() ? 'favorite' : 'favorite_border'"
-          color="warn"
+          [color]="chef() !== undefined ? 'warn' : null"
         />
       </button>
     </span>
