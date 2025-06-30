@@ -3,7 +3,7 @@
   <button
     matButton
     class="rating-button"
-    (click)="handleRate.emit(i)"
+    (click)="onClick($event, i)"
     (mouseenter)="onHoverStart(i)"
     (mouseleave)="onHoverEnd()"
     [disabled]="!enabled"

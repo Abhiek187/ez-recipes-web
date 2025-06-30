@@ -57,6 +57,11 @@ export class RecipeRatingComponent {
     return `Rate ${stars} ${stars === 1 ? 'star' : 'stars'}`;
   }
 
+  onClick(event: MouseEvent, star_i: number) {
+    event.stopPropagation();
+    this.handleRate.emit(star_i);
+  }
+
   onHoverStart(star_i: number) {
     this.hoveringStar.set(star_i);
   }

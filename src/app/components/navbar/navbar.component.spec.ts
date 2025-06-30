@@ -1,22 +1,55 @@
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
+import { of } from 'rxjs';
 
 import { NavbarComponent } from './navbar.component';
+import { mockChef } from 'src/app/models/profile.mock';
+import { RecipeService } from 'src/app/services/recipe.service';
+import { mockToken, mockRecipe } from 'src/app/models/recipe.mock';
 
 describe('NavbarComponent', () => {
   let navbarComponent: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
   let rootElement: HTMLElement;
 
+  let mockRecipeService: jasmine.SpyObj<RecipeService>;
+
   beforeEach(async () => {
+    mockRecipeService = jasmine.createSpyObj(
+      'RecipeService',
+      ['updateRecipe'],
+      {
+        recipe: signal(mockRecipe),
+      }
+    );
+
     await TestBed.configureTestingModule({
       imports: [
         NoopAnimationsModule,
         RouterModule.forRoot([]),
         NavbarComponent,
       ],
+      providers: [
+        {
+          provide: RecipeService,
+          useValue: mockRecipeService,
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
+
+    const localStorageProto = Object.getPrototypeOf(localStorage);
+    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
+    spyOn(localStorageProto, 'setItem').and.callFake(() => {});
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
 
     fixture = TestBed.createComponent(NavbarComponent);
     navbarComponent = fixture.componentInstance;
@@ -92,35 +125,58 @@ describe('NavbarComponent', () => {
     expect(sidenav?.classList).not.toContain('mat-drawer-opened');
   });
 
-  it('should toggle isFavorite', () => {
-    // Check that the toggleFavoriteRecipe method toggles the isFavorite property
-    const oldIsFavorite = navbarComponent.isFavorite();
-    navbarComponent.toggleFavoriteRecipe();
-
-    const newIsFavorite = navbarComponent.isFavorite();
-    expect(newIsFavorite).not.toBe(oldIsFavorite);
-  });
-
-  it('should show the correct heart icon', () => {
-    // Check that the heart icon is filled when favoriting and isn't filled when unfavoriting
+  it('should disable the favorite button if unauthenticated', () => {
     navbarComponent.isRecipePage.set(true);
+    navbarComponent.chef.set(undefined);
     fixture.detectChanges();
 
     const favoriteButton =
       rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
-    const favoriteIcon = favoriteButton?.querySelector('mat-icon');
-    expect(favoriteButton).not.toBeNull();
+    expect(favoriteButton?.disabled).toBeTrue();
+    expect(navbarComponent.isFavorite()).toBeFalse();
+  });
+
+  it('should toggle isFavorite', () => {
+    // Check that the toggleFavoriteRecipe method toggles the isFavorite property
+    navbarComponent.isRecipePage.set(true);
+    navbarComponent.chef.set(mockChef);
+    fixture.detectChanges();
     // Recipe shouldn't be liked by default
+    expect(navbarComponent.isFavorite()).toBeFalse();
+
+    // Check that the heart icon is filled when favoriting and isn't filled when unfavoriting
+    const favoriteButton =
+      rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
+    const favoriteIcon = favoriteButton?.querySelector('mat-icon');
     expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');
     expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
+    mockRecipeService.updateRecipe.and.returnValue(of(mockToken));
 
     favoriteButton?.click();
     fixture.detectChanges();
+    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(
+      mockRecipe.id,
+      { isFavorite: true },
+      mockChef.token
+    );
+    expect(navbarComponent.chef()?.favoriteRecipes).toContain(
+      mockRecipe.id.toString()
+    );
+    expect(navbarComponent.isFavorite()).toBeTrue();
     expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite');
     expect(favoriteButton?.ariaLabel).toBe('Unfavorite this recipe');
 
     favoriteButton?.click();
     fixture.detectChanges();
+    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(
+      mockRecipe.id,
+      { isFavorite: false },
+      mockChef.token
+    );
+    expect(navbarComponent.chef()?.favoriteRecipes).not.toContain(
+      mockRecipe.id.toString()
+    );
+    expect(navbarComponent.isFavorite()).toBeFalse();
     expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');
     expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
   });

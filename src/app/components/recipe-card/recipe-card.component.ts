@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,14 +34,50 @@ export class RecipeCardComponent {
   readonly calories = computed(() =>
     this.recipe().nutrients.find((nutrient) => nutrient.name === 'Calories')
   );
-  isFavorite = signal(false);
   chef = this.chefService.chef;
+  isFavorite = computed(
+    () =>
+      this.chef()?.favoriteRecipes?.includes(this.recipe().id.toString()) ??
+      false
+  );
 
   toggleFavoriteRecipe(event: MouseEvent) {
     // Don't trigger the card's click event
     event.stopPropagation();
-    // Placeholder for the heart button
-    this.isFavorite.update((isFavorite) => !isFavorite);
+
+    const recipeUpdate: RecipeUpdate = {
+      isFavorite: !this.isFavorite(),
+    };
+    const token =
+      localStorage.getItem(Constants.LocalStorage.token) ?? undefined;
+
+    this.recipeService
+      .updateRecipe(this.recipe().id, recipeUpdate, token)
+      .subscribe({
+        next: ({ token }) => {
+          const newFavoriteRecipes = this.isFavorite()
+            ? this.chef()?.favoriteRecipes?.filter(
+                (recipeId) => recipeId !== this.recipe().id.toString()
+              )
+            : this.chef()?.favoriteRecipes?.concat([
+                this.recipe().id.toString(),
+              ]);
+          this.chef.update(
+            (chef) =>
+              chef && {
+                ...chef,
+                favoriteRecipes: newFavoriteRecipes ?? [],
+              }
+          );
+
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+        },
+        error: (error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
   }
 
   onRate(rating: number) {
@@ -51,7 +87,7 @@ export class RecipeCardComponent {
     };
     const token = localStorage.getItem(Constants.LocalStorage.token);
 
-    if (this.chefService.chef() === undefined || token === null) {
+    if (this.chef() === undefined || token === null) {
       this.snackBar.open(
         'You must be signed in to rate this recipe',
         'Dismiss'
@@ -61,7 +97,7 @@ export class RecipeCardComponent {
 
     this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
       next: ({ token }) => {
-        this.chefService.chef.update(
+        this.chef.update(
           (chef) =>
             chef && {
               ...chef,

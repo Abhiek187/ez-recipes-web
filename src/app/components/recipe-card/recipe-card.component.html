@@ -18,6 +18,7 @@
           (isFavorite() ? 'Unfavorite' : 'Favorite') + ' this recipe'
         "
         (click)="toggleFavoriteRecipe($event)"
+        [disabled]="chef() === undefined"
       >
         <mat-icon
           [fontIcon]="isFavorite() ? 'favorite' : 'favorite_border'"
