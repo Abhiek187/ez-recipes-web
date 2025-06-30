@@ -215,15 +215,9 @@ export class RecipeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isLoading.set(true);
     this.recipeService
       .updateRecipe(recipeId, recipeUpdate, token)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => {
-          this.isLoading.set(false);
-        })
-      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ token }) => {
           this.chefService.chef.update(
