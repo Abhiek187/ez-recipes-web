@@ -6,7 +6,15 @@ import {
   trigger,
 } from '@angular/animations';
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnDestroy,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormControl,
@@ -27,7 +35,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import Constants from 'src/app/constants/constants';
 import { getRandomElement, toArray } from 'src/app/helpers/array';
@@ -132,6 +140,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location);
+  private destroyRef = inject(DestroyRef);
 
   filterFormNames = FilterForm;
   filterFormErrorNames = FilterFormError;
@@ -166,10 +175,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   };
   readonly scrollListener = this.onScroll.bind(this);
 
-  queryParamsSubscription?: Subscription;
-  valueChangeSubscription?: Subscription;
-  recipeServiceSubscription?: Subscription;
-
   isLoading = signal(false);
   private readonly defaultLoadingMessage = '';
   loadingMessage = signal(this.defaultLoadingMessage);
@@ -184,42 +189,41 @@ export class SearchComponent implements OnInit, OnDestroy {
   readonly mealTypes = [...MEAL_TYPES].sort();
   readonly cuisines = [...CUISINES].sort();
 
-  ngOnInit(): void {
+  constructor() {
     // Initialize the form based on the query parameters
-    this.queryParamsSubscription = this.route.queryParams.subscribe(
-      (params) => {
-        this.filterFormGroup.patchValue({
-          ...params,
-          // Parse all non-string values
-          [FilterForm.minCals]: isNumeric(params.minCals)
-            ? Number(params.minCals)
-            : null,
-          [FilterForm.maxCals]: isNumeric(params.maxCals)
-            ? Number(params.maxCals)
-            : null,
-          [FilterForm.vegetarian]: params.vegetarian === 'true',
-          [FilterForm.vegan]: params.vegan === 'true',
-          [FilterForm.glutenFree]: params.glutenFree === 'true',
-          [FilterForm.healthy]: params.healthy === 'true',
-          [FilterForm.cheap]: params.cheap === 'true',
-          [FilterForm.sustainable]: params.sustainable === 'true',
-          // 0 = undefined, 1 = string, 2+ = array
-          [FilterForm.spiceLevel]: toArray(params.spiceLevel).filter(
-            (spiceLevel): spiceLevel is SpiceLevel =>
-              isValidSpiceLevel(spiceLevel)
-          ),
-          [FilterForm.type]: toArray(params.type).filter(
-            (spiceLevel): spiceLevel is MealType => isValidMealType(spiceLevel)
-          ),
-          [FilterForm.culture]: toArray(params.culture).filter(
-            (spiceLevel): spiceLevel is Cuisine => isValidCuisine(spiceLevel)
-          ),
-        });
-      }
-    );
+    this.route.queryParams.pipe(takeUntilDestroyed()).subscribe((params) => {
+      this.filterFormGroup.patchValue({
+        ...params,
+        // Parse all non-string values
+        [FilterForm.minCals]: isNumeric(params.minCals)
+          ? Number(params.minCals)
+          : null,
+        [FilterForm.maxCals]: isNumeric(params.maxCals)
+          ? Number(params.maxCals)
+          : null,
+        [FilterForm.vegetarian]: params.vegetarian === 'true',
+        [FilterForm.vegan]: params.vegan === 'true',
+        [FilterForm.glutenFree]: params.glutenFree === 'true',
+        [FilterForm.healthy]: params.healthy === 'true',
+        [FilterForm.cheap]: params.cheap === 'true',
+        [FilterForm.sustainable]: params.sustainable === 'true',
+        // 0 = undefined, 1 = string, 2+ = array
+        [FilterForm.spiceLevel]: toArray(params.spiceLevel).filter(
+          (spiceLevel): spiceLevel is SpiceLevel =>
+            isValidSpiceLevel(spiceLevel)
+        ),
+        [FilterForm.type]: toArray(params.type).filter(
+          (spiceLevel): spiceLevel is MealType => isValidMealType(spiceLevel)
+        ),
+        [FilterForm.culture]: toArray(params.culture).filter(
+          (spiceLevel): spiceLevel is Cuisine => isValidCuisine(spiceLevel)
+        ),
+      });
+    });
 
-    this.valueChangeSubscription = this.filterFormGroup.valueChanges.subscribe(
-      (filter) => {
+    this.filterFormGroup.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((filter) => {
         // Update the query params with the selected filters
         const urlTreePath = this.router
           .createUrlTree([], {
@@ -233,19 +237,16 @@ export class SearchComponent implements OnInit, OnDestroy {
         } else {
           this.location.go(urlTreePath);
         }
-      }
-    );
+      });
+  }
 
+  ngOnInit(): void {
     // HostListener doesn't work since useCapture needs to be true
     // https://stackoverflow.com/a/54005290
     window.addEventListener('scroll', this.scrollListener, true);
   }
 
   ngOnDestroy(): void {
-    this.queryParamsSubscription?.unsubscribe();
-    this.valueChangeSubscription?.unsubscribe();
-    this.recipeServiceSubscription?.unsubscribe();
-
     window.removeEventListener('scroll', this.scrollListener, true);
   }
 
@@ -257,8 +258,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     const timer = !paginate ? this.showLoadingMessages() : undefined;
 
-    this.recipeServiceSubscription = this.recipeService
+    this.recipeService
       .getRecipesWithFilter(recipeFilter)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+          clearInterval(timer);
+        })
+      )
       .subscribe({
         next: (recipes: Recipe[]) => {
           // Append results if paginating, replace otherwise
@@ -276,10 +284,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         },
         error: (error: Error) => {
           this.snackBar.open(error.message, 'Dismiss');
-        },
-        complete: () => {
-          this.isLoading.set(false);
-          clearInterval(timer);
         },
       });
   }

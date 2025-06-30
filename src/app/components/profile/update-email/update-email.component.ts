@@ -1,4 +1,5 @@
-import { Component, inject, OnDestroy, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -10,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import Constants from 'src/app/constants/constants';
 import { ChefUpdate, ChefUpdateType } from 'src/app/models/profile.model';
@@ -28,11 +29,10 @@ import { ChefService } from 'src/app/services/chef.service';
   templateUrl: './update-email.component.html',
   styleUrl: './update-email.component.scss',
 })
-export class UpdateEmailComponent implements OnDestroy {
+export class UpdateEmailComponent {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
-
-  private chefServiceSubscription?: Subscription;
+  private destroyRef = inject(DestroyRef);
 
   isLoading = signal(false);
   emailSent = signal(false);
@@ -55,10 +55,6 @@ export class UpdateEmailComponent implements OnDestroy {
     [this.formErrors.emailInvalid]: 'Error: Invalid email',
   } as const;
 
-  ngOnDestroy(): void {
-    this.chefServiceSubscription?.unsubscribe();
-  }
-
   updateEmail() {
     this.isLoading.set(true);
     const { email } = this.formGroup.value;
@@ -73,8 +69,14 @@ export class UpdateEmailComponent implements OnDestroy {
       return;
     }
 
-    this.chefServiceSubscription = this.chefService
+    this.chefService
       .updateChef(fields, token)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
       .subscribe({
         next: ({ token }) => {
           this.emailSent.set(true);
@@ -85,9 +87,6 @@ export class UpdateEmailComponent implements OnDestroy {
         },
         error: (error) => {
           this.snackBar.open(error.message, 'Dismiss');
-        },
-        complete: () => {
-          this.isLoading.set(false);
         },
       });
   }

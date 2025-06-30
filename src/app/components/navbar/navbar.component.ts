@@ -1,12 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  Type,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, Type, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -15,7 +9,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
 
 import { RecipeComponent } from '../recipe/recipe.component';
 import { routes } from 'src/app/app-routing.module';
@@ -34,7 +27,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class NavbarComponent {
   private breakpointObserver = inject(BreakpointObserver);
   private titleService = inject(Title);
   private snackBar = inject(MatSnackBar);
@@ -48,20 +41,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   isRecipePage = signal(false);
   isFavorite = signal(false);
-  breakpointSubscription?: Subscription;
 
-  ngOnInit(): void {
-    this.breakpointSubscription = this.breakpointObserver
+  constructor() {
+    this.breakpointObserver
       .observe(Breakpoints.XSmall)
+      .pipe(takeUntilDestroyed())
       .subscribe(() => {
         this.isSmallScreen.set(
           this.breakpointObserver.isMatched(Breakpoints.XSmall)
         );
       });
-  }
-
-  ngOnDestroy(): void {
-    this.breakpointSubscription?.unsubscribe();
   }
 
   onRouterOutletActivate(event: Type<Component>) {

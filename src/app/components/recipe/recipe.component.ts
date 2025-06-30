@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnDestroy,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,7 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import Recipe, { RecipeUpdate } from '../../models/recipe.model';
 import { RecipeService } from '../../services/recipe.service';
@@ -46,14 +53,12 @@ export class RecipeComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private titleService = inject(Title);
   private termsService = inject(TermsService);
+  private destroyRef = inject(DestroyRef);
 
   recipe = this.recipeService.recipe;
   chef = this.chefService.chef;
   isLoading = signal(false);
   dictionary = signal<{ [word: string]: string } | undefined>(undefined);
-
-  routerSubscription?: Subscription;
-  getRecipeSubscription?: Subscription;
 
   // Nutrients that should be bold on the nutrition label
   readonly nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
@@ -85,11 +90,9 @@ export class RecipeComponent implements OnInit, OnDestroy {
           }
         }
       });
-  }
 
-  ngOnInit(): void {
     // Respond to navigating forward and backward by loading the correct recipe
-    this.routerSubscription = this.router.events.subscribe((event) => {
+    this.router.events.pipe(takeUntilDestroyed()).subscribe((event) => {
       if (
         event instanceof NavigationStart &&
         event.navigationTrigger === 'popstate'
@@ -101,7 +104,9 @@ export class RecipeComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
 
+  ngOnInit(): void {
     const terms = this.termsService.getCachedTerms();
     // Make it easier to lookup words and their definitions (O(n) time instead of O(n^2) time)
     this.dictionary.set(
@@ -119,9 +124,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
      * page, the correct recipe is fetched. Otherwise, the home page can continue fetching the
      * correct recipe.
      */
-    this.routerSubscription?.unsubscribe();
     this.recipeService.recipe.set(null);
-    this.getRecipeSubscription?.unsubscribe();
   }
 
   private updateRecipe(recipe: Recipe | null) {
@@ -178,14 +181,17 @@ export class RecipeComponent implements OnInit, OnDestroy {
     // Get a recipe by ID
     this.isLoading.set(true);
 
-    this.getRecipeSubscription = this.recipeService
+    this.recipeService
       .getRecipeById(id)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
       .subscribe({
         error: (error: Error) => {
           this.snackBar.open(error.message, 'Dismiss');
-        },
-        complete: () => {
-          this.isLoading.set(false);
         },
       });
   }
@@ -210,30 +216,35 @@ export class RecipeComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading.set(true);
-    this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
-      next: ({ token }) => {
-        this.chefService.chef.update(
-          (chef) =>
-            chef && {
-              ...chef,
-              ratings: {
-                ...chef?.ratings,
-                [recipeId]: rating,
-              },
-            }
-        );
+    this.recipeService
+      .updateRecipe(recipeId, recipeUpdate, token)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
+      .subscribe({
+        next: ({ token }) => {
+          this.chefService.chef.update(
+            (chef) =>
+              chef && {
+                ...chef,
+                ratings: {
+                  ...chef?.ratings,
+                  [recipeId]: rating,
+                },
+              }
+          );
 
-        if (token !== undefined) {
-          localStorage.setItem(Constants.LocalStorage.token, token);
-        }
-      },
-      error: (error) => {
-        this.snackBar.open(error.message, 'Dismiss');
-      },
-      complete: () => {
-        this.isLoading.set(false);
-      },
-    });
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+        },
+        error: (error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
   }
 
   getRandomRecipe() {
@@ -241,8 +252,14 @@ export class RecipeComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
 
     // Show a random, low-effort recipe
-    this.getRecipeSubscription = this.recipeService
+    this.recipeService
       .getRandomRecipe()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
       .subscribe({
         next: (recipe: Recipe) => {
           // Change the URL without reloading the component
@@ -251,9 +268,6 @@ export class RecipeComponent implements OnInit, OnDestroy {
         error: (error: Error) => {
           // Show a snackbar explaining that an error occurred
           this.snackBar.open(error.message, 'Dismiss');
-        },
-        complete: () => {
-          this.isLoading.set(false);
         },
       });
   }

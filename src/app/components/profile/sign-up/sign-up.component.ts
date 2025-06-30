@@ -1,4 +1,5 @@
-import { Component, inject, OnDestroy, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -13,7 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import { profileRoutes, routes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
@@ -64,14 +65,13 @@ const passwordsMatchValidator: ValidatorFn = (control) => {
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
 })
-export class SignUpComponent implements OnDestroy {
+export class SignUpComponent {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
   profileRoutes = profileRoutes;
-
-  private chefServiceSubscription?: Subscription;
 
   showPassword = signal(false);
   showPasswordConfirm = signal(false);
@@ -102,10 +102,6 @@ export class SignUpComponent implements OnDestroy {
     [formErrors.passwordMismatch]: 'Error: Passwords do not match',
   } as const;
 
-  ngOnDestroy(): void {
-    this.chefServiceSubscription?.unsubscribe();
-  }
-
   togglePasswordVisibility(event: MouseEvent) {
     event.preventDefault();
     this.showPassword.set(!this.showPassword());
@@ -124,8 +120,14 @@ export class SignUpComponent implements OnDestroy {
       password: password ?? '',
     };
 
-    this.chefServiceSubscription = this.chefService
+    this.chefService
       .createChef(loginCredentials)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
       .subscribe({
         next: ({ token, emailVerified }) => {
           localStorage.setItem(Constants.LocalStorage.token, token);
@@ -149,9 +151,6 @@ export class SignUpComponent implements OnDestroy {
         },
         error: (error) => {
           this.snackBar.open(error.message, 'Dismiss');
-        },
-        complete: () => {
-          this.isLoading.set(false);
         },
       });
   }
