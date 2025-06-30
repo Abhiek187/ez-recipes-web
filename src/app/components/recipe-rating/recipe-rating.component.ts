@@ -21,6 +21,8 @@ export class RecipeRatingComponent {
   hoveringStar = signal<number | undefined>(undefined);
 
   readonly RATINGS = Array.from({ length: 5 }, (_, i) => i + 1);
+  readonly AMBER_700 = '#FFA000';
+  readonly ORANGE_900 = '#E65100';
 
   starIcon(i: number) {
     // In the hovering state, always fill the stars to the left and keep the right stars empty
