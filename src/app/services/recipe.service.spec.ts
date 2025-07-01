@@ -7,7 +7,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
@@ -290,29 +290,20 @@ describe('RecipeService', () => {
     });
   });
 
-  it("should return an empty array if there are't any recent recipes", (done) => {
-    const subscription = recipeService
-      .getRecentRecipes()
-      .subscribe((recipes) => {
-        expect(recipes).toEqual([]);
-        subscription.unsubscribe(); // ensure done() isn't called more than once
-        done();
-      });
+  it("should return an empty array if there are't any recent recipes", async () => {
+    const recipes = await firstValueFrom(
+      recipeService.getRecentRecipes() as unknown as Observable<RecentRecipe[]>
+    );
+    expect(recipes).toEqual([]);
   });
 
-  it('should sort recent recipes in descending order', (done) => {
-    const subscription = recipeService
-      .getRecentRecipes()
-      .subscribe((recipes) => {
-        if (recipes.length === 0) {
-          recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
-          // Trigger liveQuery
-        } else {
-          expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
-          subscription.unsubscribe();
-          done();
-        }
-      });
+  it('should sort recent recipes in descending order', async () => {
+    await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
+
+    const recipes = await firstValueFrom(
+      recipeService.getRecentRecipes() as unknown as Observable<RecentRecipe[]>
+    );
+    expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
   });
 
   it("should add a recent recipe if there's enough space", async () => {
