@@ -73,40 +73,46 @@ export class NavbarComponent {
   }
 
   toggleFavoriteRecipe() {
-    if (this.recipe() === null) return;
+    const recipeId = this.recipe()?.id;
+    if (recipeId === undefined) return;
     const recipeUpdate: RecipeUpdate = {
       isFavorite: !this.isFavorite(),
     };
     const token =
       localStorage.getItem(Constants.LocalStorage.token) ?? undefined;
 
-    this.recipeService
-      .updateRecipe(this.recipe()!.id, recipeUpdate, token)
-      .subscribe({
-        next: ({ token }) => {
-          const newFavoriteRecipes = this.isFavorite()
-            ? this.chef()?.favoriteRecipes?.filter(
-                (recipeId) => recipeId !== this.recipe()!.id.toString()
-              )
-            : this.chef()?.favoriteRecipes?.concat([
-                this.recipe()!.id.toString(),
-              ]);
-          this.chef.update(
-            (chef) =>
-              chef && {
-                ...chef,
-                favoriteRecipes: newFavoriteRecipes ?? [],
-              }
-          );
+    this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
+      next: ({ token }) => {
+        const newFavoriteRecipes = this.isFavorite()
+          ? this.chef()?.favoriteRecipes?.filter(
+              (id) => id !== recipeId.toString()
+            )
+          : this.chef()?.favoriteRecipes?.concat([recipeId.toString()]);
+        this.chef.update(
+          (chef) =>
+            chef && {
+              ...chef,
+              favoriteRecipes: newFavoriteRecipes ?? [],
+            }
+        );
 
-          if (token !== undefined) {
-            localStorage.setItem(Constants.LocalStorage.token, token);
-          }
-        },
-        error: (error) => {
-          this.snackBar.open(error.message, 'Dismiss');
-        },
-      });
+        this.recipeService
+          .toggleFavoriteRecentRecipe(recipeId)
+          .catch((error) => {
+            console.error(
+              'Failed to toggle isFavorite for recent recipe:',
+              error.message
+            );
+          });
+
+        if (token !== undefined) {
+          localStorage.setItem(Constants.LocalStorage.token, token);
+        }
+      },
+      error: (error) => {
+        this.snackBar.open(error.message, 'Dismiss');
+      },
+    });
   }
 
   async shareRecipe() {

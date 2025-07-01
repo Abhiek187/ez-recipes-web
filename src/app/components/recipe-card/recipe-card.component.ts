@@ -108,6 +108,15 @@ export class RecipeCardComponent {
             }
         );
 
+        this.recipeService
+          .toggleFavoriteRecentRecipe(recipeId)
+          .catch((error) => {
+            console.error(
+              'Failed to toggle isFavorite for recent recipe:',
+              error.message
+            );
+          });
+
         if (token !== undefined) {
           localStorage.setItem(Constants.LocalStorage.token, token);
         }

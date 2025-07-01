@@ -343,4 +343,19 @@ describe('RecipeService', () => {
     const recipeCount = await recentRecipesDB.recipes.count();
     expect(recipeCount).toBe(Constants.recentRecipesDB.max);
   });
+
+  it('should toggle isFavorite for a recipe', async () => {
+    const recentRecipe = mockRecipesWithTimestamp[0];
+    await recentRecipesDB.recipes.add(recentRecipe);
+    let recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
+    expect(recipe?.isFavorite).toBeFalse();
+
+    await recipeService.toggleFavoriteRecentRecipe(recentRecipe.id);
+    recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
+    expect(recipe?.isFavorite).toBeTrue();
+
+    await recipeService.toggleFavoriteRecentRecipe(recentRecipe.id);
+    recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
+    expect(recipe?.isFavorite).toBeFalse();
+  });
 });

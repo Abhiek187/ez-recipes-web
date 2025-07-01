@@ -203,4 +203,10 @@ export class RecipeService {
       }
     );
   }
+
+  async toggleFavoriteRecentRecipe(recipeId: number) {
+    await recentRecipesDB.recipes.where({ id: recipeId }).modify((recipe) => {
+      recipe.isFavorite = !recipe.isFavorite;
+    });
+  }
 }
