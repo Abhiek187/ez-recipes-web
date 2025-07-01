@@ -1,4 +1,5 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ReactiveFormsModule,
   FormGroup,
@@ -13,7 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import Constants from 'src/app/constants/constants';
 import { ChefUpdate, ChefUpdateType } from 'src/app/models/profile.model';
@@ -59,12 +60,11 @@ const passwordsMatchValidator: ValidatorFn = (control) => {
   templateUrl: './update-password.component.html',
   styleUrl: './update-password.component.scss',
 })
-export class UpdatePasswordComponent implements OnInit, OnDestroy {
+export class UpdatePasswordComponent implements OnInit {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
-
-  private chefServiceSubscription?: Subscription;
+  private destroyRef = inject(DestroyRef);
 
   showPassword = signal(false);
   showPasswordConfirm = signal(false);
@@ -98,10 +98,6 @@ export class UpdatePasswordComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.chefServiceSubscription?.unsubscribe();
-  }
-
   togglePasswordVisibility(event: MouseEvent) {
     event.preventDefault();
     this.showPassword.set(!this.showPassword());
@@ -127,12 +123,16 @@ export class UpdatePasswordComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.chefServiceSubscription = this.chefService
+    this.chefService
       .updateChef(fields, token)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
       .subscribe({
         next: () => {
-          this.isLoading.set(false);
-
           // The token will be revoked, so sign out the user
           localStorage.removeItem(Constants.LocalStorage.token);
           this.snackBar.open(
@@ -142,7 +142,6 @@ export class UpdatePasswordComponent implements OnInit, OnDestroy {
           this.router.navigate([profileRoutes.login.path]);
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
         },
       });

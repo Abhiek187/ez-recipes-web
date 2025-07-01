@@ -67,6 +67,7 @@ describe('ChefService', () => {
     req.flush(mockChef);
 
     await expectAsync(chefPromise).toBeResolvedTo(mockChef);
+    expect(chefService.chef()).toBe(mockChef);
   });
 
   it('should return an error if the GET chef API fails', async () => {
@@ -79,6 +80,7 @@ describe('ChefService', () => {
     req.error(mockError);
 
     await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
   });
 
   it('should create a chef', async () => {
@@ -94,9 +96,19 @@ describe('ChefService', () => {
     });
     expect(req.request.headers.get('Authorization')).toBeNull();
     expect(req.request.body).toBe(credentials);
-    req.flush(mockLoginResponse());
+    const loginResponse = mockLoginResponse(false);
+    req.flush(loginResponse);
 
-    await expectAsync(chefPromise).toBeResolvedTo(mockLoginResponse());
+    await expectAsync(chefPromise).toBeResolvedTo(loginResponse);
+    expect(chefService.chef()).toEqual({
+      uid: loginResponse.uid,
+      email: credentials.email,
+      emailVerified: false,
+      ratings: {},
+      recentRecipes: {},
+      favoriteRecipes: [],
+      token: loginResponse.token,
+    });
   });
 
   it('should return an error if the POST chef API fails', async () => {
@@ -113,6 +125,7 @@ describe('ChefService', () => {
     req.error(mockError);
 
     await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
   });
 
   it('should update a chef', async () => {
@@ -185,6 +198,7 @@ describe('ChefService', () => {
     req.flush(null);
 
     await expectAsync(chefPromise).toBeResolvedTo(null);
+    expect(chefService.chef()).toBeUndefined();
   });
 
   it('should return an error if the DELETE chef API fails', async () => {
@@ -197,6 +211,7 @@ describe('ChefService', () => {
     req.error(mockError);
 
     await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
   });
 
   it('should verify an email', async () => {
@@ -240,9 +255,19 @@ describe('ChefService', () => {
     });
     expect(req.request.headers.get('Authorization')).toBeNull();
     expect(req.request.body).toBe(credentials);
-    req.flush(mockLoginResponse());
+    const loginResponse = mockLoginResponse();
+    req.flush(loginResponse);
 
-    await expectAsync(chefPromise).toBeResolvedTo(mockLoginResponse());
+    await expectAsync(chefPromise).toBeResolvedTo(loginResponse);
+    expect(chefService.chef()).toEqual({
+      uid: loginResponse.uid,
+      email: credentials.email,
+      emailVerified: true,
+      ratings: {},
+      recentRecipes: {},
+      favoriteRecipes: [],
+      token: loginResponse.token,
+    });
   });
 
   it('should return an error if the login API fails', async () => {
@@ -259,6 +284,7 @@ describe('ChefService', () => {
     req.error(mockError);
 
     await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
   });
 
   it('should logout', async () => {
@@ -275,6 +301,7 @@ describe('ChefService', () => {
     req.flush(null);
 
     await expectAsync(chefPromise).toBeResolvedTo(null);
+    expect(chefService.chef()).toBeUndefined();
   });
 
   it('should return an error if the logout API fails', async () => {
@@ -287,5 +314,6 @@ describe('ChefService', () => {
     req.error(mockError);
 
     await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
   });
 });

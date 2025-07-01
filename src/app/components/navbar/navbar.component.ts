@@ -1,5 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnDestroy, OnInit, Type, inject } from '@angular/core';
+import { Component, Type, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -8,11 +9,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
 
 import { RecipeComponent } from '../recipe/recipe.component';
 import { routes } from 'src/app/app-routing.module';
 import { environment } from 'src/environments/environment';
+import { ChefService } from 'src/app/services/chef.service';
+import { RecipeUpdate } from 'src/app/models/recipe.model';
+import Constants from 'src/app/constants/constants';
+import { RecipeService } from 'src/app/services/recipe.service';
 
 @Component({
   selector: 'app-navbar',
@@ -27,48 +31,88 @@ import { environment } from 'src/environments/environment';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class NavbarComponent {
   private breakpointObserver = inject(BreakpointObserver);
   private titleService = inject(Title);
   private snackBar = inject(MatSnackBar);
+  private recipeService = inject(RecipeService);
+  private chefService = inject(ChefService);
 
-  isSmallScreen: boolean;
+  // Detect breakpoint changes so the template can respond
+  isSmallScreen = signal(this.breakpointObserver.isMatched(Breakpoints.XSmall));
   // Navigation links to show in the sidenav
-  navItems = environment.production
+  readonly navItems = environment.production
     ? [routes.home, routes.search, routes.glossary]
     : [routes.home, routes.search, routes.glossary, routes.profile];
 
-  isRecipePage = false;
-  isFavorite = false;
-  breakpointSubscription?: Subscription;
+  recipe = this.recipeService.recipe;
+  chef = this.chefService.chef;
+
+  isRecipePage = signal(false);
+  isFavorite = computed(() =>
+    this.recipe() === null
+      ? false
+      : this.chef()?.favoriteRecipes?.includes(this.recipe()!.id.toString()) ??
+        false
+  );
 
   constructor() {
-    // Detect breakpoint changes so the template can respond
-    this.isSmallScreen = this.breakpointObserver.isMatched(Breakpoints.XSmall);
-  }
-
-  ngOnInit(): void {
-    this.breakpointSubscription = this.breakpointObserver
+    this.breakpointObserver
       .observe(Breakpoints.XSmall)
+      .pipe(takeUntilDestroyed())
       .subscribe(() => {
-        this.isSmallScreen = this.breakpointObserver.isMatched(
-          Breakpoints.XSmall
+        this.isSmallScreen.set(
+          this.breakpointObserver.isMatched(Breakpoints.XSmall)
         );
       });
   }
 
-  ngOnDestroy(): void {
-    this.breakpointSubscription?.unsubscribe();
-  }
-
   onRouterOutletActivate(event: Type<Component>) {
     // Check if the recipe component is shown in the router outlet
-    this.isRecipePage = event instanceof RecipeComponent;
+    this.isRecipePage.set(event instanceof RecipeComponent);
   }
 
   toggleFavoriteRecipe() {
-    // Placeholder for the heart button
-    this.isFavorite = !this.isFavorite;
+    const recipeId = this.recipe()?.id;
+    if (recipeId === undefined) return;
+    const recipeUpdate: RecipeUpdate = {
+      isFavorite: !this.isFavorite(),
+    };
+    const token =
+      localStorage.getItem(Constants.LocalStorage.token) ?? undefined;
+
+    this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
+      next: ({ token }) => {
+        const newFavoriteRecipes = this.isFavorite()
+          ? this.chef()?.favoriteRecipes?.filter(
+              (id) => id !== recipeId.toString()
+            )
+          : this.chef()?.favoriteRecipes?.concat([recipeId.toString()]);
+        this.chef.update(
+          (chef) =>
+            chef && {
+              ...chef,
+              favoriteRecipes: newFavoriteRecipes ?? [],
+            }
+        );
+
+        this.recipeService
+          .toggleFavoriteRecentRecipe(recipeId)
+          .catch((error) => {
+            console.error(
+              'Failed to toggle isFavorite for recent recipe:',
+              error.message
+            );
+          });
+
+        if (token !== undefined) {
+          localStorage.setItem(Constants.LocalStorage.token, token);
+        }
+      },
+      error: (error) => {
+        this.snackBar.open(error.message, 'Dismiss');
+      },
+    });
   }
 
   async shareRecipe() {

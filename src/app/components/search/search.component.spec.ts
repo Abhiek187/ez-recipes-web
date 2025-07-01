@@ -129,9 +129,9 @@ describe('SearchComponent', () => {
     });
     expect(searchComponent.filterFormGroup.valid).toBeTrue();
 
-    expect(searchComponent.isLoading).toBeFalse();
-    expect(searchComponent.loadingMessage).toBe('');
-    expect(searchComponent.noRecipesFound).toBeFalse();
+    expect(searchComponent.isLoading()).toBeFalse();
+    expect(searchComponent.loadingMessage()).toBe('');
+    expect(searchComponent.noRecipesFound()).toBeFalse();
   });
 
   it('should show an error if the calories are less than the min', () => {
@@ -264,7 +264,7 @@ describe('SearchComponent', () => {
 
   it('should show a spinner while loading', () => {
     // Check that the material spinner shows when isLoading is true
-    searchComponent.isLoading = true;
+    searchComponent.isLoading.set(true);
     fixture.detectChanges();
 
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
@@ -277,7 +277,7 @@ describe('SearchComponent', () => {
 
   it('should show an error if no recipes were found', () => {
     // Check that the noRecipesFound error appears
-    searchComponent.noRecipesFound = true;
+    searchComponent.noRecipesFound.set(true);
     fixture.detectChanges();
 
     const noResultsError =
@@ -320,14 +320,16 @@ describe('SearchComponent', () => {
   it('should show a random message while loading', () => {
     // The loading message should start blank, then show a random message after some time
     searchComponent.showLoadingMessages();
-    expect(searchComponent.loadingMessage).toBe('');
+    expect(searchComponent.loadingMessage()).toBe('');
     jasmine.clock().tick(3000);
-    expect(Constants.loadingMessages).toContain(searchComponent.loadingMessage);
+    expect(Constants.loadingMessages).toContain(
+      searchComponent.loadingMessage()
+    );
   });
 
   it('shows results if there are recipes', () => {
     // The results section should show if there's at least one recipe
-    searchComponent.recipes = mockRecipes;
+    searchComponent.recipes.set(mockRecipes);
     fixture.detectChanges();
 
     const resultsTitle =

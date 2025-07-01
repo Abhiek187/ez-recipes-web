@@ -1,0 +1,11 @@
+.recipe-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-left: 8px;
+  margin-right: 8px;
+
+  .rating-text {
+    margin-bottom: 0;
+  }
+}

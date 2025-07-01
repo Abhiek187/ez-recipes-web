@@ -1,4 +1,5 @@
-import { Component, inject, OnDestroy, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ReactiveFormsModule,
   FormGroup,
@@ -12,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import { profileRoutes } from 'src/app/app-routing.module';
 import { ChefUpdate, ChefUpdateType } from 'src/app/models/profile.model';
@@ -32,12 +33,11 @@ import { ChefService } from 'src/app/services/chef.service';
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })
-export class ForgotPasswordComponent implements OnDestroy {
+export class ForgotPasswordComponent {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
+  private destroyRef = inject(DestroyRef);
   profileRoutes = profileRoutes;
-
-  private chefServiceSubscription?: Subscription;
 
   isLoading = signal(false);
   emailSent = signal(false);
@@ -61,10 +61,6 @@ export class ForgotPasswordComponent implements OnDestroy {
     [this.formErrors.emailInvalid]: 'Error: Invalid email',
   } as const;
 
-  ngOnDestroy(): void {
-    this.chefServiceSubscription?.unsubscribe();
-  }
-
   resetPassword() {
     this.isLoading.set(true);
     const { email } = this.formGroup.value;
@@ -73,15 +69,19 @@ export class ForgotPasswordComponent implements OnDestroy {
       email: email ?? '',
     };
 
-    this.chefServiceSubscription = this.chefService
+    this.chefService
       .updateChef(chefUpdate)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
       .subscribe({
         next: () => {
-          this.isLoading.set(false);
           this.emailSent.set(true);
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
         },
       });

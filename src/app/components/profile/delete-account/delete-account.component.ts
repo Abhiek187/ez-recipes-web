@@ -1,11 +1,12 @@
 import {
   Component,
+  DestroyRef,
   inject,
-  OnDestroy,
   OnInit,
   Signal,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ReactiveFormsModule,
   FormGroup,
@@ -19,7 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
@@ -59,12 +60,11 @@ const usernamesMatchValidator =
   templateUrl: './delete-account.component.html',
   styleUrl: './delete-account.component.scss',
 })
-export class DeleteAccountComponent implements OnInit, OnDestroy {
+export class DeleteAccountComponent implements OnInit {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
-
-  private chefServiceSubscription?: Subscription;
+  private destroyRef = inject(DestroyRef);
 
   isLoading = signal(false);
   private chefUsername = signal<string | null>(null);
@@ -85,10 +85,6 @@ export class DeleteAccountComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.chefServiceSubscription?.unsubscribe();
-  }
-
   deleteAccount() {
     this.isLoading.set(true);
     const token = localStorage.getItem(Constants.LocalStorage.token);
@@ -98,18 +94,21 @@ export class DeleteAccountComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.chefServiceSubscription = this.chefService
+    this.chefService
       .deleteChef(token)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
       .subscribe({
         next: () => {
-          this.isLoading.set(false);
-
           localStorage.removeItem(Constants.LocalStorage.token);
           this.snackBar.open('Your account has been deleted.', 'Dismiss');
           this.router.navigate([routes.profile.path]);
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
         },
       });

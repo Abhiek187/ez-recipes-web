@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, effect, inject, signal } from '@angular/core';
 import { liveQuery } from 'dexie';
-import { BehaviorSubject, catchError, Observable } from 'rxjs';
+import { catchError, Observable, tap } from 'rxjs';
 
 import Recipe, { RecipeUpdate, Token } from '../models/recipe.model';
 import { environment } from 'src/environments/environment';
@@ -20,21 +20,18 @@ export class RecipeService {
   private readonly isMocking = !environment.production && environment.mock;
 
   // Store the recipe object in the service so other components can reference it and observe changes
-  private recipe = new BehaviorSubject<Recipe | null>(null);
+  recipe = signal<Recipe | null>(null);
   // Turn on to test loading & error messages
   private mockLoading = false;
   private mockError = false;
 
-  onRecipeChange(): Observable<Recipe | null> {
-    return this.recipe.asObservable();
-  }
-
-  setRecipe(nextRecipe: Recipe) {
-    this.recipe.next(nextRecipe);
-  }
-
-  resetRecipe() {
-    this.recipe.next(null);
+  constructor() {
+    effect(() => {
+      // Log recipes fetched
+      if (this.recipe() !== null) {
+        console.log(this.recipe());
+      }
+    });
   }
 
   // API methods
@@ -60,7 +57,12 @@ export class RecipeService {
       .get<Recipe>(
         `${environment.serverBaseUrl}${Constants.recipesPath}/random`
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        tap((recipe) => {
+          this.recipe.set(recipe);
+        }),
+        catchError(handleError)
+      );
   }
 
   getRecipeById(id: string): Observable<Recipe> {
@@ -70,7 +72,12 @@ export class RecipeService {
 
     return this.http
       .get<Recipe>(`${environment.serverBaseUrl}${Constants.recipesPath}/${id}`)
-      .pipe(catchError(handleError));
+      .pipe(
+        tap((recipe) => {
+          this.recipe.set(recipe);
+        }),
+        catchError(handleError)
+      );
   }
 
   updateRecipe(
@@ -103,6 +110,7 @@ export class RecipeService {
           if (this.mockError) {
             subscriber.error(Error('A mock error occurred.'));
           } else {
+            this.recipe.set(mockRecipe);
             subscriber.next(mockRecipe);
           }
 
@@ -194,5 +202,11 @@ export class RecipeService {
         });
       }
     );
+  }
+
+  async toggleFavoriteRecentRecipe(recipeId: number) {
+    await recentRecipesDB.recipes.where({ id: recipeId }).modify((recipe) => {
+      recipe.isFavorite = !recipe.isFavorite;
+    });
   }
 }

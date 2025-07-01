@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import Constants from 'src/app/constants/constants';
 import { getRandomElement } from 'src/app/helpers/array';
@@ -23,22 +24,22 @@ import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
   private recipeService = inject(RecipeService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
-  isLoading = false;
-  private defaultLoadingMessage = '';
-  loadingMessage = this.defaultLoadingMessage;
-  recipeServiceSubscription?: Subscription;
-  recentRecipes: Recipe[] = [];
+  isLoading = signal(false);
+  private readonly defaultLoadingMessage = '';
+  loadingMessage = signal(this.defaultLoadingMessage);
+  recentRecipes = signal<Recipe[]>([]);
 
   ngOnInit(): void {
     // Get all the recent recipes from IndexedDB
     this.recipeService.getRecentRecipes().subscribe({
       next: (recipes: Recipe[]) => {
-        this.recentRecipes = recipes;
+        this.recentRecipes.set(recipes);
       },
       error: (error: Error) => {
         this.snackBar.open(error.message, 'Dismiss');
@@ -46,31 +47,29 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    // Cancel all pending requests to avoid unintentional navigation
-    this.recipeServiceSubscription?.unsubscribe();
-  }
-
   getRandomRecipe() {
     // Show the progress spinner while the recipe is loading
-    this.isLoading = true;
+    this.isLoading.set(true);
     const timer = this.showLoadingMessages();
 
     // Show a random, low-effort recipe
-    this.recipeServiceSubscription = this.recipeService
+    this.recipeService
       .getRandomRecipe()
+      // Cancel all pending requests to avoid unintentional navigation
+      .pipe(
+        // destroyRef is required if called outside a constructor
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+          clearInterval(timer);
+        })
+      )
       .subscribe({
         next: (recipe: Recipe) => {
-          this.isLoading = false;
-          clearInterval(timer);
-          this.recipeService.setRecipe(recipe);
-          console.log(recipe);
           this.router.navigate([`/recipe/${recipe.id}`]);
         },
         error: (error: Error) => {
           // Show a snackbar explaining that an error occurred
-          this.isLoading = false;
-          clearInterval(timer);
           this.snackBar.open(error.message, 'Dismiss');
         },
       });
@@ -78,10 +77,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   showLoadingMessages() {
     // Don't show any messages initially if the recipe loads quickly
-    this.loadingMessage = this.defaultLoadingMessage;
+    this.loadingMessage.set(this.defaultLoadingMessage);
 
     return setInterval(() => {
-      this.loadingMessage = getRandomElement(Constants.loadingMessages);
+      this.loadingMessage.set(getRandomElement(Constants.loadingMessages));
     }, 3000);
   }
 }

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { catchError, Observable, of } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { catchError, Observable, of, tap } from 'rxjs';
 
 import {
   Chef,
@@ -25,9 +25,12 @@ export class ChefService {
   private http = inject(HttpClient);
   private readonly isMocking = !environment.production && environment.mock;
 
+  readonly chef = signal<Chef | undefined>(undefined);
+
   // API methods
   getChef(token: string): Observable<Chef> {
     if (this.isMocking) {
+      this.chef.set(mockChef);
       return of(mockChef);
     }
 
@@ -35,11 +38,17 @@ export class ChefService {
       .get<Chef>(`${environment.serverBaseUrl}${Constants.chefsPath}`, {
         headers: this.authHeader(token),
       })
-      .pipe(catchError(handleError));
+      .pipe(
+        tap((chef) => {
+          this.chef.set(chef);
+        }),
+        catchError(handleError)
+      );
   }
 
   createChef(credentials: LoginCredentials): Observable<LoginResponse> {
     if (this.isMocking) {
+      this.chef.set(mockChef);
       return of(mockLoginResponse());
     }
 
@@ -48,7 +57,20 @@ export class ChefService {
         `${environment.serverBaseUrl}${Constants.chefsPath}`,
         credentials
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        tap(({ uid, token, emailVerified }) => {
+          this.chef.set({
+            uid,
+            email: credentials.email,
+            emailVerified,
+            ratings: {},
+            recentRecipes: {},
+            favoriteRecipes: [],
+            token,
+          });
+        }),
+        catchError(handleError)
+      );
   }
 
   updateChef(
@@ -74,6 +96,7 @@ export class ChefService {
 
   deleteChef(token: string): Observable<null> {
     if (this.isMocking) {
+      this.chef.set(undefined);
       return of(null);
     }
 
@@ -81,7 +104,12 @@ export class ChefService {
       .delete<null>(`${environment.serverBaseUrl}${Constants.chefsPath}`, {
         headers: this.authHeader(token),
       })
-      .pipe(catchError(handleError));
+      .pipe(
+        tap(() => {
+          this.chef.set(undefined);
+        }),
+        catchError(handleError)
+      );
   }
 
   verifyEmail(token: string): Observable<ChefEmailResponse> {
@@ -100,6 +128,7 @@ export class ChefService {
 
   login(credentials: LoginCredentials): Observable<LoginResponse> {
     if (this.isMocking) {
+      this.chef.set(mockChef);
       return of(mockLoginResponse());
     }
 
@@ -108,11 +137,25 @@ export class ChefService {
         `${environment.serverBaseUrl}${Constants.chefsPath}/login`,
         credentials
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        tap(({ uid, token, emailVerified }) => {
+          this.chef.set({
+            uid,
+            email: credentials.email,
+            emailVerified,
+            ratings: {},
+            recentRecipes: {},
+            favoriteRecipes: [],
+            token,
+          });
+        }),
+        catchError(handleError)
+      );
   }
 
   logout(token: string): Observable<null> {
     if (this.isMocking) {
+      this.chef.set(undefined);
       return of(null);
     }
 
@@ -124,7 +167,12 @@ export class ChefService {
           headers: this.authHeader(token),
         }
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        tap(() => {
+          this.chef.set(undefined);
+        }),
+        catchError(handleError)
+      );
   }
 
   // Helpers

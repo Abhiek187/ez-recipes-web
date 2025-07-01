@@ -11,7 +11,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
-import Recipe, { RecentRecipe, RecipeUpdate } from '../models/recipe.model';
+import { RecentRecipe, RecipeUpdate } from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
@@ -88,6 +88,7 @@ describe('RecipeService', () => {
 
     // When observable resolves, result should match test data
     await expectAsync(recipePromise).toBeResolvedTo(mockRecipe);
+    expect(recipeService.recipe()).toBe(mockRecipe);
   });
 
   it('should return an error if the random recipe API fails', async () => {
@@ -103,6 +104,7 @@ describe('RecipeService', () => {
     req.error(mockError);
 
     await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    expect(recipeService.recipe()).toBeNull();
   });
 
   it('should fetch a recipe by ID', async () => {
@@ -117,6 +119,7 @@ describe('RecipeService', () => {
     req.flush(mockRecipe);
 
     await expectAsync(recipePromise).toBeResolvedTo(mockRecipe);
+    expect(recipeService.recipe()).toBe(mockRecipe);
   });
 
   it('should return an error if the recipe ID API fails', async () => {
@@ -131,6 +134,7 @@ describe('RecipeService', () => {
     req.error(mockError);
 
     await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
+    expect(recipeService.recipe()).toBeNull();
   });
 
   it('should fetch recipes by filter', async () => {
@@ -286,27 +290,6 @@ describe('RecipeService', () => {
     });
   });
 
-  it('should set a recipe', (done) => {
-    // Check that the setRecipe method sets the recipe variable to the passed in recipe
-    recipeService.setRecipe(mockRecipe);
-
-    recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
-      expect(recipe).toBe(mockRecipe);
-      done();
-    });
-  });
-
-  it('should reset a recipe', (done) => {
-    // Check that the resetRecipe method sets the recipe variable to null
-    recipeService.setRecipe(mockRecipe);
-    recipeService.resetRecipe();
-
-    recipeService.onRecipeChange().subscribe((recipe: Recipe | null) => {
-      expect(recipe).toBeNull();
-      done();
-    });
-  });
-
   it("should return an empty array if there are't any recent recipes", (done) => {
     const subscription = recipeService
       .getRecentRecipes()
@@ -359,5 +342,20 @@ describe('RecipeService', () => {
 
     const recipeCount = await recentRecipesDB.recipes.count();
     expect(recipeCount).toBe(Constants.recentRecipesDB.max);
+  });
+
+  it('should toggle isFavorite for a recipe', async () => {
+    const recentRecipe = mockRecipesWithTimestamp[0];
+    await recentRecipesDB.recipes.add(recentRecipe);
+    let recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
+    expect(recipe?.isFavorite).toBeFalse();
+
+    await recipeService.toggleFavoriteRecentRecipe(recentRecipe.id);
+    recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
+    expect(recipe?.isFavorite).toBeTrue();
+
+    await recipeService.toggleFavoriteRecentRecipe(recentRecipe.id);
+    recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
+    expect(recipe?.isFavorite).toBeFalse();
   });
 });

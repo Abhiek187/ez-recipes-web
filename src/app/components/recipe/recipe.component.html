@@ -1,15 +1,15 @@
-@if (isLoading) {
+@if (isLoading()) {
 <mat-spinner diameter="50" class="progress-spinner" />
-} @if (recipe !== null) {
+} @if (recipe() !== null) {
 <!-- Recipe header -->
 <header class="recipe-header">
   <!-- Show the recipe name and a link to its source next to it -->
-  <h1 class="recipe-name">{{ recipe.name | titlecase }}</h1>
-  @if (recipe.url !== undefined) {
+  <h1 class="recipe-name">{{ recipe()?.name | titlecase }}</h1>
+  @if (recipe()?.url !== undefined) {
   <a
     mat-icon-button
     class="recipe-link"
-    [href]="recipe.url"
+    [href]="recipe()?.url"
     target="_blank"
     rel="noopener noreferrer"
     aria-label="Open recipe source"
@@ -25,15 +25,19 @@
     <figure class="recipe-figure">
       <img
         class="recipe-image"
-        [src]="recipe.image"
-        [alt]="recipe.name"
+        [src]="recipe()?.image"
+        [alt]="recipe()?.name"
         width="312"
         height="231"
       />
       <figcaption class="recipe-caption mat-caption">
         Image ©
-        <a [href]="recipe.sourceUrl" target="_blank" rel="noopener noreferrer">
-          {{ recipe.credit }}
+        <a
+          [href]="recipe()?.sourceUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ recipe()?.credit }}
         </a>
       </figcaption>
     </figure>
@@ -41,63 +45,65 @@
     <!-- Recipe info -->
     <mat-chip-set class="recipe-pill-list">
       <!-- Don't make the chips clickable, but still show their color -->
-      @if (['mild', 'spicy'].includes(recipe.spiceLevel)) {
+      @if (['mild', 'spicy'].includes(recipe()!.spiceLevel)) {
       <mat-chip
         [ngStyle]="{
           'background-color':
-            recipe.spiceLevel === 'mild' ? 'orange' : '#f44326'
+            recipe()?.spiceLevel === 'mild' ? 'orange' : '#f44326'
         }"
         disableRipple
       >
-        {{ recipe.spiceLevel | titlecase }}
+        {{ recipe()?.spiceLevel | titlecase }}
       </mat-chip>
-      } @if (recipe.isVegetarian) {
+      } @if (recipe()?.isVegetarian) {
       <mat-chip disableRipple>Vegetarian</mat-chip>
-      } @if (recipe.isVegan) {
+      } @if (recipe()?.isVegan) {
       <mat-chip disableRipple>Vegan</mat-chip>
-      } @if (recipe.isGlutenFree) {
+      } @if (recipe()?.isGlutenFree) {
       <mat-chip disableRipple>Gluten-Free</mat-chip>
-      } @if (recipe.isHealthy) {
+      } @if (recipe()?.isHealthy) {
       <mat-chip disableRipple>Healthy</mat-chip>
-      } @if (recipe.isCheap) {
+      } @if (recipe()?.isCheap) {
       <mat-chip disableRipple>Cheap</mat-chip>
-      } @if (recipe.isSustainable) {
+      } @if (recipe()?.isSustainable) {
       <mat-chip disableRipple>Sustainable</mat-chip>
       }
     </mat-chip-set>
 
-    <h2 class="recipe-time" [ngPlural]="recipe.time">
-      <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
-      <ng-template ngPluralCase="1">
-        <b>Time:</b> {{ recipe.time }} minute
-      </ng-template>
-      <ng-template ngPluralCase="other">
-        <b>Time:</b> {{ recipe.time }} minutes
-      </ng-template>
-    </h2>
+    <div class="recipe-time-container">
+      <h2 class="recipe-time" [ngPlural]="recipe()!.time">
+        <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
+        <ng-template ngPluralCase="1">
+          <b>Time:</b> {{ recipe()?.time }} minute
+        </ng-template>
+        <ng-template ngPluralCase="other">
+          <b>Time:</b> {{ recipe()?.time }} minutes
+        </ng-template>
+      </h2>
+      <div class="recipe-views">
+        <mat-icon fontIcon="visibility" aria-label="views" />
+        {{ recipe()?.views ?? 0 | shorthand }}
+      </div>
+    </div>
 
-    @if (recipe.types.length > 0) {
+    <app-recipe-rating
+      [averageRating]="recipe()?.averageRating ?? null"
+      [totalRatings]="recipe()?.totalRatings ?? 0"
+      [myRating]="chef()?.ratings?.[recipe()!.id] ?? undefined"
+      (handleRate)="onRate($event)"
+    />
+
+    @if ((recipe()?.types?.length ?? 0) > 0) {
     <h3 class="recipe-types">
-      <b>Great for:</b> {{ recipe.types.join(", ") }}
+      <b>Great for:</b> {{ recipe()?.types?.join(", ") }}
     </h3>
-    } @if (recipe.culture.length > 0) {
+    } @if ((recipe()?.culture?.length ?? 0) > 0) {
     <h3 class="recipe-culture">
-      <b>Cuisines:</b> {{ recipe.culture.join(", ") }}
+      <b>Cuisines:</b> {{ recipe()?.culture?.join(", ") }}
     </h3>
     }
 
     <div class="share-button-container">
-      <div class="made-container">
-        <button
-          mat-mini-fab
-          color="warn"
-          aria-label="I made this"
-          (click)="addPreparation()"
-        >
-          <mat-icon fontIcon="restaurant" />
-        </button>
-        <p>I Made This!</p>
-      </div>
       <div class="show-recipe-container">
         <button
           mat-mini-fab
@@ -105,7 +111,7 @@
           class="show-recipe-button"
           aria-label="Show me another recipe"
           (click)="getRandomRecipe()"
-          [disabled]="isLoading"
+          [disabled]="isLoading()"
         >
           <mat-icon fontIcon="receipt_long" />
         </button>
@@ -119,22 +125,22 @@
     <mat-card-header class="nutrition-card-header">
       <mat-card-title>Nutrition Facts</mat-card-title>
       <mat-card-subtitle
-        >Health Score: {{ recipe.healthScore }}%</mat-card-subtitle
+        >Health Score: {{ recipe()?.healthScore }}%</mat-card-subtitle
       >
       <!-- Change the output based on whether there is more than 1 serving -->
-      <mat-card-subtitle [ngPlural]="recipe.servings">
+      <mat-card-subtitle [ngPlural]="recipe()!.servings">
         <ng-template ngPluralCase="1">
-          {{ recipe.servings }} serving
+          {{ recipe()?.servings }} serving
         </ng-template>
         <ng-template ngPluralCase="other">
-          {{ recipe.servings }} servings
+          {{ recipe()?.servings }} servings
         </ng-template>
       </mat-card-subtitle>
     </mat-card-header>
     <mat-divider class="nutrient-divider" />
     <mat-card-content>
       <div class="nutrient-grid">
-        @for (nutrient of recipe.nutrients; track nutrient.name) {
+        @for (nutrient of recipe()?.nutrients; track nutrient.name) {
         <p
           class="nutrient-name"
           [ngClass]="{
@@ -170,7 +176,7 @@
       />
     </mat-card-header>
     <!-- Render HTML tags -->
-    <mat-card-content [innerHtml]="recipe.summary" />
+    <mat-card-content [innerHtml]="recipe()?.summary" />
   </mat-card>
 
   <!-- Ingredients -->
@@ -181,16 +187,16 @@
     <mat-divider class="ingredient-divider" />
     <mat-card-content>
       <div class="ingredient-grid">
-        @for (ingredient of recipe.ingredients; track ingredient.id) {
+        @for (ingredient of recipe()?.ingredients; track ingredient.id) {
         <p class="ingredient-amount">
           {{ ingredient.amount }} {{ ingredient.unit }}
         </p>
         <p class="ingredient-name">
           @for (word of ingredient.name.split(' '); track $index) {
           <!-- Capitalize the ingredient names -->
-          @if (dictionary !== undefined &&
-          dictionary.hasOwnProperty(word.toLowerCase())) {
-          <span class="term" [matTooltip]="dictionary[word.toLowerCase()]"
+          @if (dictionary() !== undefined &&
+          dictionary()?.hasOwnProperty(word.toLowerCase())) {
+          <span class="term" [matTooltip]="dictionary()?.[word.toLowerCase()]"
             >{{ word | titlecase }}
           </span>
           } @else {
@@ -207,7 +213,7 @@
   <!-- Steps -->
   <h2 class="steps-header">Steps</h2>
   <!-- If applicable, split each instruction into separate sections -->
-  @for (instruction of recipe.instructions; track $index) {
+  @for (instruction of recipe()?.instructions; track $index) {
   <div class="instructions-container">
     <h3 class="instruction-header">{{ instruction.name }}</h3>
     <!-- Display each step in a grid -->
@@ -221,9 +227,11 @@
             <p>
               @for (word of step.step.split(' '); track $index) {
               <!-- Can't use the "in" operator -->
-              @if (dictionary !== undefined &&
-              dictionary.hasOwnProperty(word.toLowerCase())) {
-              <span class="term" [matTooltip]="dictionary[word.toLowerCase()]"
+              @if (dictionary() !== undefined &&
+              dictionary()?.hasOwnProperty(word.toLowerCase())) {
+              <span
+                class="term"
+                [matTooltip]="dictionary()?.[word.toLowerCase()]"
                 >{{ word }}
               </span>
               } @else {

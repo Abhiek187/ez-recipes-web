@@ -15,16 +15,24 @@
         mat-icon-button
         class="recipe-favorite-icon"
         [attr.aria-label]="
-          (isFavorite ? 'Unfavorite' : 'Favorite') + ' this recipe'
+          (isFavorite() ? 'Unfavorite' : 'Favorite') + ' this recipe'
         "
         (click)="toggleFavoriteRecipe($event)"
+        [disabled]="chef() === undefined"
       >
         <mat-icon
-          [fontIcon]="isFavorite ? 'favorite' : 'favorite_border'"
-          color="warn"
+          [fontIcon]="isFavorite() ? 'favorite' : 'favorite_border'"
+          [color]="chef() !== undefined ? 'warn' : null"
         />
       </button>
     </span>
+    <app-recipe-rating
+      [averageRating]="recipe().averageRating ?? null"
+      [totalRatings]="recipe().totalRatings ?? 0"
+      [myRating]="chef()?.ratings?.[recipe().id] ?? undefined"
+      [enabled]="chef() !== undefined"
+      (handleRate)="onRate($event)"
+    />
     <span class="recipe-info-row">
       <p [ngPlural]="recipe().time">
         <!-- Pluralize the recipe time (if a recipe only takes a minute) -->
@@ -36,8 +44,8 @@
         </ng-template>
       </p>
 
-      @if (calories !== undefined) {
-      <p>{{ calories.amount | number : "1.0-0" }} {{ calories.unit }}</p>
+      @if (calories() !== undefined) {
+      <p>{{ calories()?.amount | number : "1.0-0" }} {{ calories()?.unit }}</p>
       }
     </span>
   </mat-card-content>

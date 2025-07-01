@@ -1,4 +1,5 @@
-import { Component, inject, OnDestroy, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -12,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs';
 
 import { ChefService } from 'src/app/services/chef.service';
 import { LoginCredentials } from 'src/app/models/profile.model';
@@ -33,14 +34,13 @@ import Constants from 'src/app/constants/constants';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
   profileRoutes = profileRoutes;
-
-  private chefServiceSubscription?: Subscription;
 
   showPassword = signal(false);
   isLoading = signal(false);
@@ -57,10 +57,6 @@ export class LoginComponent implements OnDestroy {
     required: (field: string) => `Error: ${field} is required`,
   } as const;
 
-  ngOnDestroy(): void {
-    this.chefServiceSubscription?.unsubscribe();
-  }
-
   togglePasswordVisibility(event: MouseEvent) {
     event.preventDefault(); // don't submit the form
     this.showPassword.set(!this.showPassword());
@@ -74,11 +70,16 @@ export class LoginComponent implements OnDestroy {
       password: password ?? '',
     };
 
-    this.chefServiceSubscription = this.chefService
+    this.chefService
       .login(loginCredentials)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        })
+      )
       .subscribe({
         next: ({ token, emailVerified }) => {
-          this.isLoading.set(false);
           localStorage.setItem(Constants.LocalStorage.token, token);
 
           // Check if the user signed up, but didn't verify their email yet
@@ -103,7 +104,6 @@ export class LoginComponent implements OnDestroy {
           }
         },
         error: (error) => {
-          this.isLoading.set(false);
           this.snackBar.open(error.message, 'Dismiss');
         },
       });
