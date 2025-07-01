@@ -15,6 +15,7 @@ import { RouterModule } from '@angular/router';
 import { SearchComponent } from './search.component';
 import Constants from 'src/app/constants/constants';
 import { mockRecipes } from 'src/app/models/recipe.mock';
+import RecentRecipesDB from 'src/app/helpers/recent-recipes-db';
 
 describe('SearchComponent', () => {
   let searchComponent: SearchComponent;
@@ -31,6 +32,10 @@ describe('SearchComponent', () => {
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
+        {
+          provide: RecentRecipesDB,
+          useClass: RecentRecipesDB,
+        },
       ],
     }).compileComponents();
 

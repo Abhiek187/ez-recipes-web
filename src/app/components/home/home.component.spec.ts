@@ -21,6 +21,7 @@ import { RecipeService } from 'src/app/services/recipe.service';
 import { mockRecipes } from 'src/app/models/recipe.mock';
 import { mockTime } from 'src/app/models/term-store.mock';
 import { RecentRecipe } from 'src/app/models/recipe.model';
+import RecentRecipesDB from 'src/app/helpers/recent-recipes-db';
 
 describe('HomeComponent', () => {
   let homeComponent: HomeComponent;
@@ -41,6 +42,10 @@ describe('HomeComponent', () => {
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
+        {
+          provide: RecentRecipesDB,
+          useClass: RecentRecipesDB,
+        },
       ],
     }).compileComponents();
 

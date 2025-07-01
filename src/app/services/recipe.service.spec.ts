@@ -16,12 +16,13 @@ import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
-import recentRecipesDB from '../helpers/recent-recipes-db';
+import RecentRecipesDB from '../helpers/recent-recipes-db';
 import { mockChef } from '../models/profile.mock';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
   let httpTestingController: HttpTestingController;
+  let recentRecipesDB: RecentRecipesDB;
 
   const baseUrl = `${environment.serverBaseUrl}${Constants.recipesPath}`;
   // Create mock ProgressEvent with type `error`, raised when something goes wrong
@@ -39,11 +40,19 @@ describe('RecipeService', () => {
   );
 
   beforeEach(() => {
+    // Create a unique DB instance so each test can run in isolation
+    recentRecipesDB = new RecentRecipesDB(
+      `TestRecentRecipesDB-${Date.now()}-${Math.random()}`
+    );
     TestBed.configureTestingModule({
       imports: [],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
+        {
+          provide: RecentRecipesDB,
+          useValue: recentRecipesDB,
+        },
       ],
     });
     recipeService = TestBed.inject(RecipeService);
@@ -55,8 +64,9 @@ describe('RecipeService', () => {
   afterEach(async () => {
     // After every test, assert that there are no more pending requests.
     httpTestingController.verify();
-    // Clear the fake table between tests
+    // Clear the fake table & delete the DB between tests
     await recentRecipesDB.recipes.clear();
+    await recentRecipesDB.delete();
   });
 
   it('should be created', () => {
