@@ -9,7 +9,7 @@ import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
-import recentRecipesDB from '../helpers/recent-recipes-db';
+import RecentRecipesDB from '../helpers/recent-recipes-db';
 import handleError from '../helpers/handleError';
 
 @Injectable({
@@ -17,6 +17,7 @@ import handleError from '../helpers/handleError';
 })
 export class RecipeService {
   private http = inject(HttpClient);
+  private recentRecipesDB = inject(RecentRecipesDB);
   private readonly isMocking = !environment.production && environment.mock;
 
   // Store the recipe object in the service so other components can reference it and observe changes
@@ -166,7 +167,7 @@ export class RecipeService {
     // Sort all the recipes by their timestamp in descending order
     // dexie's Observable type isn't the same as rxjs's Observable type
     return liveQuery(() =>
-      recentRecipesDB.recipes
+      this.recentRecipesDB.recipes
         .orderBy(Constants.recentRecipesDB.config.at(-1)!.indexes.timestamp)
         .reverse()
         .toArray()
@@ -174,28 +175,31 @@ export class RecipeService {
   }
 
   async saveRecentRecipe(recipe: Recipe) {
-    await recentRecipesDB.transaction(
+    await this.recentRecipesDB.transaction(
       'rw',
-      recentRecipesDB.recipes,
+      this.recentRecipesDB.recipes,
       async () => {
         // If the recipe already exists in the table, replace the timestamp with the current time
-        const recipesUpdated = await recentRecipesDB.recipes.update(recipe.id, {
-          timestamp: Date.now(),
-        });
+        const recipesUpdated = await this.recentRecipesDB.recipes.update(
+          recipe.id,
+          {
+            timestamp: Date.now(),
+          }
+        );
         // 0 = key doesn't exist, 1 = key exists
         if (recipesUpdated === 1) return Promise.resolve();
 
         // If there are too many recipes, delete the oldest recipe
-        const recipeCount = await recentRecipesDB.recipes.count();
+        const recipeCount = await this.recentRecipesDB.recipes.count();
 
         if (recipeCount >= Constants.recentRecipesDB.max) {
-          const oldestRecipe = await recentRecipesDB.recipes
+          const oldestRecipe = await this.recentRecipesDB.recipes
             .orderBy(Constants.recentRecipesDB.config.at(-1)!.indexes.timestamp)
             .first();
-          await recentRecipesDB.recipes.delete(oldestRecipe!.id);
+          await this.recentRecipesDB.recipes.delete(oldestRecipe!.id);
         }
 
-        await recentRecipesDB.recipes.add({
+        await this.recentRecipesDB.recipes.add({
           ...recipe,
           timestamp: Date.now(),
           isFavorite: false,
@@ -205,8 +209,10 @@ export class RecipeService {
   }
 
   async toggleFavoriteRecentRecipe(recipeId: number) {
-    await recentRecipesDB.recipes.where({ id: recipeId }).modify((recipe) => {
-      recipe.isFavorite = !recipe.isFavorite;
-    });
+    await this.recentRecipesDB.recipes
+      .where({ id: recipeId })
+      .modify((recipe) => {
+        recipe.isFavorite = !recipe.isFavorite;
+      });
   }
 }

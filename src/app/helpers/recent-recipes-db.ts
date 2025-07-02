@@ -1,14 +1,24 @@
+import { inject, Injectable, InjectionToken } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 
 import { RecentRecipe } from '../models/recipe.model';
 import Constants from '../constants/constants';
 
-class RecentRecipesDB extends Dexie {
+export const RECENT_RECIPES_DB_NAME = new InjectionToken<string>('DB_NAME', {
+  providedIn: 'root',
+  factory: () => Constants.recentRecipesDB.dbName,
+});
+
+@Injectable({
+  providedIn: 'root',
+})
+export default class RecentRecipesDB extends Dexie {
   recipes!: Table<RecentRecipe, number>;
 
   constructor() {
-    const { dbName, tableName, config } = Constants.recentRecipesDB;
+    const dbName = inject(RECENT_RECIPES_DB_NAME);
     super(dbName);
+    const { tableName, config } = Constants.recentRecipesDB;
 
     for (const { version, indexes, upgrade } of config) {
       this.version(version).stores({
@@ -23,5 +33,3 @@ class RecentRecipesDB extends Dexie {
     // No need to populate since recipes will stay in memory for now
   }
 }
-
-export default new RecentRecipesDB();

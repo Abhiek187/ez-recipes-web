@@ -7,7 +7,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
@@ -16,12 +16,15 @@ import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
-import recentRecipesDB from '../helpers/recent-recipes-db';
+import RecentRecipesDB, {
+  RECENT_RECIPES_DB_NAME,
+} from '../helpers/recent-recipes-db';
 import { mockChef } from '../models/profile.mock';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
   let httpTestingController: HttpTestingController;
+  let recentRecipesDB: RecentRecipesDB;
 
   const baseUrl = `${environment.serverBaseUrl}${Constants.recipesPath}`;
   // Create mock ProgressEvent with type `error`, raised when something goes wrong
@@ -44,9 +47,15 @@ describe('RecipeService', () => {
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
+        {
+          // Create a unique DB instance so each test can run in isolation
+          provide: RECENT_RECIPES_DB_NAME,
+          useValue: `TestRecentRecipesDB-${Date.now()}-${Math.random()}`,
+        },
       ],
     });
     recipeService = TestBed.inject(RecipeService);
+    recentRecipesDB = TestBed.inject(RecentRecipesDB);
 
     // Inject the http test controller for each test
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -55,8 +64,9 @@ describe('RecipeService', () => {
   afterEach(async () => {
     // After every test, assert that there are no more pending requests.
     httpTestingController.verify();
-    // Clear the fake table between tests
+    // Clear the fake table & delete the DB between tests
     await recentRecipesDB.recipes.clear();
+    await recentRecipesDB.delete();
   });
 
   it('should be created', () => {
@@ -290,29 +300,20 @@ describe('RecipeService', () => {
     });
   });
 
-  it("should return an empty array if there are't any recent recipes", (done) => {
-    const subscription = recipeService
-      .getRecentRecipes()
-      .subscribe((recipes) => {
-        expect(recipes).toEqual([]);
-        subscription.unsubscribe(); // ensure done() isn't called more than once
-        done();
-      });
+  it("should return an empty array if there are't any recent recipes", async () => {
+    const recipes = await firstValueFrom(
+      recipeService.getRecentRecipes() as unknown as Observable<RecentRecipe[]>
+    );
+    expect(recipes).toEqual([]);
   });
 
-  it('should sort recent recipes in descending order', (done) => {
-    const subscription = recipeService
-      .getRecentRecipes()
-      .subscribe((recipes) => {
-        if (recipes.length === 0) {
-          recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
-          // Trigger liveQuery
-        } else {
-          expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
-          subscription.unsubscribe();
-          done();
-        }
-      });
+  it('should sort recent recipes in descending order', async () => {
+    await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
+
+    const recipes = await firstValueFrom(
+      recipeService.getRecentRecipes() as unknown as Observable<RecentRecipe[]>
+    );
+    expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
   });
 
   it("should add a recent recipe if there's enough space", async () => {
