@@ -12,7 +12,6 @@ import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { TermsService } from './services/terms.service';
 import { mockTerms } from './models/term.mock';
-import RecentRecipesDB from './helpers/recent-recipes-db';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -29,10 +28,6 @@ describe('AppComponent', () => {
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-        {
-          provide: RecentRecipesDB,
-          useClass: RecentRecipesDB,
-        },
       ],
     }).compileComponents();
 

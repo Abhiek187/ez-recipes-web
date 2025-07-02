@@ -16,7 +16,9 @@ import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
-import RecentRecipesDB from '../helpers/recent-recipes-db';
+import RecentRecipesDB, {
+  RECENT_RECIPES_DB_NAME,
+} from '../helpers/recent-recipes-db';
 import { mockChef } from '../models/profile.mock';
 
 describe('RecipeService', () => {
@@ -40,22 +42,20 @@ describe('RecipeService', () => {
   );
 
   beforeEach(() => {
-    // Create a unique DB instance so each test can run in isolation
-    recentRecipesDB = new RecentRecipesDB(
-      `TestRecentRecipesDB-${Date.now()}-${Math.random()}`
-    );
     TestBed.configureTestingModule({
       imports: [],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         {
-          provide: RecentRecipesDB,
-          useValue: recentRecipesDB,
+          // Create a unique DB instance so each test can run in isolation
+          provide: RECENT_RECIPES_DB_NAME,
+          useValue: `TestRecentRecipesDB-${Date.now()}-${Math.random()}`,
         },
       ],
     });
     recipeService = TestBed.inject(RecipeService);
+    recentRecipesDB = TestBed.inject(RecentRecipesDB);
 
     // Inject the http test controller for each test
     httpTestingController = TestBed.inject(HttpTestingController);

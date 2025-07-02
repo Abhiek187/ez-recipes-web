@@ -1,12 +1,22 @@
+import { inject, Injectable, InjectionToken } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 
 import { RecentRecipe } from '../models/recipe.model';
 import Constants from '../constants/constants';
 
+export const RECENT_RECIPES_DB_NAME = new InjectionToken<string>('DB_NAME', {
+  providedIn: 'root',
+  factory: () => Constants.recentRecipesDB.dbName,
+});
+
+@Injectable({
+  providedIn: 'root',
+})
 export default class RecentRecipesDB extends Dexie {
   recipes!: Table<RecentRecipe, number>;
 
-  constructor(dbName = Constants.recentRecipesDB.dbName) {
+  constructor() {
+    const dbName = inject(RECENT_RECIPES_DB_NAME);
     super(dbName);
     const { tableName, config } = Constants.recentRecipesDB;
 

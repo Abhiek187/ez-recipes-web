@@ -14,7 +14,6 @@ import { RouterModule } from '@angular/router';
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
 import { ShorthandPipe } from 'src/app/pipes/shorthand.pipe';
-import RecentRecipesDB from 'src/app/helpers/recent-recipes-db';
 
 describe('RecipeComponent', () => {
   let recipeComponent: RecipeComponent;
@@ -27,10 +26,6 @@ describe('RecipeComponent', () => {
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-        {
-          provide: RecentRecipesDB,
-          useClass: RecentRecipesDB,
-        },
       ],
     }).compileComponents();
 
