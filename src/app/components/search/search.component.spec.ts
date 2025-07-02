@@ -250,6 +250,7 @@ describe('SearchComponent', () => {
       healthy: true,
       cheap: false,
       sustainable: false,
+      rating: 4,
       spiceLevel: ['none', 'mild'],
       type: ['antipasti', 'antipasto', 'appetizer'],
       culture: ['Mediterranean'],
