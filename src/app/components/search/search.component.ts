@@ -52,7 +52,7 @@ import Recipe, {
   isValidSpiceLevel,
 } from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
-import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
+import { RecipeCardComponent } from '../utils/recipe-card/recipe-card.component';
 import { isNumeric } from 'src/app/helpers/string';
 
 // Add null & undefined to all the object's values
@@ -71,6 +71,7 @@ const FilterForm = {
   healthy: 'healthy',
   cheap: 'cheap',
   sustainable: 'sustainable',
+  rating: 'rating',
   spiceLevel: 'spiceLevel',
   type: 'type',
   culture: 'culture',
@@ -161,6 +162,10 @@ export class SearchComponent implements OnInit, OnDestroy {
       [FilterForm.healthy]: new FormControl(false),
       [FilterForm.cheap]: new FormControl(false),
       [FilterForm.sustainable]: new FormControl(false),
+      [FilterForm.rating]: new FormControl<number | null>(null, [
+        Validators.min(1),
+        Validators.max(5),
+      ]),
       [FilterForm.spiceLevel]: new FormControl<SpiceLevel[]>([]),
       [FilterForm.type]: new FormControl<MealType[]>([]),
       [FilterForm.culture]: new FormControl<Cuisine[]>([]),
@@ -182,6 +187,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   recipes = signal<Recipe[]>([]);
   lastToken = signal<string | null>(null);
 
+  readonly RATINGS = Array.from({ length: 5 }, (_, i) => i + 1);
   // Exclude unknown cases and sort for ease of reference
   readonly spiceLevels = SPICE_LEVELS.filter(
     (spiceLevel) => spiceLevel !== 'unknown'
@@ -207,6 +213,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         [FilterForm.healthy]: params.healthy === 'true',
         [FilterForm.cheap]: params.cheap === 'true',
         [FilterForm.sustainable]: params.sustainable === 'true',
+        [FilterForm.rating]:
+          isNumeric(params.rating) &&
+          Number(params.rating) >= 1 &&
+          Number(params.rating) <= 5
+            ? Number(params.rating)
+            : null,
         // 0 = undefined, 1 = string, 2+ = array
         [FilterForm.spiceLevel]: toArray(params.spiceLevel).filter(
           (spiceLevel): spiceLevel is SpiceLevel =>

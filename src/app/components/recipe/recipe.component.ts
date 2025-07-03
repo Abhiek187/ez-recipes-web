@@ -24,7 +24,7 @@ import Recipe, { RecipeUpdate } from '../../models/recipe.model';
 import { RecipeService } from '../../services/recipe.service';
 import { TermsService } from 'src/app/services/terms.service';
 import { ShorthandPipe } from '../../pipes/shorthand.pipe';
-import { RecipeRatingComponent } from '../recipe-rating/recipe-rating.component';
+import { RecipeRatingComponent } from '../utils/recipe-rating/recipe-rating.component';
 import { ChefService } from 'src/app/services/chef.service';
 import Constants from 'src/app/constants/constants';
 

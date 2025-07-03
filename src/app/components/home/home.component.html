@@ -14,7 +14,42 @@
 @if (isLoading()) {
 <mat-spinner diameter="50" class="progress-spinner" />
 <p class="loading-message">{{ loadingMessage() }}</p>
-} @if (recentRecipes().length > 0) {
+}
+
+<!-- Multiple accordions can be expanded -->
+<!-- <mat-accordion multi>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>💖 Favorites</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <app-recipe-card-loader />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>⌚ Recently Viewed</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <ul class="recents-list">
+      @for (recipe of recentRecipes(); track recipe.id) {
+      <li>
+        <app-recipe-card [recipe]="recipe" />
+      </li>
+      }
+    </ul>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>⭐ Ratings</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <app-recipe-card [recipe]="recentRecipes()[0]" />
+  </mat-expansion-panel>
+</mat-accordion> -->
+
+@if (recentRecipes().length > 0) {
 <section class="recents-section">
   <h1 class="recents-title">Recently Viewed</h1>
   <mat-divider />

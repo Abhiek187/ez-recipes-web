@@ -95,6 +95,21 @@
 
   <section class="dropdown-row">
     <mat-form-field>
+      <mat-label>Rating</mat-label>
+      <!-- Set the width to the longest option, instead of the dropdown itself -->
+      <mat-select [formControlName]="filterFormNames.rating" panelWidth="">
+        <mat-option [value]="null">(none)</mat-option>
+        @for (rating of RATINGS; track rating) {
+        <mat-option [value]="rating">
+          @for (star of RATINGS.slice(0, rating); track star) {
+          <mat-icon fontIcon="star" color="accent" />
+          }
+          {{ rating }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
       <mat-label>Spice Level</mat-label>
       <mat-select [formControlName]="filterFormNames.spiceLevel" multiple>
         @for (spiceLevel of spiceLevels; track spiceLevel) {

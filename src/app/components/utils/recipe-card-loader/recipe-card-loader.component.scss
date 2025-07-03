@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 312px;
+  height: 439px;
+
+  .recipe-card-loader-h {
+    display: flex;
+    gap: 8px;
+  }
+}
