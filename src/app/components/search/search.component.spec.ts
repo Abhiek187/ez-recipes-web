@@ -123,6 +123,7 @@ describe('SearchComponent', () => {
       healthy: false,
       cheap: false,
       sustainable: false,
+      rating: null,
       spiceLevel: [],
       type: [],
       culture: [],
