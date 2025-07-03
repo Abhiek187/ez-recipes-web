@@ -52,7 +52,7 @@ import Recipe, {
   isValidSpiceLevel,
 } from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
-import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
+import { RecipeCardComponent } from '../utils/recipe-card/recipe-card.component';
 import { isNumeric } from 'src/app/helpers/string';
 
 // Add null & undefined to all the object's values

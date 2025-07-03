@@ -2,6 +2,7 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -11,15 +12,18 @@ import Constants from 'src/app/constants/constants';
 import { getRandomElement } from 'src/app/helpers/array';
 import Recipe from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
-import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
+import { RecipeCardComponent } from '../utils/recipe-card/recipe-card.component';
+import { RecipeCardLoaderComponent } from '../utils/recipe-card-loader/recipe-card-loader.component';
 
 @Component({
   selector: 'app-home',
   imports: [
     MatButtonModule,
     MatDividerModule,
+    MatExpansionModule,
     MatProgressSpinnerModule,
     RecipeCardComponent,
+    RecipeCardLoaderComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',

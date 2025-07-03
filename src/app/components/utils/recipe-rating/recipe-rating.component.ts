@@ -3,7 +3,7 @@ import { Component, input, output, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-import { ShorthandPipe } from '../../pipes/shorthand.pipe';
+import { ShorthandPipe } from '../../../pipes/shorthand.pipe';
 
 @Component({
   selector: 'app-recipe-rating',
