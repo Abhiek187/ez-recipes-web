@@ -19,6 +19,8 @@ export const authGuard: CanActivateFn = (_route, state) => {
 
   if (token === null) {
     return loginRedirect;
+  } else if (chefService.chef() !== undefined) {
+    return true;
   }
 
   return chefService.getChef(token).pipe(
