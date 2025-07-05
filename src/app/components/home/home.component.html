@@ -17,20 +17,45 @@
 }
 
 <!-- Multiple accordions can be expanded -->
-<!-- <mat-accordion multi>
-  <mat-expansion-panel>
+<mat-accordion multi class="home-accordion">
+  <mat-expansion-panel (opened)="onExpandFavorites()">
     <mat-expansion-panel-header>
       <mat-panel-title>💖 Favorites</mat-panel-title>
     </mat-expansion-panel-header>
 
+    @if (!isLoggedIn()) { @if (isLoading()) {
+    <!-- Show the recipe cards loading while waiting for both the auth state & recipes -->
     <app-recipe-card-loader />
+    } @else {
+    <!-- Encourage the user to sign in to see these recipes -->
+    <p>Sign in to view your saved recipes</p>
+    } } @else if (favoriteRecipes().length === 0) {
+    <p>No recipes found</p>
+    } @else {
+    <ul class="recents-list">
+      @for (recipe of favoriteRecipes(); track recipe?.id) {
+      <li>
+        @if (recipe !== undefined) {
+        <app-recipe-card [recipe]="recipe" />
+        } @else {
+        <app-recipe-card-loader />
+        }
+      </li>
+      }
+    </ul>
+    }
   </mat-expansion-panel>
 
-  <mat-expansion-panel>
+  <mat-expansion-panel (opened)="onExpandRecents()">
     <mat-expansion-panel-header>
       <mat-panel-title>⌚ Recently Viewed</mat-panel-title>
     </mat-expansion-panel-header>
 
+    @if (!isLoggedIn()) {
+    <!-- Show what's stored locally while the chef isn't signed in -->
+    @if (recentRecipes().length === 0) {
+    <p>No recipes found</p>
+    } @else {
     <ul class="recents-list">
       @for (recipe of recentRecipes(); track recipe.id) {
       <li>
@@ -38,27 +63,46 @@
       </li>
       }
     </ul>
+    } } @else if (recentRecipes2().length === 0) {
+    <p>No recipes found</p>
+    } @else {
+    <ul class="recents-list">
+      @for (recipe of recentRecipes2(); track recipe?.id) {
+      <li>
+        @if (recipe !== undefined) {
+        <app-recipe-card [recipe]="recipe" />
+        } @else {
+        <app-recipe-card-loader />
+        }
+      </li>
+      }
+    </ul>
+    }
   </mat-expansion-panel>
 
-  <mat-expansion-panel>
+  <mat-expansion-panel (opened)="onExpandRatings()">
     <mat-expansion-panel-header>
       <mat-panel-title>⭐ Ratings</mat-panel-title>
     </mat-expansion-panel-header>
 
-    <app-recipe-card [recipe]="recentRecipes()[0]" />
-  </mat-expansion-panel>
-</mat-accordion> -->
-
-@if (recentRecipes().length > 0) {
-<section class="recents-section">
-  <h1 class="recents-title">Recently Viewed</h1>
-  <mat-divider />
-  <ul class="recents-list">
-    @for (recipe of recentRecipes(); track recipe.id) {
-    <li>
-      <app-recipe-card [recipe]="recipe" />
-    </li>
+    @if (!isLoggedIn()) { @if (isLoading()) {
+    <app-recipe-card-loader />
+    } @else {
+    <p>Sign in to view your saved recipes</p>
+    } } @else if (ratedRecipes().length === 0) {
+    <p>No recipes found</p>
+    } @else {
+    <ul class="recents-list">
+      @for (recipe of ratedRecipes(); track recipe?.id) {
+      <li>
+        @if (recipe !== undefined) {
+        <app-recipe-card [recipe]="recipe" />
+        } @else {
+        <app-recipe-card-loader />
+        }
+      </li>
+      }
+    </ul>
     }
-  </ul>
-</section>
-}
+  </mat-expansion-panel>
+</mat-accordion>
