@@ -12,7 +12,6 @@ import { RouterModule } from '@angular/router';
 
 import { RecipeComponent } from '../recipe/recipe.component';
 import { routes } from 'src/app/app-routing.module';
-import { environment } from 'src/environments/environment';
 import { ChefService } from 'src/app/services/chef.service';
 import { RecipeUpdate } from 'src/app/models/recipe.model';
 import Constants from 'src/app/constants/constants';
@@ -41,9 +40,12 @@ export class NavbarComponent {
   // Detect breakpoint changes so the template can respond
   isSmallScreen = signal(this.breakpointObserver.isMatched(Breakpoints.XSmall));
   // Navigation links to show in the sidenav
-  readonly navItems = environment.production
-    ? [routes.home, routes.search, routes.glossary]
-    : [routes.home, routes.search, routes.glossary, routes.profile];
+  readonly navItems = [
+    routes.home,
+    routes.search,
+    routes.glossary,
+    routes.profile,
+  ];
 
   recipe = this.recipeService.recipe;
   chef = this.chefService.chef;
