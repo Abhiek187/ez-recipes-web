@@ -16,6 +16,47 @@
 <p class="loading-message">{{ loadingMessage() }}</p>
 }
 
+<!-- Reusable container for the accordions -->
+<ng-template
+  #recipeCards
+  let-recipes="recipes"
+  let-showWhenOffline="showWhenOffline"
+>
+  @if (!isLoggedIn()) { @if (showWhenOffline) {
+  <!-- Show what's stored locally while the chef isn't signed in -->
+  @if (recentRecipesLocal().length === 0) {
+  <p>No recipes found</p>
+  } @else {
+  <ul class="recipe-card-list">
+    @for (recipe of recentRecipesLocal(); track recipe.id) {
+    <li>
+      <app-recipe-card [recipe]="recipe" />
+    </li>
+    }
+  </ul>
+  } } @else if (isLoading()) {
+  <!-- Show the recipe cards loading while waiting for both the auth state & recipes -->
+  <app-recipe-card-loader />
+  } @else {
+  <!-- Encourage the user to sign in to see these recipes -->
+  <p>Sign in to view your saved recipes</p>
+  } } @else if (recipes().length === 0) {
+  <p>No recipes found</p>
+  } @else {
+  <ul class="recipe-card-list">
+    @for (recipe of recipes(); track recipe?.id) {
+    <li>
+      @if (recipe !== undefined) {
+      <app-recipe-card [recipe]="recipe" />
+      } @else {
+      <app-recipe-card-loader />
+      }
+    </li>
+    }
+  </ul>
+  }
+</ng-template>
+
 <!-- Multiple accordions can be expanded -->
 <mat-accordion multi class="home-accordion">
   <mat-expansion-panel
@@ -26,27 +67,9 @@
       <mat-panel-title>💖 Favorites</mat-panel-title>
     </mat-expansion-panel-header>
 
-    @if (!isLoggedIn()) { @if (isLoading()) {
-    <!-- Show the recipe cards loading while waiting for both the auth state & recipes -->
-    <app-recipe-card-loader />
-    } @else {
-    <!-- Encourage the user to sign in to see these recipes -->
-    <p>Sign in to view your saved recipes</p>
-    } } @else if (favoriteRecipes().length === 0) {
-    <p>No recipes found</p>
-    } @else {
-    <ul class="recipe-card-list">
-      @for (recipe of favoriteRecipes(); track recipe?.id) {
-      <li>
-        @if (recipe !== undefined) {
-        <app-recipe-card [recipe]="recipe" />
-        } @else {
-        <app-recipe-card-loader />
-        }
-      </li>
-      }
-    </ul>
-    }
+    <ng-container
+      *ngTemplateOutlet="recipeCards; context: recipeCardContext.favorites"
+    />
   </mat-expansion-panel>
 
   <mat-expansion-panel class="recents-accordion" (opened)="onExpandRecents()">
@@ -54,33 +77,9 @@
       <mat-panel-title>⌚ Recently Viewed</mat-panel-title>
     </mat-expansion-panel-header>
 
-    @if (!isLoggedIn()) {
-    <!-- Show what's stored locally while the chef isn't signed in -->
-    @if (recentRecipesLocal().length === 0) {
-    <p>No recipes found</p>
-    } @else {
-    <ul class="recipe-card-list">
-      @for (recipe of recentRecipesLocal(); track recipe.id) {
-      <li>
-        <app-recipe-card [recipe]="recipe" />
-      </li>
-      }
-    </ul>
-    } } @else if (recentRecipesRemote().length === 0) {
-    <p>No recipes found</p>
-    } @else {
-    <ul class="recipe-card-list">
-      @for (recipe of recentRecipesRemote(); track recipe?.id) {
-      <li>
-        @if (recipe !== undefined) {
-        <app-recipe-card [recipe]="recipe" />
-        } @else {
-        <app-recipe-card-loader />
-        }
-      </li>
-      }
-    </ul>
-    }
+    <ng-container
+      *ngTemplateOutlet="recipeCards; context: recipeCardContext.recents"
+    />
   </mat-expansion-panel>
 
   <mat-expansion-panel class="ratings-accordion" (opened)="onExpandRatings()">
@@ -88,24 +87,8 @@
       <mat-panel-title>⭐ Ratings</mat-panel-title>
     </mat-expansion-panel-header>
 
-    @if (!isLoggedIn()) { @if (isLoading()) {
-    <app-recipe-card-loader />
-    } @else {
-    <p>Sign in to view your saved recipes</p>
-    } } @else if (ratedRecipes().length === 0) {
-    <p>No recipes found</p>
-    } @else {
-    <ul class="recipe-card-list">
-      @for (recipe of ratedRecipes(); track recipe?.id) {
-      <li>
-        @if (recipe !== undefined) {
-        <app-recipe-card [recipe]="recipe" />
-        } @else {
-        <app-recipe-card-loader />
-        }
-      </li>
-      }
-    </ul>
-    }
+    <ng-container
+      *ngTemplateOutlet="recipeCards; context: recipeCardContext.ratings"
+    />
   </mat-expansion-panel>
 </mat-accordion>

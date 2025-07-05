@@ -1,7 +1,9 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   DestroyRef,
   OnInit,
+  WritableSignal,
   computed,
   inject,
   signal,
@@ -25,6 +27,7 @@ import { ChefService } from 'src/app/services/chef.service';
 @Component({
   selector: 'app-home',
   imports: [
+    CommonModule,
     MatButtonModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
@@ -48,11 +51,21 @@ export class HomeComponent implements OnInit {
   isLoggedIn = computed(() => this.chefService.chef() !== undefined);
 
   private didExpandFavorites = signal(false);
-  favoriteRecipes = signal<(Recipe | undefined)[]>([]);
+  private favoriteRecipes = signal<(Recipe | undefined)[]>([]);
   private didExpandRecents = signal(false);
-  recentRecipesRemote = signal<(Recipe | undefined)[]>([]);
+  private recentRecipesRemote = signal<(Recipe | undefined)[]>([]);
   private didExpandRatings = signal(false);
-  ratedRecipes = signal<(Recipe | undefined)[]>([]);
+  private ratedRecipes = signal<(Recipe | undefined)[]>([]);
+  recipeCardContext: {
+    [key: string]: {
+      recipes: WritableSignal<(Recipe | undefined)[]>;
+      showWhenOffline: boolean;
+    };
+  } = {
+    favorites: { recipes: this.favoriteRecipes, showWhenOffline: false },
+    recents: { recipes: this.recentRecipesRemote, showWhenOffline: true },
+    ratings: { recipes: this.ratedRecipes, showWhenOffline: false },
+  };
 
   ngOnInit(): void {
     // Get all the recent recipes from IndexedDB
