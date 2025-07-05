@@ -18,14 +18,17 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { HomeComponent } from './home.component';
 import Constants from 'src/app/constants/constants';
 import { RecipeService } from 'src/app/services/recipe.service';
-import { mockRecipes } from 'src/app/models/recipe.mock';
+import { mockRecipe, mockRecipes } from 'src/app/models/recipe.mock';
 import { mockTime } from 'src/app/models/term-store.mock';
 import { RecentRecipe } from 'src/app/models/recipe.model';
+import { ChefService } from 'src/app/services/chef.service';
+import { mockChef } from 'src/app/models/profile.mock';
 
 describe('HomeComponent', () => {
   let homeComponent: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let rootElement: HTMLElement;
+  let chefService: ChefService;
 
   const mockRecentRecipes = (value: RecentRecipe[]) => {
     spyOn(RecipeService.prototype, 'getRecentRecipes').and.returnValue(
@@ -47,6 +50,7 @@ describe('HomeComponent', () => {
     fixture = TestBed.createComponent(HomeComponent);
     homeComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
+    chefService = TestBed.inject(ChefService);
 
     // Create a fake timer to mock setInterval & setTimeout
     jasmine.clock().install();
@@ -79,6 +83,21 @@ describe('HomeComponent', () => {
     // The spinner should be hidden
     expect(homeComponent.isLoading()).toBeFalse();
     expect(rootElement.querySelector('.progress-spinner')).toBeNull();
+
+    // All the accordions should be present
+    const favoritesAccordion = rootElement.querySelector(
+      '.favorites-accordion'
+    );
+    expect(favoritesAccordion).toBeDefined();
+    expect(favoritesAccordion?.textContent).toContain('Favorites');
+
+    const recentsAccordion = rootElement.querySelector('.recents-accordion');
+    expect(recentsAccordion).toBeDefined();
+    expect(recentsAccordion?.textContent).toContain('Recently Viewed');
+
+    const ratingsAccordion = rootElement.querySelector('.ratings-accordion');
+    expect(ratingsAccordion).toBeDefined();
+    expect(ratingsAccordion?.textContent).toContain('Ratings');
   });
 
   it('should load a random recipe after clicking the find recipe button', fakeAsync(() => {
@@ -119,15 +138,33 @@ describe('HomeComponent', () => {
     expect(Constants.loadingMessages).toContain(homeComponent.loadingMessage());
   });
 
-  it("shouldn't show the recents section if there aren't any recent recipes", () => {
-    mockRecentRecipes([]);
+  it('should show the sign in message if the user is unauthenticated', () => {
+    chefService.chef.set(undefined);
+    fixture.detectChanges();
 
-    const recentsSection =
-      rootElement.querySelector<HTMLElement>('.recents-section');
-    expect(recentsSection).toBeNull();
+    const favoritesAccordion = rootElement.querySelector(
+      '.favorites-accordion'
+    );
+    expect(favoritesAccordion?.textContent).toContain(
+      'Sign in to view your saved recipes'
+    );
+    const ratingsAccordion = rootElement.querySelector('.ratings-accordion');
+    expect(ratingsAccordion?.textContent).toContain(
+      'Sign in to view your saved recipes'
+    );
   });
 
-  it('should show the recents section if there are recent recipes', () => {
+  it("should show no recipes found if there aren't any recent recipes", () => {
+    chefService.chef.set(undefined);
+    mockRecentRecipes([]);
+
+    const recentsAccordion =
+      rootElement.querySelector<HTMLElement>('.recents-accordion');
+    expect(recentsAccordion?.textContent).toContain('No recipes found');
+  });
+
+  it('should show locally stored recipes if there are recent recipes and the user is unauthenticated', () => {
+    chefService.chef.set(undefined);
     mockRecentRecipes(
       mockRecipes.map((recipe) => ({
         ...recipe,
@@ -136,17 +173,69 @@ describe('HomeComponent', () => {
       }))
     );
 
-    const recentsSection =
-      rootElement.querySelector<HTMLElement>('.recents-section');
-    expect(recentsSection).not.toBeNull();
-    expect(
-      recentsSection?.querySelector<HTMLHeadingElement>('.recents-title')
-        ?.textContent
-    ).toBe('Recently Viewed');
-
+    const recentsAccordion =
+      rootElement.querySelector<HTMLElement>('.recents-accordion');
     const recentsList =
-      recentsSection?.querySelector<HTMLUListElement>('.recents-list');
+      recentsAccordion?.querySelector<HTMLUListElement>('.recipe-card-list');
     expect(recentsList).not.toBeNull();
     expect(recentsList?.childElementCount).toBe(mockRecipes.length);
+  });
+
+  it("should show no recipes found if the user is authenticated but hasn't saved any recipe", () => {
+    chefService.chef.set({
+      ...mockChef,
+      favoriteRecipes: [],
+      recentRecipes: {},
+      ratings: {},
+    });
+    homeComponent.onExpandFavorites();
+    homeComponent.onExpandRecents();
+    homeComponent.onExpandRatings();
+    fixture.detectChanges();
+
+    const favoritesAccordion = rootElement.querySelector(
+      '.favorites-accordion'
+    );
+    expect(favoritesAccordion?.textContent).toContain('No recipes found');
+
+    const recentsAccordion = rootElement.querySelector('.recents-accordion');
+    expect(recentsAccordion?.textContent).toContain('No recipes found');
+
+    const ratingsAccordion = rootElement.querySelector('.ratings-accordion');
+    expect(ratingsAccordion?.textContent).toContain('No recipes found');
+  });
+
+  it('should populate all the accordions if authenticated', () => {
+    spyOn(RecipeService.prototype, 'getRecipeById').and.returnValue(
+      of(mockRecipe)
+    );
+    chefService.chef.set(mockChef);
+    homeComponent.onExpandFavorites();
+    homeComponent.onExpandRecents();
+    homeComponent.onExpandRatings();
+    fixture.detectChanges();
+
+    const favoritesAccordion = rootElement.querySelector(
+      '.favorites-accordion'
+    );
+    const favoritesList =
+      favoritesAccordion?.querySelector<HTMLUListElement>('.recipe-card-list');
+    expect(favoritesList?.childElementCount).toBe(
+      mockChef.favoriteRecipes.length
+    );
+
+    const recentsAccordion = rootElement.querySelector('.recents-accordion');
+    const recentsList =
+      recentsAccordion?.querySelector<HTMLUListElement>('.recipe-card-list');
+    expect(recentsList?.childElementCount).toBe(
+      Object.keys(mockChef.recentRecipes).length
+    );
+
+    const ratingsAccordion = rootElement.querySelector('.ratings-accordion');
+    const ratingsList =
+      ratingsAccordion?.querySelector<HTMLUListElement>('.recipe-card-list');
+    expect(ratingsList?.childElementCount).toBe(
+      Object.keys(mockChef.ratings).length
+    );
   });
 });

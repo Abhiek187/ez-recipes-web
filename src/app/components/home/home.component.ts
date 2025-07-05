@@ -44,13 +44,13 @@ export class HomeComponent implements OnInit {
   isLoading = signal(false);
   private readonly defaultLoadingMessage = '';
   loadingMessage = signal(this.defaultLoadingMessage);
-  recentRecipes = signal<Recipe[]>([]);
+  recentRecipesLocal = signal<Recipe[]>([]);
   isLoggedIn = computed(() => this.chefService.chef() !== undefined);
 
   private didExpandFavorites = signal(false);
   favoriteRecipes = signal<(Recipe | undefined)[]>([]);
   private didExpandRecents = signal(false);
-  recentRecipes2 = signal<(Recipe | undefined)[]>([]);
+  recentRecipesRemote = signal<(Recipe | undefined)[]>([]);
   private didExpandRatings = signal(false);
   ratedRecipes = signal<(Recipe | undefined)[]>([]);
 
@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit {
     // Get all the recent recipes from IndexedDB
     this.recipeService.getRecentRecipes().subscribe({
       next: (recipes: Recipe[]) => {
-        this.recentRecipes.set(recipes);
+        this.recentRecipesLocal.set(recipes);
       },
       error: (error: Error) => {
         this.snackBar.open(error.message, 'Dismiss');
@@ -166,7 +166,7 @@ export class HomeComponent implements OnInit {
       const recipeIds = Object.entries(chef?.recentRecipes ?? {})
         .toSorted(([, time1], [, time2]) => time2.localeCompare(time1))
         .map(([recipeId]) => recipeId);
-      this.recentRecipes2.set(recipeIds.map(() => undefined));
+      this.recentRecipesRemote.set(recipeIds.map(() => undefined));
 
       zip(
         recipeIds.map((recipeId) =>
@@ -176,7 +176,7 @@ export class HomeComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (notifications) => {
-            const newRecentRecipes = this.recentRecipes2();
+            const newRecentRecipes = this.recentRecipesRemote();
 
             for (const [
               index,
@@ -192,7 +192,7 @@ export class HomeComponent implements OnInit {
               }
             }
 
-            this.recentRecipes2.set(
+            this.recentRecipesRemote.set(
               newRecentRecipes.filter((recipe) => recipe !== undefined)
             );
           },

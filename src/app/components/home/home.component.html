@@ -18,7 +18,10 @@
 
 <!-- Multiple accordions can be expanded -->
 <mat-accordion multi class="home-accordion">
-  <mat-expansion-panel (opened)="onExpandFavorites()">
+  <mat-expansion-panel
+    class="favorites-accordion"
+    (opened)="onExpandFavorites()"
+  >
     <mat-expansion-panel-header>
       <mat-panel-title>💖 Favorites</mat-panel-title>
     </mat-expansion-panel-header>
@@ -32,7 +35,7 @@
     } } @else if (favoriteRecipes().length === 0) {
     <p>No recipes found</p>
     } @else {
-    <ul class="recents-list">
+    <ul class="recipe-card-list">
       @for (recipe of favoriteRecipes(); track recipe?.id) {
       <li>
         @if (recipe !== undefined) {
@@ -46,28 +49,28 @@
     }
   </mat-expansion-panel>
 
-  <mat-expansion-panel (opened)="onExpandRecents()">
+  <mat-expansion-panel class="recents-accordion" (opened)="onExpandRecents()">
     <mat-expansion-panel-header>
       <mat-panel-title>⌚ Recently Viewed</mat-panel-title>
     </mat-expansion-panel-header>
 
     @if (!isLoggedIn()) {
     <!-- Show what's stored locally while the chef isn't signed in -->
-    @if (recentRecipes().length === 0) {
+    @if (recentRecipesLocal().length === 0) {
     <p>No recipes found</p>
     } @else {
-    <ul class="recents-list">
-      @for (recipe of recentRecipes(); track recipe.id) {
+    <ul class="recipe-card-list">
+      @for (recipe of recentRecipesLocal(); track recipe.id) {
       <li>
         <app-recipe-card [recipe]="recipe" />
       </li>
       }
     </ul>
-    } } @else if (recentRecipes2().length === 0) {
+    } } @else if (recentRecipesRemote().length === 0) {
     <p>No recipes found</p>
     } @else {
-    <ul class="recents-list">
-      @for (recipe of recentRecipes2(); track recipe?.id) {
+    <ul class="recipe-card-list">
+      @for (recipe of recentRecipesRemote(); track recipe?.id) {
       <li>
         @if (recipe !== undefined) {
         <app-recipe-card [recipe]="recipe" />
@@ -80,7 +83,7 @@
     }
   </mat-expansion-panel>
 
-  <mat-expansion-panel (opened)="onExpandRatings()">
+  <mat-expansion-panel class="ratings-accordion" (opened)="onExpandRatings()">
     <mat-expansion-panel-header>
       <mat-panel-title>⭐ Ratings</mat-panel-title>
     </mat-expansion-panel-header>
@@ -92,7 +95,7 @@
     } } @else if (ratedRecipes().length === 0) {
     <p>No recipes found</p>
     } @else {
-    <ul class="recents-list">
+    <ul class="recipe-card-list">
       @for (recipe of ratedRecipes(); track recipe?.id) {
       <li>
         @if (recipe !== undefined) {
