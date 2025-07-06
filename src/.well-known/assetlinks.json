@@ -12,5 +12,12 @@
         "66:E1:DD:94:BF:CF:2E:24:AB:5E:CD:CB:30:2A:78:B4:29:88:9A:99:18:B9:03:89:5D:C5:FE:B0:CB:1A:DE:88"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "web",
+      "site": "https://ez-recipes-web.onrender.com"
+    }
   }
 ]
