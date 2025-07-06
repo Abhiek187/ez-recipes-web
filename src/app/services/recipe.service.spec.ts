@@ -271,6 +271,7 @@ describe('RecipeService', () => {
     const fields: RecipeUpdate = {
       isFavorite: false,
     };
+    mockLocalStorage();
     const recipePromise = firstValueFrom(
       recipeService.updateRecipe(id, fields)
     );
