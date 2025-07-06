@@ -121,7 +121,7 @@ describe('DeleteAccountComponent', () => {
     submitButton?.click();
     fixture.detectChanges();
 
-    expect(mockChefService.deleteChef).toHaveBeenCalledWith(mockChef.token);
+    expect(mockChefService.deleteChef).toHaveBeenCalledWith();
     expect(navigateSpy).toHaveBeenCalledWith([routes.profile.path]);
   });
 });

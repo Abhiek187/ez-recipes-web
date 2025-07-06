@@ -116,15 +116,9 @@ export class UpdatePasswordComponent implements OnInit {
       email: this.chefEmail(),
       password: password ?? '',
     };
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token === null) {
-      this.isLoading.set(false);
-      this.snackBar.open(Constants.noTokenFound, 'Dismiss');
-      return;
-    }
 
     this.chefService
-      .updateChef(fields, token)
+      .updateChef(fields)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
@@ -133,8 +127,6 @@ export class UpdatePasswordComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          // The token will be revoked, so sign out the user
-          localStorage.removeItem(Constants.LocalStorage.token);
           this.snackBar.open(
             'Password updated successfully! Please sign in again.',
             'Dismiss'

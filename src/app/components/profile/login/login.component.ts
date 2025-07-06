@@ -18,7 +18,6 @@ import { finalize } from 'rxjs';
 import { ChefService } from 'src/app/services/chef.service';
 import { LoginCredentials } from 'src/app/models/profile.model';
 import { profileRoutes, routes } from 'src/app/app-routing.module';
-import Constants from 'src/app/constants/constants';
 
 @Component({
   selector: 'app-login',
@@ -79,13 +78,11 @@ export class LoginComponent {
         })
       )
       .subscribe({
-        next: ({ token, emailVerified }) => {
-          localStorage.setItem(Constants.LocalStorage.token, token);
-
+        next: ({ emailVerified }) => {
           // Check if the user signed up, but didn't verify their email yet
           if (!emailVerified) {
             // Don't update the chef's verified status until they click the redirect link
-            this.chefService.verifyEmail(token).subscribe();
+            this.chefService.verifyEmail().subscribe();
             this.router.navigate([profileRoutes.verifyEmail.path], {
               state: { email: username },
             });

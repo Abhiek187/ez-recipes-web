@@ -109,11 +109,9 @@ describe('RecipeCardComponent', () => {
     mockRecipeService.updateRecipe.and.returnValue(of(mockToken));
     favoriteButton?.click();
     fixture.detectChanges();
-    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(
-      mockRecipe.id,
-      { isFavorite: true },
-      mockChef.token
-    );
+    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
+      isFavorite: true,
+    });
     expect(recipeCardComponent.chef()?.favoriteRecipes).toContain(
       mockRecipe.id.toString()
     );
@@ -121,11 +119,9 @@ describe('RecipeCardComponent', () => {
 
     favoriteButton?.click();
     fixture.detectChanges();
-    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(
-      mockRecipe.id,
-      { isFavorite: false },
-      mockChef.token
-    );
+    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
+      isFavorite: false,
+    });
     expect(recipeCardComponent.chef()?.favoriteRecipes).not.toContain(
       mockRecipe.id.toString()
     );

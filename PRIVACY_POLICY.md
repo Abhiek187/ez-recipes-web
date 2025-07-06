@@ -20,13 +20,13 @@ By signing up for an account, you agree to have your email, a unique ID, and rec
 
 ## Deleting your Account
 
-The best way to delete your account is within the app itself. Click the "Delete Account" button on your profile and enter your username to confirm deletion. This will immediately delete all data in Firebase and MongoDB associated with your unique ID.
+The best way to delete your account is within the app itself or by visiting https://ez-recipes-web.onrender.com/profile/delete-account. Click the "Delete Account" button on your profile and enter your username to confirm deletion. This will immediately delete all data in Firebase and MongoDB associated with your unique ID.
 
 > [!NOTE]
 >
 > Anonymously collected data, such as recipe views, will not be deleted alongside your account.
 
-Users who wish to delete their data after uninstalling the app can send an email to me at achaudhuri2011@yahoo.com. Please use the same email used to create the account to ensure we don't accidentally delete someone else's account.
+Users who wish to delete their data after uninstalling the app and can't sign in can send an email to me at achaudhuri2011@yahoo.com. Please use the same email used to create the account to ensure we don't accidentally delete someone else's account.
 
 ## Cloning the App
 

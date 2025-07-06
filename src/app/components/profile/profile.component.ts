@@ -7,7 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
-import { AuthState, Chef, ProfileAction } from 'src/app/models/profile.model';
+import { AuthState, ProfileAction } from 'src/app/models/profile.model';
 import { profileRoutes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
@@ -33,7 +33,7 @@ export class ProfileComponent implements OnInit {
 
   AuthState = AuthState;
   authState = signal(AuthState.Loading);
-  chef = signal<Chef | undefined>(undefined);
+  chef = this.chefService.chef;
   profileRoutes = profileRoutes;
 
   readonly totalRecipesFavorited = computed(
@@ -52,22 +52,21 @@ export class ProfileComponent implements OnInit {
 
     if (token === null) {
       this.authState.set(AuthState.Unauthenticated);
+    } else if (
+      this.totalRecipesFavorited() > 0 ||
+      this.totalRecipesViewed() > 0 ||
+      this.totalRecipesRated() > 0
+    ) {
+      // If redirected from the login page, the chef's recipe stats still need to be fetched
+      this.authState.set(AuthState.Authenticated);
     } else {
-      this.chefService.getChef(token).subscribe({
-        next: (chefResponse) => {
-          this.chef.set(chefResponse);
-          localStorage.setItem(
-            Constants.LocalStorage.token,
-            chefResponse.token
-          );
+      this.chefService.getChef().subscribe({
+        next: ({ emailVerified }) => {
           this.authState.set(
-            chefResponse.emailVerified
-              ? AuthState.Authenticated
-              : AuthState.Unauthenticated
+            emailVerified ? AuthState.Authenticated : AuthState.Unauthenticated
           );
         },
         error: (error) => {
-          localStorage.removeItem(Constants.LocalStorage.token);
           this.authState.set(AuthState.Unauthenticated);
           this.snackBar.open(error.message, 'Dismiss');
         },
@@ -95,13 +94,7 @@ export class ProfileComponent implements OnInit {
   }
 
   logout() {
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token !== null) {
-      // subscribe is required to call the API without getting the result
-      this.chefService.logout(token).subscribe();
-    }
-    // Assume the user should be signed out since there's no auth token
-    localStorage.removeItem(Constants.LocalStorage.token);
+    this.chefService.logout().subscribe();
     this.authState.set(AuthState.Unauthenticated);
   }
 

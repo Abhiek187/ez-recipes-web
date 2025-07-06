@@ -5,60 +5,90 @@
     color="accent"
     class="find-recipe-button"
     (click)="getRandomRecipe()"
-    [disabled]="isLoading()"
+    [disabled]="isLoadingRecipe()"
   >
     Find Me a Recipe!
   </button>
 </div>
 
-@if (isLoading()) {
+@if (isLoadingRecipe()) {
 <mat-spinner diameter="50" class="progress-spinner" />
 <p class="loading-message">{{ loadingMessage() }}</p>
 }
 
-<!-- Multiple accordions can be expanded -->
-<!-- <mat-accordion multi>
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>💖 Favorites</mat-panel-title>
-    </mat-expansion-panel-header>
-
-    <app-recipe-card-loader />
-  </mat-expansion-panel>
-
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>⌚ Recently Viewed</mat-panel-title>
-    </mat-expansion-panel-header>
-
-    <ul class="recents-list">
-      @for (recipe of recentRecipes(); track recipe.id) {
-      <li>
-        <app-recipe-card [recipe]="recipe" />
-      </li>
-      }
-    </ul>
-  </mat-expansion-panel>
-
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>⭐ Ratings</mat-panel-title>
-    </mat-expansion-panel-header>
-
-    <app-recipe-card [recipe]="recentRecipes()[0]" />
-  </mat-expansion-panel>
-</mat-accordion> -->
-
-@if (recentRecipes().length > 0) {
-<section class="recents-section">
-  <h1 class="recents-title">Recently Viewed</h1>
-  <mat-divider />
-  <ul class="recents-list">
-    @for (recipe of recentRecipes(); track recipe.id) {
+<!-- Reusable container for the accordions -->
+<ng-template
+  #recipeCards
+  let-recipes="recipes"
+  let-showWhenOffline="showWhenOffline"
+>
+  @if (!isLoggedIn()) { @if (showWhenOffline) {
+  <!-- Show what's stored locally while the chef isn't signed in -->
+  @if (recentRecipesLocal().length === 0) {
+  <p>No recipes found</p>
+  } @else {
+  <ul class="recipe-card-list">
+    @for (recipe of recentRecipesLocal(); track recipe.id) {
     <li>
       <app-recipe-card [recipe]="recipe" />
     </li>
     }
   </ul>
-</section>
-}
+  } } @else if (isLoadingChef()) {
+  <!-- Show the recipe cards loading while waiting for both the auth state & recipes -->
+  <app-recipe-card-loader />
+  } @else {
+  <!-- Encourage the user to sign in to see these recipes -->
+  <p>Sign in to view your saved recipes</p>
+  } } @else if (recipes().length === 0) {
+  <p>No recipes found</p>
+  } @else {
+  <ul class="recipe-card-list">
+    @for (recipe of recipes(); track recipe?.id) {
+    <li>
+      @if (recipe !== undefined) {
+      <app-recipe-card [recipe]="recipe" />
+      } @else {
+      <app-recipe-card-loader />
+      }
+    </li>
+    }
+  </ul>
+  }
+</ng-template>
+
+<!-- Multiple accordions can be expanded -->
+<mat-accordion multi class="home-accordion">
+  <mat-expansion-panel
+    class="favorites-accordion"
+    (opened)="onExpandFavorites()"
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title>💖 Favorites</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <ng-container
+      *ngTemplateOutlet="recipeCards; context: recipeCardContext.favorites"
+    />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="recents-accordion" (opened)="onExpandRecents()">
+    <mat-expansion-panel-header>
+      <mat-panel-title>⌚ Recently Viewed</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <ng-container
+      *ngTemplateOutlet="recipeCards; context: recipeCardContext.recents"
+    />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="ratings-accordion" (opened)="onExpandRatings()">
+    <mat-expansion-panel-header>
+      <mat-panel-title>⭐ Ratings</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <ng-container
+      *ngTemplateOutlet="recipeCards; context: recipeCardContext.ratings"
+    />
+  </mat-expansion-panel>
+</mat-accordion>

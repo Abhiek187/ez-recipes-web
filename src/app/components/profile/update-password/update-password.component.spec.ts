@@ -165,14 +165,11 @@ describe('UpdatePasswordComponent', () => {
     submitButton?.click();
     fixture.detectChanges();
 
-    expect(mockChefService.updateChef).toHaveBeenCalledWith(
-      {
-        type: ChefUpdateType.Password,
-        email: mockChef.email,
-        password: mockPassword,
-      },
-      mockChef.token
-    );
+    expect(mockChefService.updateChef).toHaveBeenCalledWith({
+      type: ChefUpdateType.Password,
+      email: mockChef.email,
+      password: mockPassword,
+    });
     expect(navigateSpy).toHaveBeenCalledWith([profileRoutes.login.path]);
   });
 });

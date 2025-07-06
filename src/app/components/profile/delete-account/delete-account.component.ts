@@ -22,7 +22,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
 import { routes } from 'src/app/app-routing.module';
 
@@ -87,15 +86,9 @@ export class DeleteAccountComponent implements OnInit {
 
   deleteAccount() {
     this.isLoading.set(true);
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token === null) {
-      this.isLoading.set(false);
-      this.snackBar.open(Constants.noTokenFound, 'Dismiss');
-      return;
-    }
 
     this.chefService
-      .deleteChef(token)
+      .deleteChef()
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
@@ -104,7 +97,6 @@ export class DeleteAccountComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          localStorage.removeItem(Constants.LocalStorage.token);
           this.snackBar.open('Your account has been deleted.', 'Dismiss');
           this.router.navigate([routes.profile.path]);
         },

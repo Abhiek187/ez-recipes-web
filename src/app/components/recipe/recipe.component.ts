@@ -26,7 +26,6 @@ import { TermsService } from 'src/app/services/terms.service';
 import { ShorthandPipe } from '../../pipes/shorthand.pipe';
 import { RecipeRatingComponent } from '../utils/recipe-rating/recipe-rating.component';
 import { ChefService } from 'src/app/services/chef.service';
-import Constants from 'src/app/constants/constants';
 
 @Component({
   selector: 'app-recipe',
@@ -104,6 +103,10 @@ export class RecipeComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    if (this.chef() === undefined) {
+      this.chefService.getChef().subscribe();
+    }
   }
 
   ngOnInit(): void {
@@ -149,11 +152,9 @@ export class RecipeComponent implements OnInit, OnDestroy {
     const recipeUpdate: RecipeUpdate = {
       view: true,
     };
-    const token =
-      localStorage.getItem(Constants.LocalStorage.token) ?? undefined;
 
-    this.recipeService.updateRecipe(recipe.id, recipeUpdate, token).subscribe({
-      next: ({ token }) => {
+    this.recipeService.updateRecipe(recipe.id, recipeUpdate).subscribe({
+      next: () => {
         this.chefService.chef.update(
           (chef) =>
             chef && {
@@ -164,10 +165,6 @@ export class RecipeComponent implements OnInit, OnDestroy {
               },
             }
         );
-
-        if (token !== undefined) {
-          localStorage.setItem(Constants.LocalStorage.token, token);
-        }
       },
       error: (error) => {
         console.error(
@@ -201,13 +198,8 @@ export class RecipeComponent implements OnInit, OnDestroy {
     const recipeUpdate: RecipeUpdate = {
       rating,
     };
-    const token = localStorage.getItem(Constants.LocalStorage.token);
 
-    if (
-      this.chefService.chef() === undefined ||
-      recipeId === undefined ||
-      token === null
-    ) {
+    if (this.chef() === undefined || recipeId === undefined) {
       this.snackBar.open(
         'You must be signed in to rate this recipe',
         'Dismiss'
@@ -216,10 +208,10 @@ export class RecipeComponent implements OnInit, OnDestroy {
     }
 
     this.recipeService
-      .updateRecipe(recipeId, recipeUpdate, token)
+      .updateRecipe(recipeId, recipeUpdate)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ token }) => {
+        next: () => {
           this.chefService.chef.update(
             (chef) =>
               chef && {
@@ -230,10 +222,6 @@ export class RecipeComponent implements OnInit, OnDestroy {
                 },
               }
           );
-
-          if (token !== undefined) {
-            localStorage.setItem(Constants.LocalStorage.token, token);
-          }
         },
         error: (error) => {
           this.snackBar.open(error.message, 'Dismiss');

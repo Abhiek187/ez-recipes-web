@@ -105,13 +105,10 @@ describe('UpdateEmailComponent', () => {
     submitButton?.click();
     fixture.detectChanges();
 
-    expect(mockChefService.updateChef).toHaveBeenCalledWith(
-      {
-        type: ChefUpdateType.Email,
-        email: mockEmail,
-      },
-      mockChef.token
-    );
+    expect(mockChefService.updateChef).toHaveBeenCalledWith({
+      type: ChefUpdateType.Email,
+      email: mockEmail,
+    });
     expect(rootElement.textContent).toContain(
       `We sent an email to ${mockEmail}`
     );

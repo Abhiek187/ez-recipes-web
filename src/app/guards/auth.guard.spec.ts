@@ -32,7 +32,7 @@ describe('authGuard', () => {
   const localStorageProto = Object.getPrototypeOf(localStorage);
 
   beforeEach(() => {
-    mockChefService = jasmine.createSpyObj('ChefService', ['getChef']);
+    mockChefService = jasmine.createSpyObj('ChefService', ['chef', 'getChef']);
     createUrlTreeSpy = spyOn(
       Router.prototype,
       'createUrlTree'
@@ -52,8 +52,18 @@ describe('authGuard', () => {
     expect(executeGuard).toBeTruthy();
   });
 
+  it('should return true if the user is already authenticated', () => {
+    spyOn(localStorageProto, 'getItem').and.returnValue(mockToken);
+    mockChefService.chef.and.returnValue(mockChef);
+    mockChefService.getChef.and.returnValue(of(mockChef));
+    const guardResult = executeGuard(route, state) as Observable<boolean>;
+
+    expect(guardResult).toBeTrue();
+  });
+
   it('should return true if the user is authenticated', (done) => {
     spyOn(localStorageProto, 'getItem').and.returnValue(mockToken);
+    mockChefService.chef.and.returnValue(undefined);
     mockChefService.getChef.and.returnValue(of(mockChef));
     const guardResult = executeGuard(route, state) as Observable<boolean>;
 
@@ -63,8 +73,9 @@ describe('authGuard', () => {
     });
   });
 
-  it("should redirect to the login page if there's no token in localStorage", (done) => {
+  it("should redirect to the login page if there's no token in localStorage", () => {
     spyOn(localStorageProto, 'getItem').and.returnValue(null);
+    mockChefService.chef.and.returnValue(undefined);
     mockChefService.getChef.and.returnValue(throwError(() => 'mock error'));
     const guardResult = executeGuard(route, state) as UrlTree;
 
@@ -76,12 +87,36 @@ describe('authGuard', () => {
         queryParams: { next: state.url },
       }
     );
-    done();
   });
 
   it("should redirect to the login page if the user isn't authenticated", (done) => {
     spyOn(localStorageProto, 'getItem').and.returnValue(mockToken);
+    mockChefService.chef.and.returnValue(undefined);
     mockChefService.getChef.and.returnValue(throwError(() => 'mock error'));
+    const guardResult = executeGuard(route, state) as Observable<UrlTree>;
+
+    guardResult.subscribe((result) => {
+      expect(result).toBeInstanceOf(UrlTree);
+      expect(result.queryParams).toEqual({ next: state.url });
+      expect(createUrlTreeSpy).toHaveBeenCalledWith(
+        [`/${profileRoutes.login.path}`],
+        {
+          queryParams: { next: state.url },
+        }
+      );
+      done();
+    });
+  });
+
+  it("should redirect to the login page if the user didn't verify their email", (done) => {
+    spyOn(localStorageProto, 'getItem').and.returnValue(mockToken);
+    mockChefService.chef.and.returnValue(undefined);
+    mockChefService.getChef.and.returnValue(
+      of({
+        ...mockChef,
+        emailVerified: false,
+      })
+    );
     const guardResult = executeGuard(route, state) as Observable<UrlTree>;
 
     guardResult.subscribe((result) => {

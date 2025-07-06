@@ -33,6 +33,13 @@ describe('ChefService', () => {
     'An unexpected error occurred. The server may be down or there may be network issues. ' +
     'Please try again later.';
 
+  const mockLocalStorage = (token: string | null = mockChef.token) => {
+    const localStorageProto = Object.getPrototypeOf(localStorage);
+    spyOn(localStorageProto, 'getItem').and.returnValue(token);
+    spyOn(localStorageProto, 'setItem').and.callFake(() => {});
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
+  };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
@@ -55,7 +62,8 @@ describe('ChefService', () => {
   });
 
   it('should get a chef', async () => {
-    const chefPromise = firstValueFrom(chefService.getChef(mockChef.token));
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.getChef());
 
     const req = httpTestingController.expectOne({
       method: 'GET',
@@ -71,7 +79,8 @@ describe('ChefService', () => {
   });
 
   it('should return an error if the GET chef API fails', async () => {
-    const chefPromise = firstValueFrom(chefService.getChef(mockChef.token));
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.getChef());
 
     const req = httpTestingController.expectOne({
       method: 'GET',
@@ -84,6 +93,7 @@ describe('ChefService', () => {
   });
 
   it('should create a chef', async () => {
+    mockLocalStorage();
     const credentials: LoginCredentials = {
       email: mockChef.email,
       password: 'password',
@@ -116,6 +126,7 @@ describe('ChefService', () => {
       email: mockChef.email,
       password: 'password',
     };
+    mockLocalStorage();
     const chefPromise = firstValueFrom(chefService.createChef(credentials));
 
     const req = httpTestingController.expectOne({
@@ -134,9 +145,8 @@ describe('ChefService', () => {
       email: mockChef.email,
       password: 'newpassword',
     };
-    const chefPromise = firstValueFrom(
-      chefService.updateChef(fields, mockChef.token)
-    );
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.updateChef(fields));
 
     const req = httpTestingController.expectOne({
       method: 'PATCH',
@@ -153,9 +163,10 @@ describe('ChefService', () => {
 
   it('should update a chef without a token', async () => {
     const fields: ChefUpdate = {
-      type: ChefUpdateType.Email,
+      type: ChefUpdateType.Password,
       email: mockChef.email,
     };
+    mockLocalStorage(null);
     const chefPromise = firstValueFrom(chefService.updateChef(fields));
 
     const req = httpTestingController.expectOne({
@@ -174,6 +185,7 @@ describe('ChefService', () => {
       type: ChefUpdateType.Email,
       email: mockChef.email,
     };
+    mockLocalStorage();
     const chefPromise = firstValueFrom(chefService.updateChef(fields));
 
     const req = httpTestingController.expectOne({
@@ -186,7 +198,8 @@ describe('ChefService', () => {
   });
 
   it('should delete a chef', async () => {
-    const chefPromise = firstValueFrom(chefService.deleteChef(mockChef.token));
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.deleteChef());
 
     const req = httpTestingController.expectOne({
       method: 'DELETE',
@@ -202,7 +215,8 @@ describe('ChefService', () => {
   });
 
   it('should return an error if the DELETE chef API fails', async () => {
-    const chefPromise = firstValueFrom(chefService.deleteChef(mockChef.token));
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.deleteChef());
 
     const req = httpTestingController.expectOne({
       method: 'DELETE',
@@ -215,7 +229,8 @@ describe('ChefService', () => {
   });
 
   it('should verify an email', async () => {
-    const chefPromise = firstValueFrom(chefService.verifyEmail(mockChef.token));
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.verifyEmail());
 
     const req = httpTestingController.expectOne({
       method: 'POST',
@@ -231,7 +246,8 @@ describe('ChefService', () => {
   });
 
   it('should return an error if the verify email API fails', async () => {
-    const chefPromise = firstValueFrom(chefService.verifyEmail(mockChef.token));
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.verifyEmail());
 
     const req = httpTestingController.expectOne({
       method: 'POST',
@@ -247,6 +263,7 @@ describe('ChefService', () => {
       email: mockChef.email,
       password: 'password',
     };
+    mockLocalStorage();
     const chefPromise = firstValueFrom(chefService.login(credentials));
 
     const req = httpTestingController.expectOne({
@@ -275,6 +292,7 @@ describe('ChefService', () => {
       email: mockChef.email,
       password: 'password',
     };
+    mockLocalStorage();
     const chefPromise = firstValueFrom(chefService.login(credentials));
 
     const req = httpTestingController.expectOne({
@@ -288,7 +306,8 @@ describe('ChefService', () => {
   });
 
   it('should logout', async () => {
-    const chefPromise = firstValueFrom(chefService.logout(mockChef.token));
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.logout());
 
     const req = httpTestingController.expectOne({
       method: 'POST',
@@ -305,7 +324,8 @@ describe('ChefService', () => {
   });
 
   it('should return an error if the logout API fails', async () => {
-    const chefPromise = firstValueFrom(chefService.logout(mockChef.token));
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.logout());
 
     const req = httpTestingController.expectOne({
       method: 'POST',
