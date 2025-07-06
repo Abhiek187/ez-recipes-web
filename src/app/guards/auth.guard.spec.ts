@@ -107,4 +107,28 @@ describe('authGuard', () => {
       done();
     });
   });
+
+  it("should redirect to the login page if the user didn't verify their email", (done) => {
+    spyOn(localStorageProto, 'getItem').and.returnValue(mockToken);
+    mockChefService.chef.and.returnValue(undefined);
+    mockChefService.getChef.and.returnValue(
+      of({
+        ...mockChef,
+        emailVerified: false,
+      })
+    );
+    const guardResult = executeGuard(route, state) as Observable<UrlTree>;
+
+    guardResult.subscribe((result) => {
+      expect(result).toBeInstanceOf(UrlTree);
+      expect(result.queryParams).toEqual({ next: state.url });
+      expect(createUrlTreeSpy).toHaveBeenCalledWith(
+        [`/${profileRoutes.login.path}`],
+        {
+          queryParams: { next: state.url },
+        }
+      );
+      done();
+    });
+  });
 });

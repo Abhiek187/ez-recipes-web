@@ -24,7 +24,7 @@ export const authGuard: CanActivateFn = (_route, state) => {
   }
 
   return chefService.getChef().pipe(
-    map(() => true),
+    map(({ emailVerified }) => emailVerified || loginRedirect),
     catchError(() => of(loginRedirect))
   );
 };

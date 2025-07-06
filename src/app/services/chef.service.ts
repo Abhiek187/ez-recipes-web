@@ -47,7 +47,7 @@ export class ChefService {
       .pipe(
         tap((chef) => {
           localStorage.setItem(Constants.LocalStorage.token, chef.token);
-          this.chef.set(chef);
+          this.chef.set(chef.emailVerified ? chef : undefined);
         }),
         catchError((error) => {
           localStorage.removeItem(Constants.LocalStorage.token);
