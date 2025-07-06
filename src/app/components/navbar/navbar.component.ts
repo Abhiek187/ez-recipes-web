@@ -14,7 +14,6 @@ import { RecipeComponent } from '../recipe/recipe.component';
 import { routes } from 'src/app/app-routing.module';
 import { ChefService } from 'src/app/services/chef.service';
 import { RecipeUpdate } from 'src/app/models/recipe.model';
-import Constants from 'src/app/constants/constants';
 import { RecipeService } from 'src/app/services/recipe.service';
 
 @Component({
@@ -80,11 +79,9 @@ export class NavbarComponent {
     const recipeUpdate: RecipeUpdate = {
       isFavorite: !this.isFavorite(),
     };
-    const token =
-      localStorage.getItem(Constants.LocalStorage.token) ?? undefined;
 
-    this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
-      next: ({ token }) => {
+    this.recipeService.updateRecipe(recipeId, recipeUpdate).subscribe({
+      next: () => {
         const newFavoriteRecipes = this.isFavorite()
           ? this.chef()?.favoriteRecipes?.filter(
               (id) => id !== recipeId.toString()
@@ -106,10 +103,6 @@ export class NavbarComponent {
               error.message
             );
           });
-
-        if (token !== undefined) {
-          localStorage.setItem(Constants.LocalStorage.token, token);
-        }
       },
       error: (error) => {
         this.snackBar.open(error.message, 'Dismiss');

@@ -41,6 +41,13 @@ describe('RecipeService', () => {
     })
   );
 
+  const mockLocalStorage = (token: string | null = mockChef.token) => {
+    const localStorageProto = Object.getPrototypeOf(localStorage);
+    spyOn(localStorageProto, 'getItem').and.returnValue(token);
+    spyOn(localStorageProto, 'setItem').and.callFake(() => {});
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
+  };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
@@ -54,6 +61,7 @@ describe('RecipeService', () => {
         },
       ],
     });
+
     recipeService = TestBed.inject(RecipeService);
     recentRecipesDB = TestBed.inject(RecentRecipesDB);
 
@@ -217,8 +225,9 @@ describe('RecipeService', () => {
       view: true,
       isFavorite: true,
     };
+    mockLocalStorage();
     const recipePromise = firstValueFrom(
-      recipeService.updateRecipe(id, fields, mockChef.token)
+      recipeService.updateRecipe(id, fields)
     );
 
     const req = httpTestingController.expectOne({
@@ -240,6 +249,7 @@ describe('RecipeService', () => {
     const fields: RecipeUpdate = {
       view: true,
     };
+    mockLocalStorage(null);
     const recipePromise = firstValueFrom(
       recipeService.updateRecipe(id, fields)
     );
@@ -269,7 +279,9 @@ describe('RecipeService', () => {
       method: 'PATCH',
       url: `${baseUrl}/${id}`,
     });
-    expect(req.request.headers.get('Authorization')).toBeNull();
+    expect(req.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`
+    );
     expect(req.request.body).toBe(fields);
     req.error(mockError);
 

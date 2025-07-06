@@ -13,7 +13,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
 
-import Constants from 'src/app/constants/constants';
 import { ChefUpdate, ChefUpdateType } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
 
@@ -62,15 +61,9 @@ export class UpdateEmailComponent {
       type: ChefUpdateType.Email,
       email: email ?? '',
     };
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token === null) {
-      this.isLoading.set(false);
-      this.snackBar.open(Constants.noTokenFound, 'Dismiss');
-      return;
-    }
 
     this.chefService
-      .updateChef(fields, token)
+      .updateChef(fields)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
@@ -78,12 +71,8 @@ export class UpdateEmailComponent {
         })
       )
       .subscribe({
-        next: ({ token }) => {
+        next: () => {
           this.emailSent.set(true);
-
-          if (token !== undefined) {
-            localStorage.setItem(Constants.LocalStorage.token, token);
-          }
         },
         error: (error) => {
           this.snackBar.open(error.message, 'Dismiss');

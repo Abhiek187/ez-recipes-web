@@ -68,7 +68,7 @@ describe('VerifyEmailComponent', () => {
       ?.querySelector<HTMLButtonElement>('button');
     resendButton?.click();
 
-    expect(mockChefService.verifyEmail).toHaveBeenCalledWith(mockChef.token);
+    expect(mockChefService.verifyEmail).toHaveBeenCalledWith();
     expect(verifyEmailComponent.enableResend()).toBeFalse();
   });
 
@@ -80,7 +80,7 @@ describe('VerifyEmailComponent', () => {
     logoutButton?.click();
     fixture.detectChanges();
 
-    expect(mockChefService.logout).toHaveBeenCalledWith(mockChef.token);
+    expect(mockChefService.logout).toHaveBeenCalledWith();
     expect(navigateSpy).toHaveBeenCalledWith([routes.profile.path]);
   });
 });

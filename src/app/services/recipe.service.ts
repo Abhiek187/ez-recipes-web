@@ -81,14 +81,12 @@ export class RecipeService {
       );
   }
 
-  updateRecipe(
-    id: number,
-    fields: RecipeUpdate,
-    token?: string
-  ): Observable<Token> {
+  updateRecipe(id: number, fields: RecipeUpdate): Observable<Token> {
     if (this.isMocking) {
       return this.getMockToken();
     }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
 
     return this.http
       .patch<Token>(
@@ -96,11 +94,18 @@ export class RecipeService {
         fields,
         {
           headers: {
-            ...(token !== undefined && this.authHeader(token)),
+            ...(token !== null && this.authHeader(token)),
           },
         }
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        tap(({ token }) => {
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+        }),
+        catchError(handleError)
+      );
   }
 
   // Load a sample recipe to avoid hitting the API while testing the UI

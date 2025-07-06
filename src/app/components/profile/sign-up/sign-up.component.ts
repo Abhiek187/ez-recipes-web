@@ -129,12 +129,10 @@ export class SignUpComponent {
         })
       )
       .subscribe({
-        next: ({ token, emailVerified }) => {
-          localStorage.setItem(Constants.LocalStorage.token, token);
-
+        next: ({ emailVerified }) => {
           if (!emailVerified) {
             // Should always be true
-            this.chefService.verifyEmail(token).subscribe();
+            this.chefService.verifyEmail().subscribe();
             this.router.navigate([profileRoutes.verifyEmail.path], {
               state: { email },
             });

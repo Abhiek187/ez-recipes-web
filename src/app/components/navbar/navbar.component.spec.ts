@@ -154,11 +154,9 @@ describe('NavbarComponent', () => {
 
     favoriteButton?.click();
     fixture.detectChanges();
-    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(
-      mockRecipe.id,
-      { isFavorite: true },
-      mockChef.token
-    );
+    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
+      isFavorite: true,
+    });
     expect(navbarComponent.chef()?.favoriteRecipes).toContain(
       mockRecipe.id.toString()
     );
@@ -168,11 +166,9 @@ describe('NavbarComponent', () => {
 
     favoriteButton?.click();
     fixture.detectChanges();
-    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(
-      mockRecipe.id,
-      { isFavorite: false },
-      mockChef.token
-    );
+    expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
+      isFavorite: false,
+    });
     expect(navbarComponent.chef()?.favoriteRecipes).not.toContain(
       mockRecipe.id.toString()
     );

@@ -60,20 +60,13 @@ export class ProfileComponent implements OnInit {
       // If redirected from the login page, the chef's recipe stats still need to be fetched
       this.authState.set(AuthState.Authenticated);
     } else {
-      this.chefService.getChef(token).subscribe({
-        next: (chefResponse) => {
-          localStorage.setItem(
-            Constants.LocalStorage.token,
-            chefResponse.token
-          );
+      this.chefService.getChef().subscribe({
+        next: ({ emailVerified }) => {
           this.authState.set(
-            chefResponse.emailVerified
-              ? AuthState.Authenticated
-              : AuthState.Unauthenticated
+            emailVerified ? AuthState.Authenticated : AuthState.Unauthenticated
           );
         },
         error: (error) => {
-          localStorage.removeItem(Constants.LocalStorage.token);
           this.authState.set(AuthState.Unauthenticated);
           this.snackBar.open(error.message, 'Dismiss');
         },
@@ -101,13 +94,7 @@ export class ProfileComponent implements OnInit {
   }
 
   logout() {
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token !== null) {
-      // subscribe is required to call the API without getting the result
-      this.chefService.logout(token).subscribe();
-    }
-    // Assume the user should be signed out since there's no auth token
-    localStorage.removeItem(Constants.LocalStorage.token);
+    this.chefService.logout().subscribe();
     this.authState.set(AuthState.Unauthenticated);
   }
 

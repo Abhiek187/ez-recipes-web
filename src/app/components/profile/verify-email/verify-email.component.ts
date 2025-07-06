@@ -57,24 +57,16 @@ export class VerifyEmailComponent implements OnInit {
   }
 
   resendVerificationEmail() {
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token !== null) {
-      this.chefService.verifyEmail(token).subscribe({
-        error: (error) => {
-          this.snackBar.open(error.message, 'Dismiss');
-        },
-      });
-    }
+    this.chefService.verifyEmail().subscribe({
+      error: (error) => {
+        this.snackBar.open(error.message, 'Dismiss');
+      },
+    });
     this.enableResend.set(false);
   }
 
   logout() {
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-    if (token !== null) {
-      this.chefService.logout(token).subscribe();
-    }
-    // Assume the user should be signed out since there's no auth token
-    localStorage.removeItem(Constants.LocalStorage.token);
+    this.chefService.logout().subscribe();
     this.router.navigate([routes.profile.path]);
   }
 }

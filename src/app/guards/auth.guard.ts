@@ -23,7 +23,7 @@ export const authGuard: CanActivateFn = (_route, state) => {
     return true;
   }
 
-  return chefService.getChef(token).pipe(
+  return chefService.getChef().pipe(
     map(() => true),
     catchError(() => of(loginRedirect))
   );

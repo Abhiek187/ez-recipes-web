@@ -10,7 +10,6 @@ import Recipe, { RecipeUpdate } from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { RecipeRatingComponent } from '../recipe-rating/recipe-rating.component';
 import { ChefService } from 'src/app/services/chef.service';
-import Constants from 'src/app/constants/constants';
 
 @Component({
   selector: 'app-recipe-card',
@@ -48,36 +47,26 @@ export class RecipeCardComponent {
     const recipeUpdate: RecipeUpdate = {
       isFavorite: !this.isFavorite(),
     };
-    const token =
-      localStorage.getItem(Constants.LocalStorage.token) ?? undefined;
 
-    this.recipeService
-      .updateRecipe(this.recipe().id, recipeUpdate, token)
-      .subscribe({
-        next: ({ token }) => {
-          const newFavoriteRecipes = this.isFavorite()
-            ? this.chef()?.favoriteRecipes?.filter(
-                (recipeId) => recipeId !== this.recipe().id.toString()
-              )
-            : this.chef()?.favoriteRecipes?.concat([
-                this.recipe().id.toString(),
-              ]);
-          this.chef.update(
-            (chef) =>
-              chef && {
-                ...chef,
-                favoriteRecipes: newFavoriteRecipes ?? [],
-              }
-          );
-
-          if (token !== undefined) {
-            localStorage.setItem(Constants.LocalStorage.token, token);
-          }
-        },
-        error: (error) => {
-          this.snackBar.open(error.message, 'Dismiss');
-        },
-      });
+    this.recipeService.updateRecipe(this.recipe().id, recipeUpdate).subscribe({
+      next: () => {
+        const newFavoriteRecipes = this.isFavorite()
+          ? this.chef()?.favoriteRecipes?.filter(
+              (recipeId) => recipeId !== this.recipe().id.toString()
+            )
+          : this.chef()?.favoriteRecipes?.concat([this.recipe().id.toString()]);
+        this.chef.update(
+          (chef) =>
+            chef && {
+              ...chef,
+              favoriteRecipes: newFavoriteRecipes ?? [],
+            }
+        );
+      },
+      error: (error) => {
+        this.snackBar.open(error.message, 'Dismiss');
+      },
+    });
   }
 
   onRate(rating: number) {
@@ -85,9 +74,8 @@ export class RecipeCardComponent {
     const recipeUpdate: RecipeUpdate = {
       rating,
     };
-    const token = localStorage.getItem(Constants.LocalStorage.token);
 
-    if (this.chef() === undefined || token === null) {
+    if (this.chef() === undefined) {
       this.snackBar.open(
         'You must be signed in to rate this recipe',
         'Dismiss'
@@ -95,8 +83,8 @@ export class RecipeCardComponent {
       return;
     }
 
-    this.recipeService.updateRecipe(recipeId, recipeUpdate, token).subscribe({
-      next: ({ token }) => {
+    this.recipeService.updateRecipe(recipeId, recipeUpdate).subscribe({
+      next: () => {
         this.chef.update(
           (chef) =>
             chef && {
@@ -116,10 +104,6 @@ export class RecipeCardComponent {
               error.message
             );
           });
-
-        if (token !== undefined) {
-          localStorage.setItem(Constants.LocalStorage.token, token);
-        }
       },
       error: (error) => {
         this.snackBar.open(error.message, 'Dismiss');

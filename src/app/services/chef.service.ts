@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, Observable, of, tap, throwError } from 'rxjs';
 
 import {
   Chef,
   ChefEmailResponse,
   ChefUpdate,
+  ChefUpdateType,
   LoginCredentials,
   LoginResponse,
 } from '../models/profile.model';
@@ -28,10 +29,15 @@ export class ChefService {
   readonly chef = signal<Chef | undefined>(undefined);
 
   // API methods
-  getChef(token: string): Observable<Chef> {
+  getChef(): Observable<Chef> {
     if (this.isMocking) {
       this.chef.set(mockChef);
       return of(mockChef);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      return this.noTokenFound();
     }
 
     return this.http
@@ -40,9 +46,13 @@ export class ChefService {
       })
       .pipe(
         tap((chef) => {
+          localStorage.setItem(Constants.LocalStorage.token, chef.token);
           this.chef.set(chef);
         }),
-        catchError(handleError)
+        catchError((error) => {
+          localStorage.removeItem(Constants.LocalStorage.token);
+          return handleError(error);
+        })
       );
   }
 
@@ -68,17 +78,23 @@ export class ChefService {
             favoriteRecipes: [],
             token,
           });
+          localStorage.setItem(Constants.LocalStorage.token, token);
         }),
         catchError(handleError)
       );
   }
 
-  updateChef(
-    fields: ChefUpdate,
-    token?: string
-  ): Observable<ChefEmailResponse> {
+  updateChef(fields: ChefUpdate): Observable<ChefEmailResponse> {
     if (this.isMocking) {
       return of(mockChefEmailResponse);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (
+      token === null &&
+      (fields.type !== ChefUpdateType.Password || fields.password !== undefined)
+    ) {
+      return this.noTokenFound();
     }
 
     return this.http
@@ -87,17 +103,35 @@ export class ChefService {
         fields,
         {
           headers: {
-            ...(token !== undefined && this.authHeader(token)),
+            ...(token !== null && this.authHeader(token)),
           },
         }
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        tap(({ token }) => {
+          if (token !== undefined && fields.type !== ChefUpdateType.Password) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          } else if (
+            token !== undefined &&
+            fields.type === ChefUpdateType.Password
+          ) {
+            // The token will be revoked, so sign out the user
+            localStorage.removeItem(Constants.LocalStorage.token);
+          }
+        }),
+        catchError(handleError)
+      );
   }
 
-  deleteChef(token: string): Observable<null> {
+  deleteChef(): Observable<null> {
     if (this.isMocking) {
       this.chef.set(undefined);
       return of(null);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      return this.noTokenFound();
     }
 
     return this.http
@@ -106,15 +140,21 @@ export class ChefService {
       })
       .pipe(
         tap(() => {
+          localStorage.removeItem(Constants.LocalStorage.token);
           this.chef.set(undefined);
         }),
         catchError(handleError)
       );
   }
 
-  verifyEmail(token: string): Observable<ChefEmailResponse> {
+  verifyEmail(): Observable<ChefEmailResponse> {
     if (this.isMocking) {
       return of(mockChefEmailResponse);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      return this.noTokenFound();
     }
 
     return this.http
@@ -123,7 +163,14 @@ export class ChefService {
         null, // no body
         { headers: this.authHeader(token) }
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        tap(({ token }) => {
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+        }),
+        catchError(handleError)
+      );
   }
 
   login(credentials: LoginCredentials): Observable<LoginResponse> {
@@ -139,6 +186,7 @@ export class ChefService {
       )
       .pipe(
         tap(({ uid, token, emailVerified }) => {
+          localStorage.setItem(Constants.LocalStorage.token, token);
           this.chef.set({
             uid,
             email: credentials.email,
@@ -153,8 +201,16 @@ export class ChefService {
       );
   }
 
-  logout(token: string): Observable<null> {
+  logout(): Observable<null> {
     if (this.isMocking) {
+      this.chef.set(undefined);
+      return of(null);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      // Assume the user should be signed out since there's no auth token
+      localStorage.removeItem(Constants.LocalStorage.token);
       this.chef.set(undefined);
       return of(null);
     }
@@ -169,6 +225,7 @@ export class ChefService {
       )
       .pipe(
         tap(() => {
+          localStorage.removeItem(Constants.LocalStorage.token);
           this.chef.set(undefined);
         }),
         catchError(handleError)
@@ -180,5 +237,9 @@ export class ChefService {
     return {
       Authorization: `Bearer ${token}`,
     };
+  }
+
+  private noTokenFound() {
+    return throwError(() => new Error(Constants.noTokenFound));
   }
 }

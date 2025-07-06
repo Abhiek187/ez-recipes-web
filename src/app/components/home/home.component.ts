@@ -79,9 +79,8 @@ export class HomeComponent implements OnInit {
     });
 
     if (!this.isLoggedIn()) {
-      const token = localStorage.getItem(Constants.LocalStorage.token);
-      if (token === null) return;
-      this.chefService.getChef(token).subscribe();
+      // subscribe is required to call the API without getting the result
+      this.chefService.getChef().subscribe();
     }
   }
 
