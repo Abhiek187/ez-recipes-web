@@ -44,7 +44,8 @@ export class HomeComponent implements OnInit {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
-  isLoading = signal(false);
+  isLoadingRecipe = signal(false);
+  isLoadingChef = signal(false);
   private readonly defaultLoadingMessage = '';
   loadingMessage = signal(this.defaultLoadingMessage);
   recentRecipesLocal = signal<Recipe[]>([]);
@@ -79,14 +80,22 @@ export class HomeComponent implements OnInit {
     });
 
     if (!this.isLoggedIn()) {
-      // subscribe is required to call the API without getting the result
-      this.chefService.getChef().subscribe();
+      this.isLoadingChef.set(true);
+      this.chefService
+        .getChef()
+        .pipe(
+          finalize(() => {
+            this.isLoadingChef.set(false);
+          })
+        )
+        // subscribe is required to call the API without getting the result
+        .subscribe();
     }
   }
 
   getRandomRecipe() {
     // Show the progress spinner while the recipe is loading
-    this.isLoading.set(true);
+    this.isLoadingRecipe.set(true);
     const timer = this.showLoadingMessages();
 
     // Show a random, low-effort recipe
@@ -97,7 +106,7 @@ export class HomeComponent implements OnInit {
         // destroyRef is required if called outside a constructor
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
-          this.isLoading.set(false);
+          this.isLoadingRecipe.set(false);
           clearInterval(timer);
         })
       )

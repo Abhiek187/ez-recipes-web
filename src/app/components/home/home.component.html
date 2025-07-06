@@ -5,13 +5,13 @@
     color="accent"
     class="find-recipe-button"
     (click)="getRandomRecipe()"
-    [disabled]="isLoading()"
+    [disabled]="isLoadingRecipe()"
   >
     Find Me a Recipe!
   </button>
 </div>
 
-@if (isLoading()) {
+@if (isLoadingRecipe()) {
 <mat-spinner diameter="50" class="progress-spinner" />
 <p class="loading-message">{{ loadingMessage() }}</p>
 }
@@ -34,7 +34,7 @@
     </li>
     }
   </ul>
-  } } @else if (isLoading()) {
+  } } @else if (isLoadingChef()) {
   <!-- Show the recipe cards loading while waiting for both the auth state & recipes -->
   <app-recipe-card-loader />
   } @else {

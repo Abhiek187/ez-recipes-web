@@ -38,6 +38,8 @@ describe('HomeComponent', () => {
   };
 
   beforeEach(async () => {
+    spyOn(ChefService.prototype, 'getChef').and.returnValue(of(mockChef));
+
     // Import all the necessary modules and components to test the app component
     await TestBed.configureTestingModule({
       imports: [RouterModule.forRoot([])],
@@ -81,7 +83,7 @@ describe('HomeComponent', () => {
     ).toBeDefined();
 
     // The spinner should be hidden
-    expect(homeComponent.isLoading()).toBeFalse();
+    expect(homeComponent.isLoadingRecipe()).toBeFalse();
     expect(rootElement.querySelector('.progress-spinner')).toBeNull();
 
     // All the accordions should be present
@@ -117,7 +119,7 @@ describe('HomeComponent', () => {
 
   it('should show a spinner while loading', () => {
     // Check that the material spinner shows when isLoading is true
-    homeComponent.isLoading.set(true);
+    homeComponent.isLoadingRecipe.set(true);
     fixture.detectChanges();
 
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
