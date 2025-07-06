@@ -103,6 +103,10 @@ export class RecipeComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    if (this.chef() === undefined) {
+      this.chefService.getChef().subscribe();
+    }
   }
 
   ngOnInit(): void {
