@@ -39,28 +39,28 @@
       "sizes": "2360x1640",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Jambalaya Stew, recipe heading"
+      "label": "Pasta With Italian Sausage, recipe heading"
     },
     {
       "src": "/assets/screenshots/narrow/recipe-1.png",
       "sizes": "1082x2402",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Jambalaya Stew, recipe heading"
+      "label": "Pasta With Italian Sausage, recipe heading"
     },
     {
       "src": "/assets/screenshots/wide/recipe-3.png",
       "sizes": "2360x1640",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Jambalaya Stew, instructions"
+      "label": "Pasta With Italian Sausage, instructions"
     },
     {
-      "src": "/assets/screenshots/narrow/recipe-4.png",
+      "src": "/assets/screenshots/narrow/recipe-3.png",
       "sizes": "1082x2402",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Jambalaya Stew, instructions"
+      "label": "Pasta With Italian Sausage, instructions"
     },
     {
       "src": "/assets/screenshots/wide/search-2.png",
@@ -75,6 +75,20 @@
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Searching for pasta with chicken"
+    },
+    {
+      "src": "/assets/screenshots/wide/profile.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Profile screen"
+    },
+    {
+      "src": "/assets/screenshots/narrow/profile.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Profile screen"
     }
   ]
 }

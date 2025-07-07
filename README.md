@@ -5,9 +5,10 @@
 
 <div>
     <img src="src/assets/screenshots/wide/home.png" alt="Home screen" width="600">
-    <img src="src/assets/screenshots/wide/recipe-1.png" alt="Jambalaya Stew, recipe heading" width="600">
-    <img src="src/assets/screenshots/wide/recipe-3.png" alt="Jambalaya Stew, instructions" width="600">
+    <img src="src/assets/screenshots/wide/recipe-1.png" alt="Pasta With Italian Sausage, recipe heading" width="600">
+    <img src="src/assets/screenshots/wide/recipe-3.png" alt="Pasta With Italian Sausage, instructions" width="600">
     <img src="src/assets/screenshots/wide/search-2.png" alt="Searching for pasta with chicken" width="600">
+    <img src="src/assets/screenshots/wide/profile.png" alt="Profile screen" width="600">
 </div>
 
 ## Overview
@@ -125,9 +126,7 @@ Run `docker kill <container id>` to shut down the image when done. The container
 
 EZ Recipes is continuously improving! More features will come in the future to enhance the cooking experience, including (but not limited to):
 
-- Accounts so chefs can sync their favorite recipes across all their devices
-- The ability to favorite, rate, and view the popularity of recipes
-- An enhanced home page showing recently viewed recipes and any recommended/popular recipes
+- An enhanced home page showing any recommended/popular recipes
 - Showing additional recipe information, such as allergens
 
 ## Related Repos
