@@ -37,8 +37,8 @@ describe('UpdatePasswordComponent', () => {
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
     spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => {});
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
+    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
     router = TestBed.inject(Router);
     spyOnProperty(router, 'lastSuccessfulNavigation').and.returnValue({
@@ -48,7 +48,7 @@ describe('UpdatePasswordComponent', () => {
       extractedUrl: new UrlTree(),
       trigger: 'imperative',
       previousNavigation: null,
-      abort: () => {},
+      abort: () => undefined,
     });
     fixture = TestBed.createComponent(UpdatePasswordComponent);
     updatePasswordComponent = fixture.componentInstance;

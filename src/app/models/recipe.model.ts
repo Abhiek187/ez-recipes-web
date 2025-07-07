@@ -86,7 +86,7 @@ export const isValidCuisine = (str: string): str is Cuisine => {
   return CUISINES.includes(str as Cuisine);
 };
 
-type Recipe = {
+interface Recipe {
   _id?: string;
   id: number;
   name: string;
@@ -141,7 +141,7 @@ type Recipe = {
   totalRatings?: number;
   averageRating?: number | null;
   views?: number;
-};
+}
 
 export default Recipe;
 
@@ -150,12 +150,12 @@ export interface RecentRecipe extends Recipe {
   isFavorite: boolean;
 }
 
-export type RecipeUpdate = {
+export interface RecipeUpdate {
   rating?: number;
   view?: boolean;
   isFavorite?: boolean;
-};
+}
 
-export type Token = {
+export interface Token {
   token?: string;
-};
+}

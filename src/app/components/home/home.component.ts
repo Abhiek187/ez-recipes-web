@@ -57,12 +57,10 @@ export class HomeComponent implements OnInit {
   private recentRecipesRemote = signal<(Recipe | undefined)[]>([]);
   private didExpandRatings = signal(false);
   private ratedRecipes = signal<(Recipe | undefined)[]>([]);
-  recipeCardContext: {
-    [key: string]: {
+  recipeCardContext: Record<string, {
       recipes: WritableSignal<(Recipe | undefined)[]>;
       showWhenOffline: boolean;
-    };
-  } = {
+    }> = {
     favorites: { recipes: this.favoriteRecipes, showWhenOffline: false },
     recents: { recipes: this.recentRecipesRemote, showWhenOffline: true },
     ratings: { recipes: this.ratedRecipes, showWhenOffline: false },

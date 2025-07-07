@@ -57,7 +57,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
   recipe = this.recipeService.recipe;
   chef = this.chefService.chef;
   isLoading = signal(false);
-  dictionary = signal<{ [word: string]: string } | undefined>(undefined);
+  dictionary = signal<Record<string, string> | undefined>(undefined);
 
   // Nutrients that should be bold on the nutrition label
   readonly nutrientHeadings = ['Calories', 'Fat', 'Carbohydrates', 'Protein'];
@@ -113,9 +113,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
     const terms = this.termsService.getCachedTerms();
     // Make it easier to lookup words and their definitions (O(n) time instead of O(n^2) time)
     this.dictionary.set(
-      terms?.reduce<{
-        [word: string]: string;
-      }>((dict, term) => {
+      terms?.reduce<Record<string, string>>((dict, term) => {
         dict[term.word] = term.definition;
         return dict;
       }, {})

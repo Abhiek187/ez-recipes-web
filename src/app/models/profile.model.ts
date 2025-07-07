@@ -4,7 +4,7 @@ export enum AuthState {
   Loading,
 }
 
-export type Chef = {
+export interface Chef {
   uid: string;
   email: string;
   emailVerified: boolean;
@@ -12,35 +12,35 @@ export type Chef = {
   recentRecipes: Record<string, string>;
   favoriteRecipes: string[];
   token: string;
-};
+}
 
-export type ChefEmailResponse = {
+export interface ChefEmailResponse {
   kind: string;
   email: string;
   token?: string;
-};
+}
 
-export type ChefUpdate = {
+export interface ChefUpdate {
   type: ChefUpdateType;
   email: string;
   password?: string;
-};
+}
 
 export enum ChefUpdateType {
   Email = 'email',
   Password = 'password',
 }
 
-export type LoginCredentials = {
+export interface LoginCredentials {
   email: string;
   password: string;
-};
+}
 
-export type LoginResponse = {
+export interface LoginResponse {
   uid: string;
   token: string;
   emailVerified: boolean;
-};
+}
 
 export enum ProfileAction {
   VerifyEmail = 'verifyEmail',

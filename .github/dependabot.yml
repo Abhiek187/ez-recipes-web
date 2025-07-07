@@ -18,10 +18,8 @@ updates:
       angular:
         patterns:
           - "@angular*"
-      types:
-        patterns:
-          - "@types/*"
-          - "@typescript-eslint/*"
+      dev:
+        dependency-type: "development"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"

@@ -30,7 +30,7 @@ const recipeFilterParams = (filter: RecipeFilter): HttpParams => {
     encoder: new RecipeFilterEncoder(),
   });
 
-  for (const key of Object.keys(filter) as Array<keyof RecipeFilter>) {
+  for (const key of Object.keys(filter) as (keyof RecipeFilter)[]) {
     // Keep just the key if true, otherwise remove key
     if (typeof filter[key] === 'boolean') {
       params = filter[key] ? params.set(key, '') : params.delete(key);

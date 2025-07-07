@@ -37,8 +37,8 @@ describe('ProfileComponent', () => {
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
     spyOn(localStorageProto, 'getItem').and.returnValue(null);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => {});
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
+    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);

@@ -1,5 +1,8 @@
 import { Cuisine, MealType, SpiceLevel } from './recipe.model';
 
+// type is needed instead of interface when passing to HttpParams:
+// https://stackoverflow.com/a/71394297
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type RecipeFilter = {
   query?: string;
   minCals?: number;

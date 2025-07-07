@@ -34,8 +34,8 @@ describe('UpdateEmailComponent', () => {
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
     spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => {});
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
+    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
     fixture = TestBed.createComponent(UpdateEmailComponent);
     updateEmailComponent = fixture.componentInstance;

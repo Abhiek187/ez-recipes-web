@@ -44,8 +44,8 @@ describe('RecipeService', () => {
   const mockLocalStorage = (token: string | null = mockChef.token) => {
     const localStorageProto = Object.getPrototypeOf(localStorage);
     spyOn(localStorageProto, 'getItem').and.returnValue(token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => {});
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => {});
+    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
   };
 
   beforeEach(() => {

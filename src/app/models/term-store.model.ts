@@ -1,8 +1,8 @@
 import Term from './term.model';
 
-type TermStore = {
+interface TermStore {
   terms: Term[];
   expireAt: number;
-};
+}
 
 export default TermStore;

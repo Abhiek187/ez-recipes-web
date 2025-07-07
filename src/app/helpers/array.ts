@@ -6,7 +6,7 @@
  * @returns a random element from `array`
  * @throws if `array` is empty
  */
-export const getRandomElement = <T>(array: Array<T>): T => {
+export const getRandomElement = <T>(array: T[]): T => {
   if (array.length === 0) {
     throw new Error(
       'The array must contain at least one element to be randomly selected.'
