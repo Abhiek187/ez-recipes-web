@@ -1,5 +1,12 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, Type, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  Type,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +22,8 @@ import { routes } from 'src/app/app-routing.module';
 import { ChefService } from 'src/app/services/chef.service';
 import { RecipeUpdate } from 'src/app/models/recipe.model';
 import { RecipeService } from 'src/app/services/recipe.service';
+import Constants from 'src/app/constants/constants';
+import Theme from 'src/app/models/theme.model';
 
 @Component({
   selector: 'app-navbar',
@@ -56,6 +65,9 @@ export class NavbarComponent {
       : this.chef()?.favoriteRecipes?.includes(this.recipe()!.id.toString()) ??
         false
   );
+  isDarkMode = signal(
+    localStorage.getItem(Constants.LocalStorage.theme) === Theme.Dark
+  );
 
   constructor() {
     this.breakpointObserver
@@ -66,11 +78,25 @@ export class NavbarComponent {
           this.breakpointObserver.isMatched(Breakpoints.XSmall)
         );
       });
+
+    /** Signals don't update to localStorage changes,
+     * need to update signal first, then update localStorage
+     */
+    effect(() => {
+      localStorage.setItem(
+        Constants.LocalStorage.theme,
+        this.isDarkMode() ? Theme.Dark : Theme.Light
+      );
+    });
   }
 
   onRouterOutletActivate(event: Type<Component>) {
     // Check if the recipe component is shown in the router outlet
     this.isRecipePage.set(event instanceof RecipeComponent);
+  }
+
+  toggleTheme() {
+    this.isDarkMode.update((currentTheme) => !currentTheme);
   }
 
   toggleFavoriteRecipe() {

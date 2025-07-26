@@ -28,6 +28,16 @@
   </nav>
   }
   <span class="spacer"></span>
+  <button
+    mat-icon-button
+    class="theme-icon"
+    [attr.aria-label]="
+      'Switch to ' + (isDarkMode() ? 'light' : 'dark') + ' mode'
+    "
+    (click)="toggleTheme()"
+  >
+    <mat-icon [fontIcon]="isDarkMode() ? 'dark_mode' : 'light_mode'" />
+  </button>
   <!-- Update the material icon to match the corresponding boolean value -->
   @if (isRecipePage()) {
   <button

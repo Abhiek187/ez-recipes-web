@@ -68,6 +68,11 @@ describe('NavbarComponent', () => {
       expect(rootElement.textContent).toContain(route.title);
     }
 
+    // The theme icon should always be visible
+    const themeIcon =
+      rootElement.querySelector<HTMLButtonElement>('.theme-icon');
+    expect(themeIcon).not.toBeNull();
+
     // The favorite and share buttons should be hidden by default on the home page
     const favoriteIcon =
       rootElement.querySelector<HTMLButtonElement>('.favorite-icon');

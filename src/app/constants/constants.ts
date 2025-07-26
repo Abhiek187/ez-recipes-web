@@ -30,6 +30,7 @@ abstract class Constants {
   static LocalStorage = class {
     static readonly terms = 'terms';
     static readonly token = 'token';
+    static readonly theme = 'theme';
   };
 
   // IndexedDB
