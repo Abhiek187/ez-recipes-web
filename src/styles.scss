@@ -7,7 +7,7 @@ $primary: #673ab7;
 $accent: #ffd740;
 $warn: #d32f2f;
 $black: #000000de;
-$gray: #0000008a;
+$blue-400: #42a5f5;
 
 $my-typography: mat.m2-define-typography-config();
 
@@ -47,8 +47,23 @@ body {
 
   @include mat.card-overrides(
     (
-      subtitle-text-color: $gray,
+      subtitle-text-color: var(--mat-sys-on-surface-variant),
       subtitle-text-size: 14px,
+    )
+  );
+
+  @include mat.chips-overrides(
+    (
+      container-shape-radius: 16px,
+      elevated-container-color: $blue-400,
+      label-text-color: $black,
+      label-text-weight: 400,
+    )
+  );
+
+  @include mat.expansion-overrides(
+    (
+      container-background-color: var(--mat-sys-surface-container-high),
     )
   );
 
