@@ -1,4 +1,4 @@
-$error-color: #d32f2f; // red-700
+@use "../../../styles.scss" as my-theme;
 
 .recipe-form {
   display: flex;
@@ -27,7 +27,7 @@ $error-color: #d32f2f; // red-700
     .calorie-errors {
       display: flex;
       flex-direction: column;
-      color: $error-color;
+      color: my-theme.$warn;
 
       span {
         display: flex;
@@ -60,7 +60,7 @@ $error-color: #d32f2f; // red-700
     display: flex;
     align-items: center;
     gap: 8px;
-    color: $error-color;
+    color: my-theme.$warn;
   }
 }
 

@@ -1,3 +1,6 @@
+@use "@angular/material" as mat;
+@use "../../../styles.scss" as my-theme;
+
 :host {
   // Required, otherwise the toolbar will stop being sticky after scrolling down far enough
   display: block;
@@ -7,6 +10,23 @@
   position: sticky;
   z-index: 2;
   top: 0;
+
+  @include mat.button-overrides(
+    (
+      // Button hover
+      text-state-layer-color: my-theme.$accent
+    )
+  );
+
+  @include mat.icon-overrides(
+    (
+      color: var(--mat-sys-background),
+    )
+  );
+
+  .toolbar-title {
+    color: var(--mat-sys-background);
+  }
 }
 
 .nav-links {
@@ -35,13 +55,21 @@ $toolbar-height-sm: 56px;
 $toolbar-height-lg: 64px;
 $toolbar-breakpoint: 599px;
 
-.sidenav-content {
-  // Fill the height of the container with the remaining screen space
-  height: calc(100vh - $toolbar-height-lg);
-}
+.sidenav-container {
+  @include mat.sidenav-overrides(
+    (
+      container-width: auto,
+    )
+  );
 
-@media screen and (max-width: $toolbar-breakpoint) {
   .sidenav-content {
-    height: calc(100vh - $toolbar-height-sm);
+    // Fill the height of the container with the remaining screen space
+    height: calc(100vh - $toolbar-height-lg);
+  }
+
+  @media screen and (max-width: $toolbar-breakpoint) {
+    .sidenav-content {
+      height: calc(100vh - $toolbar-height-sm);
+    }
   }
 }

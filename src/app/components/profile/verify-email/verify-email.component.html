@@ -13,7 +13,7 @@
     <p>Didn't receive an email?</p>
     <button
       mat-raised-button
-      color="primary"
+      class="btn-primary"
       (click)="resendVerificationEmail()"
       [disabled]="!enableResend()"
     >
@@ -27,12 +27,7 @@
     </span>
   </div>
 
-  <button
-    mat-raised-button
-    color="accent"
-    class="logout-button"
-    (click)="logout()"
-  >
+  <button mat-raised-button class="logout-button" (click)="logout()">
     Logout
   </button>
 </div>
