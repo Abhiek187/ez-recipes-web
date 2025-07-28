@@ -102,7 +102,7 @@
         @for (rating of RATINGS; track rating) {
         <mat-option [value]="rating">
           @for (star of RATINGS.slice(0, rating); track star) {
-          <mat-icon fontIcon="star" color="accent" />
+          <mat-icon fontIcon="star" class="icon-accent" />
           }
           {{ rating }}
         </mat-option>
@@ -144,7 +144,6 @@
   <span class="submit-row">
     <button
       mat-raised-button
-      color="accent"
       type="submit"
       class="submit-button"
       [disabled]="!filterFormGroup.valid || isLoading()"

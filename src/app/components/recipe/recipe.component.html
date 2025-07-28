@@ -47,10 +47,7 @@
       <!-- Don't make the chips clickable, but still show their color -->
       @if (['mild', 'spicy'].includes(recipe()!.spiceLevel)) {
       <mat-chip
-        [ngStyle]="{
-          'background-color':
-            recipe()?.spiceLevel === 'mild' ? 'orange' : '#f44326'
-        }"
+        [class]="recipe()?.spiceLevel === 'mild' ? 'orange-pill' : 'red-pill'"
         disableRipple
       >
         {{ recipe()?.spiceLevel | titlecase }}
@@ -107,7 +104,6 @@
       <div class="show-recipe-container">
         <button
           mat-mini-fab
-          color="accent"
           class="show-recipe-button"
           aria-label="Show me another recipe"
           (click)="getRandomRecipe()"

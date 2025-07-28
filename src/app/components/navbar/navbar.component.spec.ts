@@ -13,6 +13,8 @@ import { NavbarComponent } from './navbar.component';
 import { mockChef } from 'src/app/models/profile.mock';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { mockToken, mockRecipe } from 'src/app/models/recipe.mock';
+import Constants from 'src/app/constants/constants';
+import Theme from 'src/app/models/theme.model';
 
 describe('NavbarComponent', () => {
   let navbarComponent: NavbarComponent;
@@ -20,6 +22,7 @@ describe('NavbarComponent', () => {
   let rootElement: HTMLElement;
 
   let mockRecipeService: jasmine.SpyObj<RecipeService>;
+  let setItemSpy: jasmine.SpyObj<unknown>;
 
   beforeEach(async () => {
     mockRecipeService = jasmine.createSpyObj(
@@ -48,7 +51,7 @@ describe('NavbarComponent', () => {
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
     spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    setItemSpy = spyOn(localStorageProto, 'setItem');
     spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
     fixture = TestBed.createComponent(NavbarComponent);
@@ -67,6 +70,11 @@ describe('NavbarComponent', () => {
     for (const route of navbarComponent.navItems) {
       expect(rootElement.textContent).toContain(route.title);
     }
+
+    // The theme icon should always be visible
+    const themeIcon =
+      rootElement.querySelector<HTMLButtonElement>('.theme-icon');
+    expect(themeIcon).not.toBeNull();
 
     // The favorite and share buttons should be hidden by default on the home page
     const favoriteIcon =
@@ -123,6 +131,33 @@ describe('NavbarComponent', () => {
     menuIcon?.click();
     fixture.detectChanges();
     expect(sidenav?.classList).not.toContain('mat-drawer-opened');
+  });
+
+  it('should toggle between light and dark mode', () => {
+    expect(navbarComponent.isDarkMode()).toBeFalse();
+    expect(document.body.style.colorScheme).toBe(Theme.Light);
+    const themeIcon = document.querySelector<HTMLButtonElement>('.theme-icon');
+    expect(themeIcon?.ariaLabel).toBe('Switch to dark mode');
+
+    themeIcon?.click();
+    fixture.detectChanges();
+    expect(navbarComponent.isDarkMode()).toBeTrue();
+    expect(setItemSpy).toHaveBeenCalledWith(
+      Constants.LocalStorage.theme,
+      Theme.Dark
+    );
+    expect(document.body.style.colorScheme).toBe(Theme.Dark);
+    expect(themeIcon?.ariaLabel).toBe('Switch to light mode');
+
+    themeIcon?.click();
+    fixture.detectChanges();
+    expect(navbarComponent.isDarkMode()).toBeFalse();
+    expect(setItemSpy).toHaveBeenCalledWith(
+      Constants.LocalStorage.theme,
+      Theme.Light
+    );
+    expect(document.body.style.colorScheme).toBe(Theme.Light);
+    expect(themeIcon?.ariaLabel).toBe('Switch to dark mode');
   });
 
   it('should disable the favorite button if unauthenticated', () => {

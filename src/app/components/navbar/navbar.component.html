@@ -1,4 +1,4 @@
-<mat-toolbar color="primary" class="toolbar">
+<mat-toolbar class="toolbar">
   @if (isSmallScreen()) {
   <!-- Show a hamburger menu on small screens -->
   <!-- All material icons are found at: https://fonts.google.com/icons -->
@@ -10,14 +10,13 @@
   >
     <mat-icon fontIcon="menu" />
   </button>
-  <span>EZ Recipes</span>
+  <span class="toolbar-title">EZ Recipes</span>
   } @else {
   <!-- Show all the links side-by-side if there's enough screen space -->
   <nav class="nav-links">
     @for (nav of navItems; track nav.path) {
     <button
       mat-button
-      color="accent"
       [routerLink]="nav.path"
       [routerLinkActive]="nav.path === '' ? '' : 'selected'"
       [style]="{ 'font-size': nav.path === '' ? '20px' : '16px' }"
@@ -28,6 +27,16 @@
   </nav>
   }
   <span class="spacer"></span>
+  <button
+    mat-icon-button
+    class="theme-icon"
+    [attr.aria-label]="
+      'Switch to ' + (isDarkMode() ? 'light' : 'dark') + ' mode'
+    "
+    (click)="toggleTheme()"
+  >
+    <mat-icon [fontIcon]="isDarkMode() ? 'dark_mode' : 'light_mode'" />
+  </button>
   <!-- Update the material icon to match the corresponding boolean value -->
   @if (isRecipePage()) {
   <button

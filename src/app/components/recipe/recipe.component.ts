@@ -4,6 +4,7 @@ import {
   DestroyRef,
   OnDestroy,
   OnInit,
+  ViewEncapsulation,
   inject,
   signal,
 } from '@angular/core';
@@ -43,6 +44,7 @@ import { ChefService } from 'src/app/services/chef.service';
   ],
   templateUrl: './recipe.component.html',
   styleUrl: './recipe.component.scss',
+  encapsulation: ViewEncapsulation.None, // apply styles to innerHTML
 })
 export class RecipeComponent implements OnInit, OnDestroy {
   private recipeService = inject(RecipeService);

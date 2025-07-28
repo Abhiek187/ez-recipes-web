@@ -1,9 +1,13 @@
+@use "@angular/material" as mat;
+
 $side-width-breakpoint: 700px;
 $step-breakpoint: 800px;
 
 // Material design color tool: https://m2.material.io/design/color/the-color-system.html
+$blue-900: #0d47a1;
 $yellow-300: #fff176;
-$blue-400: #42a5f5;
+$yellow-700: #fbc02d;
+$red-500: #f44336;
 
 .term {
   // Appear hoverable like with the <abbr> tag
@@ -58,8 +62,21 @@ $blue-400: #42a5f5;
     .recipe-pill-list {
       margin-bottom: 8px;
 
-      mat-chip {
-        background-color: $blue-400;
+      .orange-pill {
+        @include mat.chips-overrides(
+          (
+            elevated-container-color: orange,
+          )
+        );
+      }
+
+      .red-pill {
+        @include mat.chips-overrides(
+          (
+            elevated-container-color: $red-500,
+            label-text-color: white,
+          )
+        );
       }
     }
 
@@ -155,7 +172,8 @@ $blue-400: #42a5f5;
   }
 
   .recipe-summary-card {
-    background-color: $yellow-300;
+    background-color: light-dark($yellow-300, $yellow-700);
+    color: var(--mat-sys-on-secondary-fixed);
     margin-bottom: 16px;
     flex-basis: 50%; // take up 50% of the flexbox
 
@@ -170,6 +188,10 @@ $blue-400: #42a5f5;
       position: absolute;
       top: 10px;
       right: 10px;
+    }
+
+    a {
+      color: $blue-900;
     }
   }
 
@@ -241,7 +263,7 @@ $blue-400: #42a5f5;
 
       .step-number {
         font-weight: bold;
-        border: 1px solid black;
+        border: 1px solid var(--mat-sys-on-background);
         border-radius: 50%;
         flex: 0 0 30px; // fix the width of the flex item to 30px
         height: 30px;

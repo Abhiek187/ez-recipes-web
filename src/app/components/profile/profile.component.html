@@ -30,14 +30,16 @@
     </span>
   </span>
   <div class="profile-actions">
-    <button mat-raised-button color="primary" (click)="logout()">Logout</button>
-    <button mat-raised-button color="primary" (click)="changeEmail()">
+    <button mat-raised-button class="btn-primary" (click)="logout()">
+      Logout
+    </button>
+    <button mat-raised-button class="btn-primary" (click)="changeEmail()">
       Change Email
     </button>
-    <button mat-raised-button color="primary" (click)="changePassword()">
+    <button mat-raised-button class="btn-primary" (click)="changePassword()">
       Change Password
     </button>
-    <button mat-raised-button color="warn" (click)="deleteAccount()">
+    <button mat-raised-button class="btn-warn" (click)="deleteAccount()">
       Delete Account
     </button>
   </div>
@@ -51,11 +53,7 @@
     <li>Rating recipes</li>
     <li>Syncing recipes across the web and mobile apps</li>
   </ul>
-  <button
-    mat-raised-button
-    color="accent"
-    [routerLink]="'/' + profileRoutes.login.path"
-  >
+  <button mat-raised-button [routerLink]="'/' + profileRoutes.login.path">
     Login
   </button>
   } @else {

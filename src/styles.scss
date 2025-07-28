@@ -1,10 +1,120 @@
 // You can add global styles to this file, and also import other style files
-html,
-body {
-  height: 100%;
+@use "@angular/material" as mat;
+@use "./_theme-colors.scss" as my-theme;
+
+// Taken from M2's deeppurple-amber theme
+$primary: #673ab7;
+$accent: #ffd740;
+$warn: #d32f2f;
+$black: #000000de;
+$blue-400: #42a5f5;
+
+$my-typography: mat.m2-define-typography-config();
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: my-theme.$primary-palette,
+        tertiary: my-theme.$tertiary-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+  // Add styles to all non-Angular Material elements
+  @include mat.typography-hierarchy($my-typography);
 }
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  height: 100%;
+  color-scheme: light dark;
+}
+
+// Global Angular Material overrides
+:root {
+  @include mat.button-overrides(
+    (
+      // Raised button
+      protected-container-color: $accent,
+      protected-label-text-color: $black,
+      // Regular button
+      text-label-text-color: $accent,
+      text-label-text-tracking: 0.0892857143em
+    )
+  );
+
+  @include mat.card-overrides(
+    (
+      subtitle-text-color: var(--mat-sys-on-surface-variant),
+      subtitle-text-size: 14px,
+    )
+  );
+
+  @include mat.chips-overrides(
+    (
+      container-shape-radius: 16px,
+      elevated-container-color: $blue-400,
+      label-text-color: $black,
+      label-text-weight: 400,
+    )
+  );
+
+  @include mat.expansion-overrides(
+    (
+      container-background-color: var(--mat-sys-surface-container-high),
+    )
+  );
+
+  @include mat.fab-overrides(
+    (
+      // Mini FAB
+      small-container-color: $accent,
+      small-foreground-color: $black
+    )
+  );
+
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: $primary,
+      container-text-color: $accent,
+    )
+  );
+}
+
+.btn-primary {
+  @include mat.button-overrides(
+    (
+      // Raised button
+      protected-container-color: $primary,
+      protected-label-text-color: white
+    )
+  );
+}
+
+.btn-warn {
+  @include mat.button-overrides(
+    (
+      // Raised button
+      protected-container-color: $warn,
+      protected-label-text-color: white
+    )
+  );
+}
+
+.icon-accent {
+  @include mat.icon-overrides(
+    (
+      color: $accent,
+    )
+  );
+}
+
+.icon-warn {
+  @include mat.icon-overrides(
+    (
+      color: $warn,
+    )
+  );
 }
