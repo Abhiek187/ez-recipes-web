@@ -12,7 +12,6 @@ $blue-400: #42a5f5;
 $my-typography: mat.m2-define-typography-config();
 
 html {
-  color-scheme: light dark;
   @include mat.theme(
     (
       color: (
@@ -30,6 +29,7 @@ html {
 body {
   margin: 0;
   height: 100%;
+  color-scheme: light dark;
 }
 
 // Global Angular Material overrides

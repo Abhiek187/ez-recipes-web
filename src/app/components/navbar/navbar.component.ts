@@ -65,8 +65,11 @@ export class NavbarComponent {
       : this.chef()?.favoriteRecipes?.includes(this.recipe()!.id.toString()) ??
         false
   );
+  // If the theme isn't set, check the OS's preference
   isDarkMode = signal(
-    localStorage.getItem(Constants.LocalStorage.theme) === Theme.Dark
+    localStorage.getItem(Constants.LocalStorage.theme) === null
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : localStorage.getItem(Constants.LocalStorage.theme) === Theme.Dark
   );
 
   constructor() {
@@ -83,10 +86,10 @@ export class NavbarComponent {
      * need to update signal first, then update localStorage
      */
     effect(() => {
-      localStorage.setItem(
-        Constants.LocalStorage.theme,
-        this.isDarkMode() ? Theme.Dark : Theme.Light
-      );
+      const theme = this.isDarkMode() ? Theme.Dark : Theme.Light;
+
+      localStorage.setItem(Constants.LocalStorage.theme, theme);
+      document.body.style.colorScheme = theme;
     });
   }
 
