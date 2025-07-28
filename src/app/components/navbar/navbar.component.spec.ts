@@ -136,8 +136,9 @@ describe('NavbarComponent', () => {
   it('should toggle between light and dark mode', () => {
     expect(navbarComponent.isDarkMode()).toBeFalse();
     expect(document.body.style.colorScheme).toBe(Theme.Light);
-
     const themeIcon = document.querySelector<HTMLButtonElement>('.theme-icon');
+    expect(themeIcon?.ariaLabel).toBe('Switch to dark mode');
+
     themeIcon?.click();
     fixture.detectChanges();
     expect(navbarComponent.isDarkMode()).toBeTrue();
@@ -146,6 +147,7 @@ describe('NavbarComponent', () => {
       Theme.Dark
     );
     expect(document.body.style.colorScheme).toBe(Theme.Dark);
+    expect(themeIcon?.ariaLabel).toBe('Switch to light mode');
 
     themeIcon?.click();
     fixture.detectChanges();
@@ -155,6 +157,7 @@ describe('NavbarComponent', () => {
       Theme.Light
     );
     expect(document.body.style.colorScheme).toBe(Theme.Light);
+    expect(themeIcon?.ariaLabel).toBe('Switch to dark mode');
   });
 
   it('should disable the favorite button if unauthenticated', () => {
