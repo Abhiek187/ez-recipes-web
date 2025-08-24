@@ -8,7 +8,7 @@ import { of } from 'rxjs';
 
 import { UpdateEmailComponent } from './update-email.component';
 import { ChefService } from 'src/app/services/chef.service';
-import { mockChefEmailResponse } from 'src/app/models/profile.mock';
+import { mockChef, mockChefEmailResponse } from 'src/app/models/profile.mock';
 import { ChefUpdateType } from 'src/app/models/profile.model';
 
 describe('UpdateEmailComponent', () => {
@@ -31,6 +31,11 @@ describe('UpdateEmailComponent', () => {
         },
       ],
     }).compileComponents();
+
+    const localStorageProto = Object.getPrototypeOf(localStorage);
+    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
+    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
     fixture = TestBed.createComponent(UpdateEmailComponent);
     updateEmailComponent = fixture.componentInstance;
