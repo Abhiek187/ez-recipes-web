@@ -34,6 +34,11 @@ describe('DeleteAccountComponent', () => {
       ],
     }).compileComponents();
 
+    const localStorageProto = Object.getPrototypeOf(localStorage);
+    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
+    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+
     router = TestBed.inject(Router);
     spyOnProperty(router, 'lastSuccessfulNavigation').and.returnValue({
       extras: { state: { email: mockChef.email } },

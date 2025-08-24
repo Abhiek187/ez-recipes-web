@@ -19,6 +19,7 @@ import recipeFilterParams from './recipe-filter-params';
 import RecentRecipesDB, {
   RECENT_RECIPES_DB_NAME,
 } from '../helpers/recent-recipes-db';
+import { mockChef } from '../models/profile.mock';
 
 describe('RecipeService', () => {
   let recipeService: RecipeService;
@@ -39,6 +40,13 @@ describe('RecipeService', () => {
       isFavorite: false,
     })
   );
+
+  const mockLocalStorage = (token: string | null = mockChef.token) => {
+    const localStorageProto = Object.getPrototypeOf(localStorage);
+    spyOn(localStorageProto, 'getItem').and.returnValue(token);
+    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -217,6 +225,7 @@ describe('RecipeService', () => {
       view: true,
       isFavorite: true,
     };
+    mockLocalStorage();
     const recipePromise = firstValueFrom(
       recipeService.updateRecipe(id, fields)
     );
@@ -225,6 +234,9 @@ describe('RecipeService', () => {
       method: 'PATCH',
       url: `${baseUrl}/${id}`,
     });
+    expect(req.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`
+    );
     expect(req.request.body).toBe(fields);
     req.flush(mockToken);
 
@@ -237,6 +249,7 @@ describe('RecipeService', () => {
     const fields: RecipeUpdate = {
       view: true,
     };
+    mockLocalStorage(null);
     const recipePromise = firstValueFrom(
       recipeService.updateRecipe(id, fields)
     );
@@ -245,6 +258,7 @@ describe('RecipeService', () => {
       method: 'PATCH',
       url: `${baseUrl}/${id}`,
     });
+    expect(req.request.headers.get('Authorization')).toBeNull();
     expect(req.request.body).toBe(fields);
     req.flush({});
 
@@ -257,6 +271,7 @@ describe('RecipeService', () => {
     const fields: RecipeUpdate = {
       isFavorite: false,
     };
+    mockLocalStorage();
     const recipePromise = firstValueFrom(
       recipeService.updateRecipe(id, fields)
     );
@@ -265,6 +280,9 @@ describe('RecipeService', () => {
       method: 'PATCH',
       url: `${baseUrl}/${id}`,
     });
+    expect(req.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`
+    );
     expect(req.request.body).toBe(fields);
     req.error(mockError);
 
