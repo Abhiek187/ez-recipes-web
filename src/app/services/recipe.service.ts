@@ -86,26 +86,15 @@ export class RecipeService {
       return this.getMockToken();
     }
 
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-
     return this.http
       .patch<Token>(
         `${environment.serverBaseUrl}${Constants.recipesPath}/${id}`,
         fields,
         {
-          headers: {
-            ...(token !== null && this.authHeader(token)),
-          },
+          withCredentials: true,
         }
       )
-      .pipe(
-        tap(({ token }) => {
-          if (token !== undefined) {
-            localStorage.setItem(Constants.LocalStorage.token, token);
-          }
-        }),
-        catchError(handleError)
-      );
+      .pipe(catchError(handleError));
   }
 
   // Load a sample recipe to avoid hitting the API while testing the UI
@@ -159,12 +148,6 @@ export class RecipeService {
         this.mockLoading ? 10_000 : 0
       );
     });
-  }
-
-  private authHeader(token: string) {
-    return {
-      Authorization: `Bearer ${token}`,
-    };
   }
 
   // IndexedDB methods

@@ -12,11 +12,13 @@ import {
   RouterLink,
   RouterModule,
 } from '@angular/router';
+import { of, throwError } from 'rxjs';
 
 import { ProfileComponent } from './profile.component';
 import { AuthState } from 'src/app/models/profile.model';
 import { profileRoutes, routes } from 'src/app/app-routing.module';
 import { mockChef } from 'src/app/models/profile.mock';
+import { ChefService } from 'src/app/services/chef.service';
 
 describe('ProfileComponent', () => {
   let profileComponent: ProfileComponent;
@@ -25,20 +27,30 @@ describe('ProfileComponent', () => {
   let router: Router;
   let location: Location;
 
+  let mockChefService: jasmine.SpyObj<ChefService>;
+
   beforeEach(async () => {
+    mockChefService = jasmine.createSpyObj('ChefService', [
+      'chef',
+      'getChef',
+      'logout',
+    ]);
+    mockChefService.chef.and.returnValue(undefined);
+    mockChefService.getChef.and.returnValue(throwError(() => 'mock error'));
+    mockChefService.logout.and.returnValue(of(null));
+
     await TestBed.configureTestingModule({
       imports: [ProfileComponent, RouterModule.forRoot([])],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         provideRouter(Object.values(routes)),
+        {
+          provide: ChefService,
+          useValue: mockChefService,
+        },
       ],
     }).compileComponents();
-
-    const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(null);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
@@ -74,7 +86,7 @@ describe('ProfileComponent', () => {
 
   it('should show the profile page if the user is authenticated', async () => {
     profileComponent.authState.set(AuthState.Authenticated);
-    profileComponent.chef.set(mockChef);
+    mockChefService.chef.and.returnValue(mockChef);
     fixture.detectChanges();
 
     const profileStats = rootElement.querySelector('.profile-stats');

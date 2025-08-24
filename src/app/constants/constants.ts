@@ -17,7 +17,6 @@ abstract class Constants {
     'Mixing things up... 🥘',
     'Shaking things up... 🍲',
   ];
-  static readonly noTokenFound = 'No token found';
 
   // APIs
   static readonly recipesPath = '/api/recipes';
@@ -29,7 +28,6 @@ abstract class Constants {
 
   static LocalStorage = class {
     static readonly terms = 'terms';
-    static readonly token = 'token';
     static readonly theme = 'theme';
   };
 
