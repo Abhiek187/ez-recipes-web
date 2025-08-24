@@ -9,7 +9,7 @@ import { of } from 'rxjs';
 
 import { VerifyEmailComponent } from './verify-email.component';
 import { ChefService } from 'src/app/services/chef.service';
-import { mockChef, mockChefEmailResponse } from 'src/app/models/profile.mock';
+import { mockChefEmailResponse } from 'src/app/models/profile.mock';
 import { routes } from 'src/app/app-routing.module';
 
 describe('VerifyEmailComponent', () => {
@@ -36,11 +36,6 @@ describe('VerifyEmailComponent', () => {
         },
       ],
     }).compileComponents();
-
-    const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
     router = TestBed.inject(Router);
     fixture = TestBed.createComponent(VerifyEmailComponent);

@@ -47,11 +47,6 @@ describe('RecipeCardComponent', () => {
       ],
     }).compileComponents();
 
-    const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
-
     fixture = TestBed.createComponent(RecipeCardComponent);
     recipeCardComponent = fixture.componentInstance;
     fixture.componentRef.setInput('recipe', mockRecipe); // input is required

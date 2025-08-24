@@ -9,7 +9,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { AuthState, ProfileAction } from 'src/app/models/profile.model';
 import { profileRoutes } from 'src/app/app-routing.module';
-import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
 
 @Component({
@@ -48,11 +47,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     // Check if the user is authenticated every time the profile tab is launched
-    const token = localStorage.getItem(Constants.LocalStorage.token);
-
-    if (token === null) {
-      this.authState.set(AuthState.Unauthenticated);
-    } else if (
+    if (
       this.totalRecipesFavorited() > 0 ||
       this.totalRecipesViewed() > 0 ||
       this.totalRecipesRated() > 0
@@ -68,7 +63,13 @@ export class ProfileComponent implements OnInit {
         },
         error: (error) => {
           this.authState.set(AuthState.Unauthenticated);
-          this.snackBar.open(error.message, 'Dismiss');
+
+          // Don't show the snackbar if the token is missing
+          if (
+            error.message !== 'Missing the Firebase ID token from the request'
+          ) {
+            this.snackBar.open(error.message, 'Dismiss');
+          }
         },
       });
     }
