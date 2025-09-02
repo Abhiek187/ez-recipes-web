@@ -1,9 +1,10 @@
 // @ts-check
+const { defineConfig } = require("eslint/config");
 const eslint = require("@eslint/js");
 const tseslint = require("typescript-eslint");
 const angular = require("angular-eslint");
 
-module.exports = tseslint.config(
+module.exports = defineConfig(
   {
     files: ["**/*.ts"],
     extends: [
@@ -34,6 +35,7 @@ module.exports = tseslint.config(
   },
   {
     files: ["**/*.html"],
+    // @ts-ignore
     extends: [
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
