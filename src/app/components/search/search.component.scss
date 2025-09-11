@@ -62,6 +62,12 @@
       position: absolute;
       margin-left: calc(73.4px + 16px); // width of button + gap
     }
+
+    .sort-container {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
   }
 
   .no-results-error {

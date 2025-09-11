@@ -250,6 +250,8 @@ describe('SearchComponent', () => {
       spiceLevel: ['none', 'mild'],
       type: ['antipasti', 'antipasto', 'appetizer'],
       culture: ['Mediterranean'],
+      sort: 'calories',
+      asc: true,
     });
     fixture.detectChanges();
 

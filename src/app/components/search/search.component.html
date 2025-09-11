@@ -145,6 +145,34 @@
     @if (isLoading()) {
     <mat-spinner diameter="40" class="progress-spinner" />
     }
+    <span class="sort-container">
+      <mat-icon fontIcon="sort" />
+      <mat-select [formControlName]="filterFormNames.sort" panelWidth="">
+        <mat-option [value]="null">(none)</mat-option>
+        @for (sortField of SORT_FIELDS; track sortField) {
+        <mat-option [value]="sortField">
+          {{ sortField | label }}
+        </mat-option>
+        }
+      </mat-select>
+      <button
+        mat-icon-button
+        [attr.aria-label]="
+          filterFormGroup.value[filterFormNames.asc]
+            ? 'Sort in descending order'
+            : 'Sort in ascending order'
+        "
+        (click)="toggleSortDirection()"
+      >
+        <mat-icon
+          [fontIcon]="
+            filterFormGroup.value[filterFormNames.asc]
+              ? 'arrow_upward'
+              : 'arrow_downward'
+          "
+        />
+      </button>
+    </span>
   </span>
   @if (isLoading()) {
   <p class="loading-message">{{ loadingMessage() }}</p>
