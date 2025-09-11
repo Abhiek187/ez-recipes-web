@@ -5,7 +5,6 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { of } from 'rxjs';
 
@@ -34,11 +33,7 @@ describe('NavbarComponent', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [
-        NoopAnimationsModule,
-        RouterModule.forRoot([]),
-        NavbarComponent,
-      ],
+      imports: [RouterModule.forRoot([]), NavbarComponent],
       providers: [
         {
           provide: RecipeService,

@@ -47,30 +47,22 @@
     <!-- Show errors as separate rows so they don't overlap with the rest of the form -->
     <div class="calorie-errors">
       <span
-        [@showHide]="
+        [class.show]="
           filterFormGroup.controls.minCals.hasError(filterFormErrorNames.min) ||
           filterFormGroup.controls.maxCals.hasError(filterFormErrorNames.min)
-            ? 'show'
-            : 'hide'
         "
       >
         <mat-icon fontIcon="error" />{{ Errors.min }}
       </span>
       <span
-        [@showHide]="
+        [class.show]="
           filterFormGroup.controls.minCals.hasError(filterFormErrorNames.max) ||
           filterFormGroup.controls.maxCals.hasError(filterFormErrorNames.max)
-            ? 'show'
-            : 'hide'
         "
       >
         <mat-icon fontIcon="error" />{{ Errors.max }}
       </span>
-      <span
-        [@showHide]="
-          filterFormGroup.hasError(filterFormErrorNames.range) ? 'show' : 'hide'
-        "
-      >
+      <span [class.show]="filterFormGroup.hasError(filterFormErrorNames.range)">
         <mat-icon fontIcon="error" />{{ Errors.range }}
       </span>
     </div>

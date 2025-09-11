@@ -1,10 +1,3 @@
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
 import { Location } from '@angular/common';
 import {
   Component,
@@ -114,26 +107,6 @@ const calorieRangeValidator: ValidatorFn = (
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
-  animations: [
-    trigger('showHide', [
-      state(
-        'show',
-        style({
-          height: '25px',
-          opacity: 1,
-        })
-      ),
-      state(
-        'hide',
-        style({
-          height: '0px',
-          opacity: 0,
-        })
-      ),
-      transition('show => hide', [animate('0.2s ease-in-out')]),
-      transition('hide => show', [animate('0.2s ease-in-out')]),
-    ]),
-  ],
 })
 export class SearchComponent implements OnInit, OnDestroy {
   private recipeService = inject(RecipeService);

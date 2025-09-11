@@ -33,6 +33,14 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        transition: 0.2s ease-in-out;
+        height: 0px;
+        opacity: 0;
+      }
+
+      span.show {
+        height: 25px;
+        opacity: 1;
       }
     }
   }
