@@ -4,7 +4,6 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { of } from 'rxjs';
@@ -21,7 +20,6 @@ describe('AppComponent', () => {
     // Import all the necessary modules and components to test the app component
     await TestBed.configureTestingModule({
       imports: [
-        NoopAnimationsModule,
         RouterModule.forRoot([]),
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: false }),
       ],

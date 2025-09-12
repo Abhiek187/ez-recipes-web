@@ -33,6 +33,14 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        transition: 0.2s ease-in-out;
+        height: 0px;
+        opacity: 0;
+      }
+
+      span.show {
+        height: 25px;
+        opacity: 1;
       }
     }
   }
@@ -46,13 +54,43 @@
 
   .submit-row {
     display: flex;
+    flex-direction: row;
+    justify-content: space-around;
     align-items: center;
     gap: 16px;
+    width: 100%;
+    margin-left: 8px;
+    margin-right: 8px;
+
+    > * {
+      flex: 1;
+    }
+
+    @media screen and (max-width: 600px) {
+      .spacer {
+        flex: 0;
+      }
+    }
+
+    .submit-button-row {
+      display: flex;
+      gap: 8px;
+    }
 
     .progress-spinner {
       // Place next to the submit button, but keep the button centered
       position: absolute;
       margin-left: calc(73.4px + 16px); // width of button + gap
+    }
+
+    .sort-container {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+
+      .sort-field {
+        width: 150px;
+      }
     }
   }
 

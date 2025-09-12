@@ -1,10 +1,3 @@
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
 import { Location } from '@angular/common';
 import {
   Component,
@@ -39,7 +32,11 @@ import { finalize } from 'rxjs';
 
 import Constants from 'src/app/constants/constants';
 import { getRandomElement, toArray } from 'src/app/helpers/array';
-import RecipeFilter from 'src/app/models/recipe-filter.model';
+import RecipeFilter, {
+  isValidSortField,
+  RECIPE_SORT_FIELDS,
+  RecipeSortField,
+} from 'src/app/models/recipe-filter.model';
 import Recipe, {
   CUISINES,
   Cuisine,
@@ -54,6 +51,7 @@ import Recipe, {
 import { RecipeService } from 'src/app/services/recipe.service';
 import { RecipeCardComponent } from '../utils/recipe-card/recipe-card.component';
 import { isNumeric } from 'src/app/helpers/string';
+import { LabelPipe } from '../../pipes/label.pipe';
 
 // Add null & undefined to all the object's values
 type PartialNull<T> = {
@@ -75,6 +73,8 @@ const FilterForm = {
   spiceLevel: 'spiceLevel',
   type: 'type',
   culture: 'culture',
+  sort: 'sort',
+  asc: 'asc',
 } as const;
 const FilterFormError = {
   min: 'min',
@@ -100,6 +100,7 @@ const calorieRangeValidator: ValidatorFn = (
 @Component({
   selector: 'app-search',
   imports: [
+    LabelPipe,
     MatButtonModule,
     MatCheckboxModule,
     MatDividerModule,
@@ -114,26 +115,6 @@ const calorieRangeValidator: ValidatorFn = (
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
-  animations: [
-    trigger('showHide', [
-      state(
-        'show',
-        style({
-          height: '25px',
-          opacity: 1,
-        })
-      ),
-      state(
-        'hide',
-        style({
-          height: '0px',
-          opacity: 0,
-        })
-      ),
-      transition('show => hide', [animate('0.2s ease-in-out')]),
-      transition('hide => show', [animate('0.2s ease-in-out')]),
-    ]),
-  ],
 })
 export class SearchComponent implements OnInit, OnDestroy {
   private recipeService = inject(RecipeService);
@@ -169,6 +150,8 @@ export class SearchComponent implements OnInit, OnDestroy {
       [FilterForm.spiceLevel]: new FormControl<SpiceLevel[]>([]),
       [FilterForm.type]: new FormControl<MealType[]>([]),
       [FilterForm.culture]: new FormControl<Cuisine[]>([]),
+      [FilterForm.sort]: new FormControl<RecipeSortField | null>(null),
+      [FilterForm.asc]: new FormControl(false),
     },
     { validators: calorieRangeValidator }
   );
@@ -194,6 +177,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   );
   readonly mealTypes = [...MEAL_TYPES].sort();
   readonly cuisines = [...CUISINES].sort();
+  readonly SORT_FIELDS = [...RECIPE_SORT_FIELDS].sort();
 
   constructor() {
     // Initialize the form based on the query parameters
@@ -230,6 +214,8 @@ export class SearchComponent implements OnInit, OnDestroy {
         [FilterForm.culture]: toArray(params.culture).filter(
           (spiceLevel): spiceLevel is Cuisine => isValidCuisine(spiceLevel)
         ),
+        [FilterForm.sort]: isValidSortField(params.sort) ? params.sort : null,
+        [FilterForm.asc]: params.asc === 'true',
       });
     });
 
@@ -260,6 +246,17 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     window.removeEventListener('scroll', this.scrollListener, true);
+  }
+
+  toggleSortDirection(event: MouseEvent) {
+    // Don't submit the form if the sort field isn't specified
+    if (this.filterFormGroup.value[this.filterFormNames.sort] === null) {
+      event.preventDefault();
+    }
+
+    this.filterFormGroup.controls[this.filterFormNames.asc].setValue(
+      !this.filterFormGroup.value[this.filterFormNames.asc]
+    );
   }
 
   private searchRecipes(paginate: boolean) {

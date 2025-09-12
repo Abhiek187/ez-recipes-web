@@ -9,7 +9,6 @@ import {
   fakeAsync,
   tick,
 } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 
 import { SearchComponent } from './search.component';
@@ -23,11 +22,7 @@ describe('SearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        SearchComponent,
-        NoopAnimationsModule,
-        RouterModule.forRoot([]),
-      ],
+      imports: [SearchComponent, RouterModule.forRoot([])],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -127,6 +122,8 @@ describe('SearchComponent', () => {
       spiceLevel: [],
       type: [],
       culture: [],
+      sort: null,
+      asc: false,
     });
     expect(searchComponent.filterFormGroup.valid).toBeTrue();
 
@@ -255,6 +252,8 @@ describe('SearchComponent', () => {
       spiceLevel: ['none', 'mild'],
       type: ['antipasti', 'antipasto', 'appetizer'],
       culture: ['Mediterranean'],
+      sort: 'calories',
+      asc: true,
     });
     fixture.detectChanges();
 
@@ -342,5 +341,29 @@ describe('SearchComponent', () => {
       rootElement.querySelector<HTMLUListElement>('.results-list');
     expect(resultsList).not.toBeNull();
     expect(resultsList?.childElementCount).toBe(mockRecipes.length);
+  });
+
+  it('sorts the results by the specified field and direction', () => {
+    const form = searchComponent.filterFormGroup;
+    form.controls.sort.setValue('calories');
+    form.controls.asc.setValue(true);
+    fixture.detectChanges();
+
+    expect(form.valid).toBeTrue();
+    const submitButton =
+      rootElement.querySelector<HTMLButtonElement>('.submit-button');
+    expect(submitButton?.disabled).toBeFalse();
+
+    const sortDirectionButton = rootElement.querySelector<HTMLButtonElement>(
+      '.sort-direction-button'
+    );
+    expect(sortDirectionButton).not.toBeNull();
+    sortDirectionButton?.click();
+    fixture.detectChanges();
+
+    expect(form.controls.asc.value).toBeFalse();
+    sortDirectionButton?.click();
+    fixture.detectChanges();
+    expect(form.controls.asc.value).toBeTrue();
   });
 });

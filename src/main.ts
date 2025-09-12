@@ -4,7 +4,6 @@ import {
 } from '@angular/common/http';
 import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { environment } from './environments/environment';
@@ -28,6 +27,5 @@ bootstrapApplication(AppComponent, {
       })
     ),
     provideHttpClient(withInterceptorsFromDi()),
-    provideAnimations(),
   ],
 }).catch((err) => console.error(err));

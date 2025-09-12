@@ -47,30 +47,22 @@
     <!-- Show errors as separate rows so they don't overlap with the rest of the form -->
     <div class="calorie-errors">
       <span
-        [@showHide]="
+        [class.show]="
           filterFormGroup.controls.minCals.hasError(filterFormErrorNames.min) ||
           filterFormGroup.controls.maxCals.hasError(filterFormErrorNames.min)
-            ? 'show'
-            : 'hide'
         "
       >
         <mat-icon fontIcon="error" />{{ Errors.min }}
       </span>
       <span
-        [@showHide]="
+        [class.show]="
           filterFormGroup.controls.minCals.hasError(filterFormErrorNames.max) ||
           filterFormGroup.controls.maxCals.hasError(filterFormErrorNames.max)
-            ? 'show'
-            : 'hide'
         "
       >
         <mat-icon fontIcon="error" />{{ Errors.max }}
       </span>
-      <span
-        [@showHide]="
-          filterFormGroup.hasError(filterFormErrorNames.range) ? 'show' : 'hide'
-        "
-      >
+      <span [class.show]="filterFormGroup.hasError(filterFormErrorNames.range)">
         <mat-icon fontIcon="error" />{{ Errors.range }}
       </span>
     </div>
@@ -142,17 +134,51 @@
   </section>
 
   <span class="submit-row">
-    <button
-      mat-raised-button
-      type="submit"
-      class="submit-button"
-      [disabled]="!filterFormGroup.valid || isLoading()"
-    >
-      Apply
-    </button>
-    @if (isLoading()) {
-    <mat-spinner diameter="40" class="progress-spinner" />
-    }
+    <span class="spacer"></span>
+    <span class="submit-button-row">
+      <button
+        mat-raised-button
+        type="submit"
+        class="submit-button"
+        [disabled]="!filterFormGroup.valid || isLoading()"
+      >
+        Apply
+      </button>
+      @if (isLoading()) {
+      <mat-spinner diameter="40" class="progress-spinner" />
+      }
+    </span>
+    <span class="sort-container">
+      <mat-form-field class="sort-field">
+        <mat-label> <mat-icon fontIcon="sort" /> Sort </mat-label>
+        <mat-select [formControlName]="filterFormNames.sort">
+          <mat-option [value]="null">(none)</mat-option>
+          @for (sortField of SORT_FIELDS; track sortField) {
+          <mat-option [value]="sortField">
+            {{ sortField | label }}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button
+        mat-icon-button
+        class="sort-direction-button"
+        [attr.aria-label]="
+          filterFormGroup.value[filterFormNames.asc]
+            ? 'Sort in descending order'
+            : 'Sort in ascending order'
+        "
+        (click)="toggleSortDirection($event)"
+      >
+        <mat-icon
+          [fontIcon]="
+            filterFormGroup.value[filterFormNames.asc]
+              ? 'arrow_upward'
+              : 'arrow_downward'
+          "
+        />
+      </button>
+    </span>
   </span>
   @if (isLoading()) {
   <p class="loading-message">{{ loadingMessage() }}</p>
