@@ -134,27 +134,32 @@
   </section>
 
   <span class="submit-row">
-    <button
-      mat-raised-button
-      type="submit"
-      class="submit-button"
-      [disabled]="!filterFormGroup.valid || isLoading()"
-    >
-      Apply
-    </button>
-    @if (isLoading()) {
-    <mat-spinner diameter="40" class="progress-spinner" />
-    }
+    <span class="spacer"></span>
+    <span class="submit-button-row">
+      <button
+        mat-raised-button
+        type="submit"
+        class="submit-button"
+        [disabled]="!filterFormGroup.valid || isLoading()"
+      >
+        Apply
+      </button>
+      @if (isLoading()) {
+      <mat-spinner diameter="40" class="progress-spinner" />
+      }
+    </span>
     <span class="sort-container">
-      <mat-icon fontIcon="sort" />
-      <mat-select [formControlName]="filterFormNames.sort" panelWidth="">
-        <mat-option [value]="null">(none)</mat-option>
-        @for (sortField of SORT_FIELDS; track sortField) {
-        <mat-option [value]="sortField">
-          {{ sortField | label }}
-        </mat-option>
-        }
-      </mat-select>
+      <mat-form-field class="sort-field">
+        <mat-label> <mat-icon fontIcon="sort" /> Sort </mat-label>
+        <mat-select [formControlName]="filterFormNames.sort">
+          <mat-option [value]="null">(none)</mat-option>
+          @for (sortField of SORT_FIELDS; track sortField) {
+          <mat-option [value]="sortField">
+            {{ sortField | label }}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
       <button
         mat-icon-button
         [attr.aria-label]="
@@ -162,7 +167,7 @@
             ? 'Sort in descending order'
             : 'Sort in ascending order'
         "
-        (click)="toggleSortDirection()"
+        (click)="toggleSortDirection($event)"
       >
         <mat-icon
           [fontIcon]="

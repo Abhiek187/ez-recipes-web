@@ -248,7 +248,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     window.removeEventListener('scroll', this.scrollListener, true);
   }
 
-  toggleSortDirection() {
+  toggleSortDirection(event: MouseEvent) {
+    // Don't submit the form if the sort field isn't specified
+    if (this.filterFormGroup.value[this.filterFormNames.sort] === null) {
+      event.preventDefault();
+    }
+
     this.filterFormGroup.controls[this.filterFormNames.asc].setValue(
       !this.filterFormGroup.value[this.filterFormNames.asc]
     );
