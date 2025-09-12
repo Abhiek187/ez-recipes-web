@@ -122,6 +122,8 @@ describe('SearchComponent', () => {
       spiceLevel: [],
       type: [],
       culture: [],
+      sort: null,
+      asc: false,
     });
     expect(searchComponent.filterFormGroup.valid).toBeTrue();
 
@@ -339,5 +341,29 @@ describe('SearchComponent', () => {
       rootElement.querySelector<HTMLUListElement>('.results-list');
     expect(resultsList).not.toBeNull();
     expect(resultsList?.childElementCount).toBe(mockRecipes.length);
+  });
+
+  it('sorts the results by the specified field and direction', () => {
+    const form = searchComponent.filterFormGroup;
+    form.controls.sort.setValue('calories');
+    form.controls.asc.setValue(true);
+    fixture.detectChanges();
+
+    expect(form.valid).toBeTrue();
+    const submitButton =
+      rootElement.querySelector<HTMLButtonElement>('.submit-button');
+    expect(submitButton?.disabled).toBeFalse();
+
+    const sortDirectionButton = rootElement.querySelector<HTMLButtonElement>(
+      '.sort-direction-button'
+    );
+    expect(sortDirectionButton).not.toBeNull();
+    sortDirectionButton?.click();
+    fixture.detectChanges();
+
+    expect(form.controls.asc.value).toBeFalse();
+    sortDirectionButton?.click();
+    fixture.detectChanges();
+    expect(form.controls.asc.value).toBeTrue();
   });
 });
