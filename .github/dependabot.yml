@@ -20,6 +20,8 @@ updates:
           - "@angular*"
       dev:
         dependency-type: "development"
+        exclude-patterns:
+          - "@angular*"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
