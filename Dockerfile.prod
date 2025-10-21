@@ -1,5 +1,5 @@
 # The first stage builds the Angular application for production
-FROM node:24-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /usr/src/app
 
 COPY package*.json ./
