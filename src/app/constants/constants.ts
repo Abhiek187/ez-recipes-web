@@ -18,6 +18,7 @@ abstract class Constants {
     'Shaking things up... 🍲',
   ];
   static readonly noTokenFound = 'No token found';
+  static readonly credentialTooOldError = 'CREDENTIAL_TOO_OLD_LOGIN_AGAIN';
 
   // APIs
   static readonly recipesPath = '/api/recipes';

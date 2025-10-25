@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -33,7 +33,7 @@ import { profileRoutes, routes } from 'src/app/app-routing.module';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
@@ -43,6 +43,7 @@ export class LoginComponent {
 
   showPassword = signal(false);
   isLoading = signal(false);
+  isStepUp = signal(false);
 
   readonly formControls = {
     username: 'username',
@@ -55,6 +56,14 @@ export class LoginComponent {
   readonly errors = {
     required: (field: string) => `Error: ${field} is required`,
   } as const;
+
+  ngOnInit(): void {
+    const isStepUp =
+      this.router.lastSuccessfulNavigation?.extras?.state?.stepUp;
+    if (typeof isStepUp === 'boolean') {
+      this.isStepUp.set(isStepUp);
+    }
+  }
 
   togglePasswordVisibility(event: MouseEvent) {
     event.preventDefault(); // don't submit the form

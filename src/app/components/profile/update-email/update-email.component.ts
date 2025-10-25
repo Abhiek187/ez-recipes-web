@@ -11,10 +11,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { ChefUpdate, ChefUpdateType } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
+import Constants from 'src/app/constants/constants';
+import { profileRoutes } from 'src/app/app-routing.module';
 
 @Component({
   selector: 'app-update-email',
@@ -32,6 +35,7 @@ export class UpdateEmailComponent {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
 
   isLoading = signal(false);
   emailSent = signal(false);
@@ -74,8 +78,17 @@ export class UpdateEmailComponent {
         next: () => {
           this.emailSent.set(true);
         },
-        error: (error) => {
-          this.snackBar.open(error.message, 'Dismiss');
+        error: (error: Error) => {
+          if (error.message.includes(Constants.credentialTooOldError)) {
+            // Prompt the user to sign in again
+            this.router.navigate([profileRoutes.login.path], {
+              // After logging in, go back to this page
+              queryParams: { next: this.router.url },
+              state: { stepUp: true },
+            });
+          } else {
+            this.snackBar.open(error.message, 'Dismiss');
+          }
         },
       });
   }

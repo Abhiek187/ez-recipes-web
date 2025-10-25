@@ -1,5 +1,8 @@
 <form class="login-form" [formGroup]="formGroup" (ngSubmit)="login()">
   <h1>Login</h1>
+  @if (isStepUp()) {
+  <h2>This is a sensitive operation. Please sign in again.</h2>
+  } @else {
   <span>
     <h2>
       Don't have an account?
@@ -11,6 +14,7 @@
       </a>
     </h2>
   </span>
+  }
 
   <div class="login-fields">
     <mat-form-field>
@@ -54,11 +58,13 @@
     </mat-form-field>
   </div>
 
+  @if (!isStepUp()) {
   <h3>
     <a [routerLink]="'/' + profileRoutes.forgotPassword.path">
       Forgot Password?
     </a>
   </h3>
+  }
   <span class="submit-row">
     <button
       mat-raised-button
