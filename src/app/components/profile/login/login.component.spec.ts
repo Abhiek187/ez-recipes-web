@@ -123,4 +123,12 @@ describe('LoginComponent', () => {
       state: { email: mockEmail },
     });
   });
+
+  it('should show the step-up message if enabled', () => {
+    loginComponent.isStepUp.set(true);
+    fixture.detectChanges();
+
+    const loginForm = rootElement.querySelector('.login-form');
+    expect(loginForm?.textContent).toContain('This is a sensitive operation');
+  });
 });
