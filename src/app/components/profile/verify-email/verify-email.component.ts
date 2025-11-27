@@ -50,7 +50,7 @@ export class VerifyEmailComponent implements OnInit {
     /* State may not be available if navigating directly to this page,
      * but the the guard functions should redirect the user in this case
      */
-    const email = this.router.lastSuccessfulNavigation?.extras?.state?.email;
+    const email = this.router.lastSuccessfulNavigation()?.extras?.state?.email;
     if (typeof email === 'string') {
       this.email.set(email);
     }

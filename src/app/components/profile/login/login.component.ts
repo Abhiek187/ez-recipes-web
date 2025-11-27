@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     const isStepUp =
-      this.router.lastSuccessfulNavigation?.extras?.state?.stepUp;
+      this.router.lastSuccessfulNavigation()?.extras?.state?.stepUp;
     if (typeof isStepUp === 'boolean') {
       this.isStepUp.set(isStepUp);
     }

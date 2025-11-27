@@ -92,7 +92,7 @@ export class UpdatePasswordComponent implements OnInit {
   } as const;
 
   ngOnInit(): void {
-    const email = this.router.lastSuccessfulNavigation?.extras?.state?.email;
+    const email = this.router.lastSuccessfulNavigation()?.extras?.state?.email;
     if (typeof email === 'string') {
       this.chefEmail.set(email);
     }
