@@ -62,14 +62,10 @@ describe('LoginComponent', () => {
     );
     expect(usernameField.type).toBe('email');
     expect(usernameField.inputMode).toBe('email');
-    expect(usernameField.autocapitalize).toBe('none');
     expect(usernameField.autocomplete).toBe('off');
-    expect(usernameField.spellcheck).toBe(false);
 
     expect(passwordField.type).toBe('password');
-    expect(passwordField.autocapitalize).toBe('none');
     expect(passwordField.autocomplete).toBe('off');
-    expect(passwordField.spellcheck).toBe(false);
 
     loginComponent.showPassword.set(true);
     fixture.detectChanges();

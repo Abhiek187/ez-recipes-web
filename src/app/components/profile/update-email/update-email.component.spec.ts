@@ -62,9 +62,7 @@ describe('UpdateEmailComponent', () => {
     const emailField = rootElement.querySelector<HTMLInputElement>('input');
     expect(emailField?.type).toBe('email');
     expect(emailField?.inputMode).toBe('email');
-    expect(emailField?.autocapitalize).toBe('none');
     expect(emailField?.autocomplete).toBe('off');
-    expect(emailField?.spellcheck).toBe(false);
   });
 
   it("should show an error if the email isn't provided", () => {

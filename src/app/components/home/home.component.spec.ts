@@ -3,12 +3,7 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { Observable as DObservable } from 'dexie';
@@ -103,8 +98,9 @@ describe('HomeComponent', () => {
     expect(ratingsAccordion?.textContent).toContain('Ratings');
   });
 
-  it('should load a random recipe after clicking the find recipe button', fakeAsync(() => {
+  it('should load a random recipe after clicking the find recipe button', () => {
     // Check that the getRandomRecipe method is called after clicking the find recipe button
+    vi.useFakeTimers();
     fixture.detectChanges();
     vi.spyOn(homeComponent, 'getRandomRecipe');
 
@@ -113,10 +109,11 @@ describe('HomeComponent', () => {
     );
     expect(findRecipeButton).not.toBeNull();
     findRecipeButton?.click();
-    tick(); // wait for the async tasks to complete
+    vi.runOnlyPendingTimers(); // wait for the async tasks to complete
 
     expect(homeComponent.getRandomRecipe).toHaveBeenCalled();
-  }));
+    vi.clearAllTimers();
+  });
 
   it('should show a spinner while loading', () => {
     // Check that the material spinner shows when isLoading is true

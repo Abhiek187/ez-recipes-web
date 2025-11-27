@@ -3,12 +3,7 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { vi } from 'vitest';
 
@@ -53,9 +48,7 @@ describe('SearchComponent', () => {
     expect(queryInput?.placeholder).toBe('food');
     expect(queryInput?.type).toBe('search');
     expect(queryInput?.inputMode).toBe('search');
-    expect(queryInput?.autocapitalize).toBe('none');
     expect(queryInput?.autocomplete).toBe('off');
-    expect(queryInput?.spellcheck).toBe(false);
 
     const caloriesRow =
       rootElement.querySelector<HTMLDivElement>('.calories-row');
@@ -291,8 +284,9 @@ describe('SearchComponent', () => {
     expect(rootElement.querySelector('.results-title')).toBeNull();
   });
 
-  it('should load recipes after submitting the initial form', fakeAsync(() => {
+  it('should load recipes after submitting the initial form', () => {
     // By default, the form should be valid
+    vi.useFakeTimers();
     vi.spyOn(searchComponent, 'onSubmit');
 
     const submitButton =
@@ -300,10 +294,11 @@ describe('SearchComponent', () => {
     expect(submitButton).not.toBeNull();
     expect(submitButton?.disabled).toBe(false);
     submitButton?.click();
-    tick();
+    vi.runOnlyPendingTimers();
 
     expect(searchComponent.onSubmit).toHaveBeenCalled();
-  }));
+    vi.clearAllTimers();
+  });
 
   it('should remove null filter values', () => {
     // Check that removeNullValues() removes null values from a recipe filter

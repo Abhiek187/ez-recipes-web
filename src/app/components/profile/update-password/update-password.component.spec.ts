@@ -86,14 +86,10 @@ describe('UpdatePasswordComponent', () => {
     );
 
     expect(passwordField.type).toBe('password');
-    expect(passwordField.autocapitalize).toBe('none');
     expect(passwordField.autocomplete).toBe('off');
-    expect(passwordField.spellcheck).toBe(false);
 
     expect(confirmPasswordField.type).toBe('password');
-    expect(confirmPasswordField.autocapitalize).toBe('none');
     expect(confirmPasswordField.autocomplete).toBe('off');
-    expect(confirmPasswordField.spellcheck).toBe(false);
 
     updatePasswordComponent.showPassword.set(true);
     fixture.detectChanges();

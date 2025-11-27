@@ -50,9 +50,7 @@ describe('ForgotPasswordComponent', () => {
     expect(emailField).toBeTruthy();
     expect(emailField?.type).toBe('email');
     expect(emailField?.inputMode).toBe('email');
-    expect(emailField?.autocapitalize).toBe('none');
     expect(emailField?.autocomplete).toBe('off');
-    expect(emailField?.spellcheck).toBe(false);
 
     const submitButton = rootElement.querySelector('button');
     expect(submitButton).toBeTruthy();

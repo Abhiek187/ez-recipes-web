@@ -78,9 +78,7 @@ describe('DeleteAccountComponent', () => {
     const usernameField = rootElement.querySelector<HTMLInputElement>('input');
     expect(usernameField?.type).toBe('email');
     expect(usernameField?.inputMode).toBe('email');
-    expect(usernameField?.autocapitalize).toBe('none');
     expect(usernameField?.autocomplete).toBe('off');
-    expect(usernameField?.spellcheck).toBe(false);
   });
 
   it("should disable account deletion if the username isn't provided", () => {

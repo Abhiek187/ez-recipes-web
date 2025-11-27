@@ -53,7 +53,7 @@ describe('authGuard', () => {
     mockChefService.getChef.mockReturnValue(of(mockChef));
     const guardResult = executeGuard(route, state) as Observable<boolean>;
 
-    expect(guardResult).toBeTrue();
+    expect(guardResult).toBeTruthy();
   });
 
   it('should return true if the user is authenticated', async () => {

@@ -3,12 +3,7 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { vi } from 'vitest';
 
@@ -311,8 +306,9 @@ describe('RecipeComponent', () => {
     ).toBe(true);
   });
 
-  it('should load another recipe after pressing the button', fakeAsync(() => {
+  it('should load another recipe after pressing the button', () => {
     // Check that the "Show Me Another Recipe!" button loads another recipe
+    vi.useFakeTimers();
     vi.spyOn(recipeComponent, 'getRandomRecipe');
 
     const showRecipeButton = rootElement.querySelector<HTMLButtonElement>(
@@ -320,8 +316,9 @@ describe('RecipeComponent', () => {
     );
     expect(showRecipeButton).not.toBeNull();
     showRecipeButton?.click();
-    tick(); // wait for the async tasks to complete
+    vi.runOnlyPendingTimers(); // wait for the async tasks to complete
 
     expect(recipeComponent.getRandomRecipe).toHaveBeenCalled();
-  }));
+    vi.clearAllTimers();
+  });
 });

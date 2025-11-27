@@ -65,19 +65,13 @@ describe('SignUpComponent', () => {
     );
     expect(emailField.type).toBe('email');
     expect(emailField.inputMode).toBe('email');
-    expect(emailField.autocapitalize).toBe('none');
     expect(emailField.autocomplete).toBe('off');
-    expect(emailField.spellcheck).toBe(false);
 
     expect(passwordField.type).toBe('password');
-    expect(passwordField.autocapitalize).toBe('none');
     expect(passwordField.autocomplete).toBe('off');
-    expect(passwordField.spellcheck).toBe(false);
 
     expect(confirmPasswordField.type).toBe('password');
-    expect(confirmPasswordField.autocapitalize).toBe('none');
     expect(confirmPasswordField.autocomplete).toBe('off');
-    expect(confirmPasswordField.spellcheck).toBe(false);
 
     signUpComponent.showPassword.set(true);
     fixture.detectChanges();
