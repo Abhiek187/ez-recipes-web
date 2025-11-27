@@ -7,6 +7,7 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { of } from 'rxjs';
+import { vi, type MockedObject } from 'vitest';
 
 import { RecipeCardComponent } from './recipe-card.component';
 import { mockRecipe, mockToken } from 'src/app/models/recipe.mock';
@@ -18,18 +19,17 @@ describe('RecipeCardComponent', () => {
   let fixture: ComponentFixture<RecipeCardComponent>;
   let rootElement: HTMLElement;
 
-  let mockRouter: jasmine.SpyObj<Router>;
-  let mockRecipeService: jasmine.SpyObj<RecipeService>;
+  let mockRouter: MockedObject<Router>;
+  let mockRecipeService: MockedObject<RecipeService>;
 
   beforeEach(async () => {
-    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
-    mockRecipeService = jasmine.createSpyObj(
-      'RecipeService',
-      ['updateRecipe'],
-      {
-        recipe: signal(mockRecipe),
-      }
-    );
+    mockRouter = vi.mockObject({
+      navigate: vi.fn().mockName('Router.navigate'),
+    } as unknown as Router);
+    mockRecipeService = vi.mockObject({
+      updateRecipe: vi.fn().mockName('RecipeService.updateRecipe'),
+      recipe: signal(mockRecipe),
+    } as unknown as RecipeService);
 
     await TestBed.configureTestingModule({
       imports: [RecipeCardComponent, RouterModule.forRoot([])],
@@ -48,9 +48,11 @@ describe('RecipeCardComponent', () => {
     }).compileComponents();
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
 
     fixture = TestBed.createComponent(RecipeCardComponent);
     recipeCardComponent = fixture.componentInstance;
@@ -93,20 +95,20 @@ describe('RecipeCardComponent', () => {
     const favoriteButton = rootElement.querySelector<HTMLButtonElement>(
       '.recipe-favorite-icon'
     );
-    expect(favoriteButton?.disabled).toBeTrue();
-    expect(recipeCardComponent.isFavorite()).toBeFalse();
+    expect(favoriteButton?.disabled).toBe(true);
+    expect(recipeCardComponent.isFavorite()).toBe(false);
   });
 
   it('should toggle isFavorite', () => {
     // Check that isFavorite toggles when the heart button is clicked
     recipeCardComponent.chef.set(mockChef);
     fixture.detectChanges();
-    expect(recipeCardComponent.isFavorite()).toBeFalse();
+    expect(recipeCardComponent.isFavorite()).toBe(false);
 
     const favoriteButton = rootElement.querySelector<HTMLButtonElement>(
       '.recipe-favorite-icon'
     );
-    mockRecipeService.updateRecipe.and.returnValue(of(mockToken));
+    mockRecipeService.updateRecipe.mockReturnValue(of(mockToken));
     favoriteButton?.click();
     fixture.detectChanges();
     expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
@@ -115,7 +117,7 @@ describe('RecipeCardComponent', () => {
     expect(recipeCardComponent.chef()?.favoriteRecipes).toContain(
       mockRecipe.id.toString()
     );
-    expect(recipeCardComponent.isFavorite()).toBeTrue();
+    expect(recipeCardComponent.isFavorite()).toBe(true);
 
     favoriteButton?.click();
     fixture.detectChanges();
@@ -125,7 +127,7 @@ describe('RecipeCardComponent', () => {
     expect(recipeCardComponent.chef()?.favoriteRecipes).not.toContain(
       mockRecipe.id.toString()
     );
-    expect(recipeCardComponent.isFavorite()).toBeFalse();
+    expect(recipeCardComponent.isFavorite()).toBe(false);
   });
 
   it('should open the selected recipe', () => {

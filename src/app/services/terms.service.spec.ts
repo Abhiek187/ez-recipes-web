@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
+import { expect, vi } from 'vitest';
 
 import { TermsService } from './terms.service';
 import Constants from '../constants/constants';
@@ -43,13 +44,13 @@ describe('TermsService', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
 
     // Mock dates to prevent tests from failing by a second
-    jasmine.clock().install();
-    jasmine.clock().mockDate(mockDate);
+    vi.useFakeTimers();
+    vi.setSystemTime(mockDate);
   });
 
   afterEach(() => {
     httpTestingController.verify();
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   it('should be created', () => {
@@ -66,7 +67,7 @@ describe('TermsService', () => {
     });
     req.flush(mockTerms);
 
-    await expectAsync(termsPromise).toBeResolvedTo(mockTerms);
+    await expect(termsPromise).resolves.toBe(mockTerms);
   });
 
   it('should return an error if the terms API fails', async () => {
@@ -79,28 +80,28 @@ describe('TermsService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(termsPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(termsPromise).rejects.toThrowError(mockErrorMessage);
   });
 
   it('should return null if no terms are stored in localStorage', () => {
-    spyOn(localStorageProto, 'getItem').and.returnValue(null);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(null);
     expect(termsService.getCachedTerms()).toBeNull();
   });
 
   it('should return null if the terms have expired', () => {
-    spyOn(localStorageProto, 'getItem').and.returnValue(
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(
       mockTermStoreStr(Date.now() - 1)
     );
     expect(termsService.getCachedTerms()).toBeNull();
   });
 
   it("should return all the cached terms if they're valid", () => {
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockTermStoreStr());
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockTermStoreStr());
     expect(termsService.getCachedTerms()).toEqual(mockTermStore().terms);
   });
 
   it('should store all terms in localStorage', () => {
-    spyOn(localStorageProto, 'setItem').and.callThrough();
+    vi.spyOn(localStorageProto, 'setItem');
     termsService.saveTerms(mockTerms);
     expect(localStorageProto.setItem).toHaveBeenCalledWith(
       Constants.LocalStorage.terms,

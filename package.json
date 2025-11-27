@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "ng test --coverage",
     "lint": "ng lint"
   },
   "private": true,
@@ -30,15 +30,14 @@
     "@angular/cli": "~21.0.1",
     "@angular/compiler-cli": "^21.0.1",
     "@types/jasmine": "~5.1.13",
+    "@vitest/coverage-v8": "^4.0.14",
     "angular-eslint": "21.0.1",
     "eslint": "^9.39.1",
+    "fake-indexeddb": "^6.2.5",
     "jasmine-core": "~5.12.1",
-    "karma": "~6.4.4",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.1",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
+    "jsdom": "^27.2.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "8.48.0"
+    "typescript-eslint": "8.48.0",
+    "vitest": "^4.0.14"
   }
 }

@@ -3,13 +3,9 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
+import { vi } from 'vitest';
 
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
@@ -31,9 +27,11 @@ describe('RecipeComponent', () => {
     }).compileComponents();
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockTermStoreStr());
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockTermStoreStr());
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
 
     fixture = TestBed.createComponent(RecipeComponent);
     fixture.detectChanges();
@@ -305,20 +303,22 @@ describe('RecipeComponent', () => {
     expect(
       rootElement.querySelector<HTMLButtonElement>('.show-recipe-button')
         ?.disabled
-    ).toBeTrue();
+    ).toBe(true);
   });
 
-  it('should load another recipe after pressing the button', fakeAsync(() => {
+  it('should load another recipe after pressing the button', () => {
     // Check that the "Show Me Another Recipe!" button loads another recipe
-    spyOn(recipeComponent, 'getRandomRecipe');
+    vi.useFakeTimers();
+    vi.spyOn(recipeComponent, 'getRandomRecipe');
 
     const showRecipeButton = rootElement.querySelector<HTMLButtonElement>(
       '.show-recipe-button'
     );
     expect(showRecipeButton).not.toBeNull();
     showRecipeButton?.click();
-    tick(); // wait for the async tasks to complete
+    vi.runOnlyPendingTimers(); // wait for the async tasks to complete
 
     expect(recipeComponent.getRandomRecipe).toHaveBeenCalled();
-  }));
+    vi.clearAllTimers();
+  });
 });

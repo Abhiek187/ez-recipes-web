@@ -6,12 +6,8 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import {
-  provideRouter,
-  Router,
-  RouterLink,
-  RouterModule,
-} from '@angular/router';
+import { provideRouter, Router, RouterLink } from '@angular/router';
+import { vi } from 'vitest';
 
 import { ProfileComponent } from './profile.component';
 import { AuthState } from 'src/app/models/profile.model';
@@ -27,18 +23,25 @@ describe('ProfileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfileComponent, RouterModule.forRoot([])],
+      imports: [ProfileComponent],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-        provideRouter(Object.values(routes)),
+        provideRouter([
+          {
+            ...routes.profile,
+            children: [{ ...profileRoutes.login, path: 'login' }],
+          },
+        ]),
       ],
     }).compileComponents();
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(null);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(null);
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
 
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
@@ -100,7 +103,7 @@ describe('ProfileComponent', () => {
     expect(changePasswordButton).toBeTruthy();
     expect(deleteAccountButton).toBeTruthy();
 
-    const navigateSpy = spyOn(router, 'navigate');
+    const navigateSpy = vi.spyOn(router, 'navigate');
     changeEmailButton.click();
     expect(navigateSpy).toHaveBeenCalledWith([profileRoutes.updateEmail.path]);
     changePasswordButton.click();

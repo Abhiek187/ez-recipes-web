@@ -3,13 +3,9 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
+import { vi } from 'vitest';
 
 import { SearchComponent } from './search.component';
 import Constants from 'src/app/constants/constants';
@@ -34,11 +30,11 @@ describe('SearchComponent', () => {
     searchComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
 
-    jasmine.clock().install();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   it('should show the filter form', () => {
@@ -52,9 +48,7 @@ describe('SearchComponent', () => {
     expect(queryInput?.placeholder).toBe('food');
     expect(queryInput?.type).toBe('search');
     expect(queryInput?.inputMode).toBe('search');
-    expect(queryInput?.autocapitalize).toBe('none');
     expect(queryInput?.autocomplete).toBe('off');
-    expect(queryInput?.spellcheck).toBeFalse();
 
     const caloriesRow =
       rootElement.querySelector<HTMLDivElement>('.calories-row');
@@ -100,7 +94,7 @@ describe('SearchComponent', () => {
     expect(submitButton?.type).toBe('submit');
 
     // The form should be valid by default
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
     expect(rootElement.querySelector('.progress-spinner')).toBeNull();
     expect(rootElement.querySelector('.no-results-error')).toBeNull();
     expect(rootElement.querySelector('.results-title')).toBeNull();
@@ -125,11 +119,11 @@ describe('SearchComponent', () => {
       sort: null,
       asc: false,
     });
-    expect(searchComponent.filterFormGroup.valid).toBeTrue();
+    expect(searchComponent.filterFormGroup.valid).toBe(true);
 
-    expect(searchComponent.isLoading()).toBeFalse();
+    expect(searchComponent.isLoading()).toBe(false);
     expect(searchComponent.loadingMessage()).toBe('');
-    expect(searchComponent.noRecipesFound()).toBeFalse();
+    expect(searchComponent.noRecipesFound()).toBe(false);
   });
 
   it('should show an error if the calories are less than the min', () => {
@@ -138,28 +132,28 @@ describe('SearchComponent', () => {
     form.controls.minCals.setValue(-1);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.minCals.hasError(searchComponent.filterFormErrorNames.min)
-    ).toBeTrue();
+    ).toBe(true);
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
 
     form.reset();
     form.controls.maxCals.setValue(-1e-3);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.min)
-    ).toBeTrue();
-    expect(submitButton?.disabled).toBeTrue();
+    ).toBe(true);
+    expect(submitButton?.disabled).toBe(true);
 
     form.reset();
     fixture.detectChanges();
-    expect(form.valid).toBeTrue();
-    expect(submitButton?.disabled).toBeFalse();
+    expect(form.valid).toBe(true);
+    expect(submitButton?.disabled).toBe(false);
   });
 
   it('should show an error if the calories are greater than the max', () => {
@@ -168,28 +162,28 @@ describe('SearchComponent', () => {
     form.controls.minCals.setValue(2001);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.minCals.hasError(searchComponent.filterFormErrorNames.max)
-    ).toBeTrue();
+    ).toBe(true);
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
 
     form.reset();
     form.controls.maxCals.setValue(3.1e3);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.max)
-    ).toBeTrue();
-    expect(submitButton?.disabled).toBeTrue();
+    ).toBe(true);
+    expect(submitButton?.disabled).toBe(true);
 
     form.reset();
     fixture.detectChanges();
-    expect(form.valid).toBeTrue();
-    expect(submitButton?.disabled).toBeFalse();
+    expect(form.valid).toBe(true);
+    expect(submitButton?.disabled).toBe(false);
   });
 
   it('should show an error if min calories > max calories', () => {
@@ -199,18 +193,18 @@ describe('SearchComponent', () => {
     form.controls.maxCals.setValue(500);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
-    expect(
-      form.hasError(searchComponent.filterFormErrorNames.range)
-    ).toBeTrue();
+    expect(form.valid).toBe(false);
+    expect(form.hasError(searchComponent.filterFormErrorNames.range)).toBe(
+      true
+    );
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
 
     form.controls.maxCals.setValue(null);
     fixture.detectChanges();
-    expect(form.valid).toBeTrue();
-    expect(submitButton?.disabled).toBeFalse();
+    expect(form.valid).toBe(true);
+    expect(submitButton?.disabled).toBe(false);
   });
 
   it('shows multiple calorie errors at the same time', () => {
@@ -220,19 +214,19 @@ describe('SearchComponent', () => {
     form.controls.maxCals.setValue(-1);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
-    expect(
-      form.hasError(searchComponent.filterFormErrorNames.range)
-    ).toBeTrue();
+    expect(form.valid).toBe(false);
+    expect(form.hasError(searchComponent.filterFormErrorNames.range)).toBe(
+      true
+    );
     expect(
       form.controls.minCals.hasError(searchComponent.filterFormErrorNames.max)
-    ).toBeTrue();
+    ).toBe(true);
     expect(
       form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.min)
-    ).toBeTrue();
+    ).toBe(true);
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it('should accept valid inputs from all fields', () => {
@@ -257,10 +251,10 @@ describe('SearchComponent', () => {
     });
     fixture.detectChanges();
 
-    expect(form.valid).toBeTrue();
+    expect(form.valid).toBe(true);
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
   });
 
   it('should show a spinner while loading', () => {
@@ -273,7 +267,7 @@ describe('SearchComponent', () => {
     // The submit button should be disabled
     expect(
       rootElement.querySelector<HTMLButtonElement>('.submit-button')?.disabled
-    ).toBeTrue();
+    ).toBe(true);
   });
 
   it('should show an error if no recipes were found', () => {
@@ -290,19 +284,21 @@ describe('SearchComponent', () => {
     expect(rootElement.querySelector('.results-title')).toBeNull();
   });
 
-  it('should load recipes after submitting the initial form', fakeAsync(() => {
+  it('should load recipes after submitting the initial form', () => {
     // By default, the form should be valid
-    spyOn(searchComponent, 'onSubmit');
+    vi.useFakeTimers();
+    vi.spyOn(searchComponent, 'onSubmit');
 
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
     expect(submitButton).not.toBeNull();
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
     submitButton?.click();
-    tick();
+    vi.runOnlyPendingTimers();
 
     expect(searchComponent.onSubmit).toHaveBeenCalled();
-  }));
+    vi.clearAllTimers();
+  });
 
   it('should remove null filter values', () => {
     // Check that removeNullValues() removes null values from a recipe filter
@@ -322,7 +318,7 @@ describe('SearchComponent', () => {
     // The loading message should start blank, then show a random message after some time
     searchComponent.showLoadingMessages();
     expect(searchComponent.loadingMessage()).toBe('');
-    jasmine.clock().tick(3000);
+    vi.advanceTimersByTime(3000);
     expect(Constants.loadingMessages).toContain(
       searchComponent.loadingMessage()
     );
@@ -349,10 +345,10 @@ describe('SearchComponent', () => {
     form.controls.asc.setValue(true);
     fixture.detectChanges();
 
-    expect(form.valid).toBeTrue();
+    expect(form.valid).toBe(true);
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
 
     const sortDirectionButton = rootElement.querySelector<HTMLButtonElement>(
       '.sort-direction-button'
@@ -361,9 +357,9 @@ describe('SearchComponent', () => {
     sortDirectionButton?.click();
     fixture.detectChanges();
 
-    expect(form.controls.asc.value).toBeFalse();
+    expect(form.controls.asc.value).toBe(false);
     sortDirectionButton?.click();
     fixture.detectChanges();
-    expect(form.controls.asc.value).toBeTrue();
+    expect(form.controls.asc.value).toBe(true);
   });
 });

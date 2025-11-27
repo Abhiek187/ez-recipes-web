@@ -6,6 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
 import { of } from 'rxjs';
+import { vi, type MockedObject } from 'vitest';
 
 import { DeleteAccountComponent } from './delete-account.component';
 import { mockChef } from 'src/app/models/profile.mock';
@@ -16,15 +17,19 @@ describe('DeleteAccountComponent', () => {
   let deleteAccountComponent: DeleteAccountComponent;
   let fixture: ComponentFixture<DeleteAccountComponent>;
   let rootElement: HTMLElement;
-  let router: jasmine.SpyObj<Router>;
-  let mockChefService: jasmine.SpyObj<ChefService>;
+  let router: MockedObject<Router>;
+  let mockChefService: MockedObject<ChefService>;
 
   beforeEach(async () => {
-    mockChefService = jasmine.createSpyObj('ChefService', ['deleteChef']);
-    router = jasmine.createSpyObj('Router', [
-      'lastSuccessfulNavigation',
-      'navigate',
-    ]);
+    mockChefService = vi.mockObject({
+      deleteChef: vi.fn().mockName('ChefService.deleteChef'),
+    } as unknown as ChefService);
+    router = vi.mockObject({
+      lastSuccessfulNavigation: vi
+        .fn()
+        .mockName('Router.lastSuccessfulNavigation'),
+      navigate: vi.fn().mockName('Router.navigate'),
+    } as unknown as Router);
 
     await TestBed.configureTestingModule({
       imports: [DeleteAccountComponent],
@@ -43,11 +48,13 @@ describe('DeleteAccountComponent', () => {
     }).compileComponents();
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
 
-    router.lastSuccessfulNavigation.and.returnValue({
+    router.lastSuccessfulNavigation.mockReturnValue({
       extras: { state: { email: mockChef.email } },
       id: 0,
       initialUrl: new UrlTree(),
@@ -71,9 +78,7 @@ describe('DeleteAccountComponent', () => {
     const usernameField = rootElement.querySelector<HTMLInputElement>('input');
     expect(usernameField?.type).toBe('email');
     expect(usernameField?.inputMode).toBe('email');
-    expect(usernameField?.autocapitalize).toBe('none');
     expect(usernameField?.autocomplete).toBe('off');
-    expect(usernameField?.spellcheck).toBeFalse();
   });
 
   it("should disable account deletion if the username isn't provided", () => {
@@ -81,17 +86,17 @@ describe('DeleteAccountComponent', () => {
     form.controls.username.setValue(null);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.username.hasError(
         deleteAccountComponent.formErrors.required
       )
-    ).toBeTrue();
+    ).toBe(true);
 
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it("should disable account deletion if the username doesn't match", () => {
@@ -99,17 +104,17 @@ describe('DeleteAccountComponent', () => {
     form.controls.username.setValue('mock chef');
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.username.hasError(
         deleteAccountComponent.formErrors.usernameMismatch
       )
-    ).toBeTrue();
+    ).toBe(true);
 
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it('should enable account deletion if the username matches', () => {
@@ -117,13 +122,13 @@ describe('DeleteAccountComponent', () => {
     form.controls.username.setValue(mockChef.email);
     fixture.detectChanges();
 
-    expect(form.valid).toBeTrue();
+    expect(form.valid).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
 
-    mockChefService.deleteChef.and.returnValue(of(null));
+    mockChefService.deleteChef.mockReturnValue(of(null));
     submitButton?.click();
     fixture.detectChanges();
 

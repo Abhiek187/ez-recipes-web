@@ -3,16 +3,12 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { Observable as DObservable } from 'dexie';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HomeComponent } from './home.component';
@@ -31,14 +27,14 @@ describe('HomeComponent', () => {
   let chefService: ChefService;
 
   const mockRecentRecipes = (value: RecentRecipe[]) => {
-    spyOn(RecipeService.prototype, 'getRecentRecipes').and.returnValue(
+    vi.spyOn(RecipeService.prototype, 'getRecentRecipes').mockReturnValue(
       of(value) as unknown as DObservable
     );
     fixture.detectChanges();
   };
 
   beforeEach(async () => {
-    spyOn(ChefService.prototype, 'getChef').and.returnValue(of(mockChef));
+    vi.spyOn(ChefService.prototype, 'getChef').mockReturnValue(of(mockChef));
 
     // Import all the necessary modules and components to test the app component
     await TestBed.configureTestingModule({
@@ -55,11 +51,11 @@ describe('HomeComponent', () => {
     chefService = TestBed.inject(ChefService);
 
     // Create a fake timer to mock setInterval & setTimeout
-    jasmine.clock().install();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   it('should create the app', () => {
@@ -83,7 +79,7 @@ describe('HomeComponent', () => {
     ).toBeDefined();
 
     // The spinner should be hidden
-    expect(homeComponent.isLoadingRecipe()).toBeFalse();
+    expect(homeComponent.isLoadingRecipe()).toBe(false);
     expect(rootElement.querySelector('.progress-spinner')).toBeNull();
 
     // All the accordions should be present
@@ -102,20 +98,22 @@ describe('HomeComponent', () => {
     expect(ratingsAccordion?.textContent).toContain('Ratings');
   });
 
-  it('should load a random recipe after clicking the find recipe button', fakeAsync(() => {
+  it('should load a random recipe after clicking the find recipe button', () => {
     // Check that the getRandomRecipe method is called after clicking the find recipe button
+    vi.useFakeTimers();
     fixture.detectChanges();
-    spyOn(homeComponent, 'getRandomRecipe');
+    vi.spyOn(homeComponent, 'getRandomRecipe');
 
     const findRecipeButton = rootElement.querySelector<HTMLButtonElement>(
       '.find-recipe-button'
     );
     expect(findRecipeButton).not.toBeNull();
     findRecipeButton?.click();
-    tick(); // wait for the async tasks to complete
+    vi.runOnlyPendingTimers(); // wait for the async tasks to complete
 
     expect(homeComponent.getRandomRecipe).toHaveBeenCalled();
-  }));
+    vi.clearAllTimers();
+  });
 
   it('should show a spinner while loading', () => {
     // Check that the material spinner shows when isLoading is true
@@ -128,7 +126,7 @@ describe('HomeComponent', () => {
     expect(
       rootElement.querySelector<HTMLButtonElement>('.find-recipe-button')
         ?.disabled
-    ).toBeTrue();
+    ).toBe(true);
   });
 
   it('should show a random message while loading', () => {
@@ -136,7 +134,7 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     homeComponent.showLoadingMessages();
     expect(homeComponent.loadingMessage()).toBe('');
-    jasmine.clock().tick(3000);
+    vi.advanceTimersByTime(3000);
     expect(Constants.loadingMessages).toContain(homeComponent.loadingMessage());
   });
 
@@ -208,7 +206,7 @@ describe('HomeComponent', () => {
   });
 
   it('should populate all the accordions if authenticated', () => {
-    spyOn(RecipeService.prototype, 'getRecipeById').and.returnValue(
+    vi.spyOn(RecipeService.prototype, 'getRecipeById').mockReturnValue(
       of(mockRecipe)
     );
     chefService.chef.set(mockChef);

@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable } from 'rxjs';
+import { expect, vi } from 'vitest';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
@@ -43,9 +44,11 @@ describe('RecipeService', () => {
 
   const mockLocalStorage = (token: string | null = mockChef.token) => {
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(token);
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
   };
 
   beforeEach(() => {
@@ -83,7 +86,7 @@ describe('RecipeService', () => {
 
   it('should not be mocked', () => {
     // Make sure network calls aren't mocked in production
-    expect(environment.mock).withContext('Turn off debug mode!').toBeFalse();
+    expect(environment.mock, 'Turn off debug mode!').toBe(false);
   });
 
   it('should fetch a random recipe', async () => {
@@ -105,7 +108,7 @@ describe('RecipeService', () => {
     req.flush(mockRecipe);
 
     // When observable resolves, result should match test data
-    await expectAsync(recipePromise).toBeResolvedTo(mockRecipe);
+    await expect(recipePromise).resolves.toBe(mockRecipe);
     expect(recipeService.recipe()).toBe(mockRecipe);
   });
 
@@ -121,7 +124,7 @@ describe('RecipeService', () => {
     // Respond with mock error
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
     expect(recipeService.recipe()).toBeNull();
   });
 
@@ -136,7 +139,7 @@ describe('RecipeService', () => {
     });
     req.flush(mockRecipe);
 
-    await expectAsync(recipePromise).toBeResolvedTo(mockRecipe);
+    await expect(recipePromise).resolves.toBe(mockRecipe);
     expect(recipeService.recipe()).toBe(mockRecipe);
   });
 
@@ -151,7 +154,7 @@ describe('RecipeService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
     expect(recipeService.recipe()).toBeNull();
   });
 
@@ -198,7 +201,7 @@ describe('RecipeService', () => {
     );
     req.flush(mockRecipes);
 
-    await expectAsync(recipePromise).toBeResolvedTo(mockRecipes);
+    await expect(recipePromise).resolves.toBe(mockRecipes);
   });
 
   it('should return an error if the filter recipe API fails', async () => {
@@ -214,7 +217,7 @@ describe('RecipeService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
   });
 
   it('should update a recipe', async () => {
@@ -240,7 +243,7 @@ describe('RecipeService', () => {
     expect(req.request.body).toBe(fields);
     req.flush(mockToken);
 
-    await expectAsync(recipePromise).toBeResolvedTo(mockToken);
+    await expect(recipePromise).resolves.toBe(mockToken);
   });
 
   it('should update a recipe without a token', async () => {
@@ -262,7 +265,7 @@ describe('RecipeService', () => {
     expect(req.request.body).toBe(fields);
     req.flush({});
 
-    await expectAsync(recipePromise).toBeResolvedTo({});
+    await expect(recipePromise).resolves.toStrictEqual({});
   });
 
   it('should return an error if the update recipe API fails', async () => {
@@ -286,30 +289,27 @@ describe('RecipeService', () => {
     expect(req.request.body).toBe(fields);
     req.error(mockError);
 
-    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
   });
 
-  it('should return a mock recipe', (done) => {
+  it('should return a mock recipe', async () => {
     // Check that getMockRecipe returns a mock recipe
     recipeService.getMockRecipe().subscribe((data) => {
       expect(data).toBe(mockRecipe);
-      done();
     });
   });
 
-  it('should return mock recipes', (done) => {
+  it('should return mock recipes', async () => {
     // Check that getMockRecipes returns multiple mock recipes
     recipeService.getMockRecipes().subscribe((data) => {
       expect(data).toBe(mockRecipes);
-      done();
     });
   });
 
-  it('should return a mock token', (done) => {
+  it('should return a mock token', async () => {
     // Check that getMockToken returns a mock token
     recipeService.getMockToken().subscribe((data) => {
       expect(data).toBe(mockToken);
-      done();
     });
   });
 
@@ -362,14 +362,14 @@ describe('RecipeService', () => {
     const recentRecipe = mockRecipesWithTimestamp[0];
     await recentRecipesDB.recipes.add(recentRecipe);
     let recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
-    expect(recipe?.isFavorite).toBeFalse();
+    expect(recipe?.isFavorite).toBe(false);
 
     await recipeService.toggleFavoriteRecentRecipe(recentRecipe.id);
     recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
-    expect(recipe?.isFavorite).toBeTrue();
+    expect(recipe?.isFavorite).toBe(true);
 
     await recipeService.toggleFavoriteRecentRecipe(recentRecipe.id);
     recipe = await recentRecipesDB.recipes.get(recentRecipe.id);
-    expect(recipe?.isFavorite).toBeFalse();
+    expect(recipe?.isFavorite).toBe(false);
   });
 });

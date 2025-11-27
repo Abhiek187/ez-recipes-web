@@ -22,6 +22,6 @@ describe('devGuard', () => {
   });
 
   it('should return true in dev', () => {
-    expect(executeGuard(route, state)).toBeTrue();
+    expect(executeGuard(route, state)).toBe(true);
   });
 });

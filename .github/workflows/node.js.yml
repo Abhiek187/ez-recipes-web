@@ -29,5 +29,5 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build --if-present
-      # Don't watch for changes and use a headless browser for testing
-      - run: npm test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+      # Don't watch for changes
+      - run: npm test -- --no-watch
