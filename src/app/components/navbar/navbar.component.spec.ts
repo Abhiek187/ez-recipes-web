@@ -3,7 +3,6 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { of } from 'rxjs';
@@ -30,7 +29,7 @@ describe('NavbarComponent', () => {
       toggleFavoriteRecentRecipe: vi
         .fn()
         .mockName('RecipeService.toggleFavoriteRecentRecipe'),
-      recipe: signal(mockRecipe),
+      recipe: vi.fn().mockReturnValue(mockRecipe),
     } as unknown as RecipeService);
     mockRecipeService.toggleFavoriteRecentRecipe.mockResolvedValue();
 

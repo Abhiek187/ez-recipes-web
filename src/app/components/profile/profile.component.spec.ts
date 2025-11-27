@@ -6,12 +6,7 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import {
-  provideRouter,
-  Router,
-  RouterLink,
-  RouterModule,
-} from '@angular/router';
+import { provideRouter, Router, RouterLink } from '@angular/router';
 import { vi } from 'vitest';
 
 import { ProfileComponent } from './profile.component';
@@ -28,11 +23,16 @@ describe('ProfileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfileComponent, RouterModule.forRoot([])],
+      imports: [ProfileComponent],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-        provideRouter(Object.values(routes)),
+        provideRouter([
+          {
+            ...routes.profile,
+            children: [{ ...profileRoutes.login, path: 'login' }],
+          },
+        ]),
       ],
     }).compileComponents();
 
