@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
+import { vi } from 'vitest';
 
 import { ChefService } from './chef.service';
 import {
@@ -35,9 +36,11 @@ describe('ChefService', () => {
 
   const mockLocalStorage = (token: string | null = mockChef.token) => {
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(token);
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
   };
 
   beforeEach(() => {

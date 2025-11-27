@@ -7,6 +7,7 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { of } from 'rxjs';
+import { vi, type MockedObject } from 'vitest';
 
 import { NavbarComponent } from './navbar.component';
 import { mockChef } from 'src/app/models/profile.mock';
@@ -20,18 +21,18 @@ describe('NavbarComponent', () => {
   let fixture: ComponentFixture<NavbarComponent>;
   let rootElement: HTMLElement;
 
-  let mockRecipeService: jasmine.SpyObj<RecipeService>;
-  let setItemSpy: jasmine.SpyObj<unknown>;
+  let mockRecipeService: MockedObject<RecipeService>;
+  let setItemSpy: MockedObject<unknown>;
 
   beforeEach(async () => {
-    mockRecipeService = jasmine.createSpyObj(
-      'RecipeService',
-      ['updateRecipe', 'toggleFavoriteRecentRecipe'],
-      {
-        recipe: signal(mockRecipe),
-      }
-    );
-    mockRecipeService.toggleFavoriteRecentRecipe.and.resolveTo();
+    mockRecipeService = vi.mockObject({
+      updateRecipe: vi.fn().mockName('RecipeService.updateRecipe'),
+      toggleFavoriteRecentRecipe: vi
+        .fn()
+        .mockName('RecipeService.toggleFavoriteRecentRecipe'),
+      recipe: signal(mockRecipe),
+    } as unknown as RecipeService);
+    mockRecipeService.toggleFavoriteRecentRecipe.mockResolvedValue();
 
     await TestBed.configureTestingModule({
       imports: [RouterModule.forRoot([]), NavbarComponent],
@@ -46,9 +47,11 @@ describe('NavbarComponent', () => {
     }).compileComponents();
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    setItemSpy = spyOn(localStorageProto, 'setItem');
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
+    setItemSpy = vi.spyOn(localStorageProto, 'setItem');
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
 
     fixture = TestBed.createComponent(NavbarComponent);
     navbarComponent = fixture.componentInstance;
@@ -78,7 +81,7 @@ describe('NavbarComponent', () => {
     const shareIcon =
       rootElement.querySelector<HTMLButtonElement>('.share-icon');
 
-    expect(navbarComponent.isRecipePage()).toBeFalse();
+    expect(navbarComponent.isRecipePage()).toBe(false);
     expect(favoriteIcon).toBeNull();
     expect(shareIcon).toBeNull();
   });
@@ -101,7 +104,7 @@ describe('NavbarComponent', () => {
     const shareIcon =
       rootElement.querySelector<HTMLButtonElement>('.share-icon');
 
-    expect(navbarComponent.isRecipePage()).toBeFalse();
+    expect(navbarComponent.isRecipePage()).toBe(false);
     expect(favoriteIcon).toBeNull();
     expect(shareIcon).toBeNull();
   });
@@ -130,14 +133,14 @@ describe('NavbarComponent', () => {
   });
 
   it('should toggle between light and dark mode', () => {
-    expect(navbarComponent.isDarkMode()).toBeFalse();
+    expect(navbarComponent.isDarkMode()).toBe(false);
     expect(document.body.style.colorScheme).toBe(Theme.Light);
     const themeIcon = document.querySelector<HTMLButtonElement>('.theme-icon');
     expect(themeIcon?.ariaLabel).toBe('Switch to dark mode');
 
     themeIcon?.click();
     fixture.detectChanges();
-    expect(navbarComponent.isDarkMode()).toBeTrue();
+    expect(navbarComponent.isDarkMode()).toBe(true);
     expect(setItemSpy).toHaveBeenCalledWith(
       Constants.LocalStorage.theme,
       Theme.Dark
@@ -147,7 +150,7 @@ describe('NavbarComponent', () => {
 
     themeIcon?.click();
     fixture.detectChanges();
-    expect(navbarComponent.isDarkMode()).toBeFalse();
+    expect(navbarComponent.isDarkMode()).toBe(false);
     expect(setItemSpy).toHaveBeenCalledWith(
       Constants.LocalStorage.theme,
       Theme.Light
@@ -163,8 +166,8 @@ describe('NavbarComponent', () => {
 
     const favoriteButton =
       rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
-    expect(favoriteButton?.disabled).toBeTrue();
-    expect(navbarComponent.isFavorite()).toBeFalse();
+    expect(favoriteButton?.disabled).toBe(true);
+    expect(navbarComponent.isFavorite()).toBe(false);
   });
 
   it('should toggle isFavorite', () => {
@@ -173,7 +176,7 @@ describe('NavbarComponent', () => {
     navbarComponent.chef.set(mockChef);
     fixture.detectChanges();
     // Recipe shouldn't be liked by default
-    expect(navbarComponent.isFavorite()).toBeFalse();
+    expect(navbarComponent.isFavorite()).toBe(false);
 
     // Check that the heart icon is filled when favoriting and isn't filled when unfavoriting
     const favoriteButton =
@@ -181,7 +184,7 @@ describe('NavbarComponent', () => {
     const favoriteIcon = favoriteButton?.querySelector('mat-icon');
     expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');
     expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
-    mockRecipeService.updateRecipe.and.returnValue(of(mockToken));
+    mockRecipeService.updateRecipe.mockReturnValue(of(mockToken));
 
     favoriteButton?.click();
     fixture.detectChanges();
@@ -191,7 +194,7 @@ describe('NavbarComponent', () => {
     expect(navbarComponent.chef()?.favoriteRecipes).toContain(
       mockRecipe.id.toString()
     );
-    expect(navbarComponent.isFavorite()).toBeTrue();
+    expect(navbarComponent.isFavorite()).toBe(true);
     expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite');
     expect(favoriteButton?.ariaLabel).toBe('Unfavorite this recipe');
 
@@ -203,14 +206,14 @@ describe('NavbarComponent', () => {
     expect(navbarComponent.chef()?.favoriteRecipes).not.toContain(
       mockRecipe.id.toString()
     );
-    expect(navbarComponent.isFavorite()).toBeFalse();
+    expect(navbarComponent.isFavorite()).toBe(false);
     expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');
     expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
   });
 
   it('should call shareRecipe after clicking the share button', () => {
     // Check that shareRecipe is called after clicking the share button
-    spyOn(navbarComponent, 'shareRecipe');
+    vi.spyOn(navbarComponent, 'shareRecipe');
     navbarComponent.isRecipePage.set(true);
     fixture.detectChanges();
 

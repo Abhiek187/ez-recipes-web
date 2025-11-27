@@ -6,6 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { of } from 'rxjs';
+import { vi, type MockedObject } from 'vitest';
 
 import { SignUpComponent } from './sign-up.component';
 import { ChefService } from 'src/app/services/chef.service';
@@ -20,13 +21,13 @@ describe('SignUpComponent', () => {
   let fixture: ComponentFixture<SignUpComponent>;
   let rootElement: HTMLElement;
   let router: Router;
-  let mockChefService: jasmine.SpyObj<ChefService>;
+  let mockChefService: MockedObject<ChefService>;
 
   beforeEach(async () => {
-    mockChefService = jasmine.createSpyObj('ChefService', [
-      'createChef',
-      'verifyEmail',
-    ]);
+    mockChefService = vi.mockObject({
+      createChef: vi.fn().mockName('ChefService.createChef'),
+      verifyEmail: vi.fn().mockName('ChefService.verifyEmail'),
+    } as unknown as ChefService);
 
     await TestBed.configureTestingModule({
       imports: [SignUpComponent, RouterModule.forRoot([])],
@@ -66,17 +67,17 @@ describe('SignUpComponent', () => {
     expect(emailField.inputMode).toBe('email');
     expect(emailField.autocapitalize).toBe('none');
     expect(emailField.autocomplete).toBe('off');
-    expect(emailField.spellcheck).toBeFalse();
+    expect(emailField.spellcheck).toBe(false);
 
     expect(passwordField.type).toBe('password');
     expect(passwordField.autocapitalize).toBe('none');
     expect(passwordField.autocomplete).toBe('off');
-    expect(passwordField.spellcheck).toBeFalse();
+    expect(passwordField.spellcheck).toBe(false);
 
     expect(confirmPasswordField.type).toBe('password');
     expect(confirmPasswordField.autocapitalize).toBe('none');
     expect(confirmPasswordField.autocomplete).toBe('off');
-    expect(confirmPasswordField.spellcheck).toBeFalse();
+    expect(confirmPasswordField.spellcheck).toBe(false);
 
     signUpComponent.showPassword.set(true);
     fixture.detectChanges();
@@ -100,23 +101,23 @@ describe('SignUpComponent', () => {
     form.controls.passwordConfirm.setValue(null);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.email.hasError(signUpComponent.formErrors.required)
-    ).toBeTrue();
+    ).toBe(true);
     expect(
       form.controls.password.hasError(signUpComponent.formErrors.required)
-    ).toBeTrue();
+    ).toBe(true);
     expect(
       form.controls.passwordConfirm.hasError(
         signUpComponent.formErrors.required
       )
-    ).toBeFalse();
+    ).toBe(false);
 
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it("should show an error if the email isn't valid", () => {
@@ -124,14 +125,14 @@ describe('SignUpComponent', () => {
     form.controls.email.setValue('not an email');
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.email.hasError(signUpComponent.formErrors.emailInvalid)
-    ).toBeTrue();
+    ).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it('should show an error if the password is too short', () => {
@@ -139,16 +140,16 @@ describe('SignUpComponent', () => {
     form.controls.password.setValue('123');
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.password.hasError(
         signUpComponent.formErrors.passwordMinLength
       )
-    ).toBeTrue();
+    ).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it("should show an error if the passwords don't match", () => {
@@ -157,14 +158,14 @@ describe('SignUpComponent', () => {
     form.controls.passwordConfirm.setValue('password2');
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
-    expect(
-      form.hasError(signUpComponent.formErrors.passwordMismatch)
-    ).toBeTrue();
+    expect(form.valid).toBe(false);
+    expect(form.hasError(signUpComponent.formErrors.passwordMismatch)).toBe(
+      true
+    );
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it('should enable the submit button if all fields are valid', () => {
@@ -176,15 +177,15 @@ describe('SignUpComponent', () => {
     form.controls.passwordConfirm.setValue(mockPassword);
     fixture.detectChanges();
 
-    expect(form.valid).toBeTrue();
+    expect(form.valid).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
 
-    mockChefService.createChef.and.returnValue(of(mockLoginResponse(false)));
-    mockChefService.verifyEmail.and.returnValue(of(mockChefEmailResponse));
-    const navigateSpy = spyOn(router, 'navigate');
+    mockChefService.createChef.mockReturnValue(of(mockLoginResponse(false)));
+    mockChefService.verifyEmail.mockReturnValue(of(mockChefEmailResponse));
+    const navigateSpy = vi.spyOn(router, 'navigate');
     submitButton?.click();
     fixture.detectChanges();
 

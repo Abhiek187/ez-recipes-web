@@ -7,6 +7,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { AppComponent } from './app.component';
 import { TermsService } from './services/terms.service';
@@ -32,12 +33,14 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     appComponent = fixture.componentInstance;
 
-    spyOn(TermsService.prototype, 'getTerms').and.returnValue(of(mockTerms));
+    vi.spyOn(TermsService.prototype, 'getTerms').mockReturnValue(of(mockTerms));
   });
 
   it('should create the app', () => {
     // Check that the component can render
-    spyOn(TermsService.prototype, 'getCachedTerms').and.returnValue(mockTerms);
+    vi.spyOn(TermsService.prototype, 'getCachedTerms').mockReturnValue(
+      mockTerms
+    );
     // Re-render the component after setting up mocks
     fixture.detectChanges();
 
@@ -47,7 +50,7 @@ describe('AppComponent', () => {
   });
 
   it("should fetch all the terms if they're not saved", () => {
-    spyOn(TermsService.prototype, 'getCachedTerms').and.returnValue(null);
+    vi.spyOn(TermsService.prototype, 'getCachedTerms').mockReturnValue(null);
     fixture.detectChanges();
 
     expect(TermsService.prototype.getCachedTerms).toHaveBeenCalled();

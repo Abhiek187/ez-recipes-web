@@ -12,6 +12,7 @@ import {
   RouterLink,
   RouterModule,
 } from '@angular/router';
+import { vi } from 'vitest';
 
 import { ProfileComponent } from './profile.component';
 import { AuthState } from 'src/app/models/profile.model';
@@ -36,9 +37,11 @@ describe('ProfileComponent', () => {
     }).compileComponents();
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(null);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(null);
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
 
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
@@ -100,7 +103,7 @@ describe('ProfileComponent', () => {
     expect(changePasswordButton).toBeTruthy();
     expect(deleteAccountButton).toBeTruthy();
 
-    const navigateSpy = spyOn(router, 'navigate');
+    const navigateSpy = vi.spyOn(router, 'navigate');
     changeEmailButton.click();
     expect(navigateSpy).toHaveBeenCalledWith([profileRoutes.updateEmail.path]);
     changePasswordButton.click();

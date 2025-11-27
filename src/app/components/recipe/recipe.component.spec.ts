@@ -10,6 +10,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
+import { vi } from 'vitest';
 
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
@@ -31,9 +32,11 @@ describe('RecipeComponent', () => {
     }).compileComponents();
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockTermStoreStr());
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockTermStoreStr());
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
 
     fixture = TestBed.createComponent(RecipeComponent);
     fixture.detectChanges();
@@ -305,12 +308,12 @@ describe('RecipeComponent', () => {
     expect(
       rootElement.querySelector<HTMLButtonElement>('.show-recipe-button')
         ?.disabled
-    ).toBeTrue();
+    ).toBe(true);
   });
 
   it('should load another recipe after pressing the button', fakeAsync(() => {
     // Check that the "Show Me Another Recipe!" button loads another recipe
-    spyOn(recipeComponent, 'getRandomRecipe');
+    vi.spyOn(recipeComponent, 'getRandomRecipe');
 
     const showRecipeButton = rootElement.querySelector<HTMLButtonElement>(
       '.show-recipe-button'

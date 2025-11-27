@@ -6,6 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
+import { vi, type MockedObject } from 'vitest';
 
 import { UpdateEmailComponent } from './update-email.component';
 import { ChefService } from 'src/app/services/chef.service';
@@ -19,10 +20,12 @@ describe('UpdateEmailComponent', () => {
   let fixture: ComponentFixture<UpdateEmailComponent>;
   let rootElement: HTMLElement;
   let router: Router;
-  let mockChefService: jasmine.SpyObj<ChefService>;
+  let mockChefService: MockedObject<ChefService>;
 
   beforeEach(async () => {
-    mockChefService = jasmine.createSpyObj('ChefService', ['updateChef']);
+    mockChefService = vi.mockObject({
+      updateChef: vi.fn().mockName('ChefService.updateChef'),
+    } as unknown as ChefService);
 
     await TestBed.configureTestingModule({
       imports: [UpdateEmailComponent],
@@ -37,9 +40,11 @@ describe('UpdateEmailComponent', () => {
     }).compileComponents();
 
     const localStorageProto = Object.getPrototypeOf(localStorage);
-    spyOn(localStorageProto, 'getItem').and.returnValue(mockChef.token);
-    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
-    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
+    vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
+    vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
+    vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
+      () => undefined
+    );
 
     router = TestBed.inject(Router);
     fixture = TestBed.createComponent(UpdateEmailComponent);
@@ -59,7 +64,7 @@ describe('UpdateEmailComponent', () => {
     expect(emailField?.inputMode).toBe('email');
     expect(emailField?.autocapitalize).toBe('none');
     expect(emailField?.autocomplete).toBe('off');
-    expect(emailField?.spellcheck).toBeFalse();
+    expect(emailField?.spellcheck).toBe(false);
   });
 
   it("should show an error if the email isn't provided", () => {
@@ -67,15 +72,15 @@ describe('UpdateEmailComponent', () => {
     form.controls.email.setValue(null);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.email.hasError(updateEmailComponent.formErrors.required)
-    ).toBeTrue();
+    ).toBe(true);
 
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it("should show an error if the email isn't valid", () => {
@@ -83,15 +88,15 @@ describe('UpdateEmailComponent', () => {
     form.controls.email.setValue('not an email');
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.email.hasError(updateEmailComponent.formErrors.emailInvalid)
-    ).toBeTrue();
+    ).toBe(true);
 
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it('should enable the submit button if the email is valid', () => {
@@ -100,13 +105,13 @@ describe('UpdateEmailComponent', () => {
     form.controls.email.setValue(mockEmail);
     fixture.detectChanges();
 
-    expect(form.valid).toBeTrue();
+    expect(form.valid).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
 
-    mockChefService.updateChef.and.returnValue(of(mockChefEmailResponse));
+    mockChefService.updateChef.mockReturnValue(of(mockChefEmailResponse));
     submitButton?.click();
     fixture.detectChanges();
 
@@ -125,16 +130,16 @@ describe('UpdateEmailComponent', () => {
     form.controls.email.setValue(mockEmail);
     fixture.detectChanges();
 
-    expect(form.valid).toBeTrue();
+    expect(form.valid).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
 
-    mockChefService.updateChef.and.returnValue(
+    mockChefService.updateChef.mockReturnValue(
       throwError(() => new Error(Constants.credentialTooOldError))
     );
-    const navigateSpy = spyOn(router, 'navigate');
+    const navigateSpy = vi.spyOn(router, 'navigate');
     submitButton?.click();
     fixture.detectChanges();
 

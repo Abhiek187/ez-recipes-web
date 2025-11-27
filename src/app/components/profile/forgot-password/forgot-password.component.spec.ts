@@ -6,6 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { of } from 'rxjs';
+import { vi, type MockedObject } from 'vitest';
 
 import { ForgotPasswordComponent } from './forgot-password.component';
 import { ChefService } from 'src/app/services/chef.service';
@@ -16,10 +17,12 @@ describe('ForgotPasswordComponent', () => {
   let forgotPasswordComponent: ForgotPasswordComponent;
   let fixture: ComponentFixture<ForgotPasswordComponent>;
   let rootElement: HTMLElement;
-  let mockChefService: jasmine.SpyObj<ChefService>;
+  let mockChefService: MockedObject<ChefService>;
 
   beforeEach(async () => {
-    mockChefService = jasmine.createSpyObj('ChefService', ['updateChef']);
+    mockChefService = vi.mockObject({
+      updateChef: vi.fn().mockName('ChefService.updateChef'),
+    } as unknown as ChefService);
 
     await TestBed.configureTestingModule({
       imports: [ForgotPasswordComponent, RouterModule.forRoot([])],
@@ -49,11 +52,11 @@ describe('ForgotPasswordComponent', () => {
     expect(emailField?.inputMode).toBe('email');
     expect(emailField?.autocapitalize).toBe('none');
     expect(emailField?.autocomplete).toBe('off');
-    expect(emailField?.spellcheck).toBeFalse();
+    expect(emailField?.spellcheck).toBe(false);
 
     const submitButton = rootElement.querySelector('button');
     expect(submitButton).toBeTruthy();
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it('should show that an email was sent', () => {
@@ -68,12 +71,12 @@ describe('ForgotPasswordComponent', () => {
     form.controls.email.setValue(null);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.email.hasError(forgotPasswordComponent.formErrors.required)
-    ).toBeTrue();
+    ).toBe(true);
     const submitButton = rootElement.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it("should show an error if the email isn't valid", () => {
@@ -81,14 +84,14 @@ describe('ForgotPasswordComponent', () => {
     form.controls.email.setValue('not an email');
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
+    expect(form.valid).toBe(false);
     expect(
       form.controls.email.hasError(
         forgotPasswordComponent.formErrors.emailInvalid
       )
-    ).toBeTrue();
+    ).toBe(true);
     const submitButton = rootElement.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it('should enable the submit button if all fields are valid', () => {
@@ -97,16 +100,16 @@ describe('ForgotPasswordComponent', () => {
     form.controls.email.setValue(mockEmail);
     fixture.detectChanges();
 
-    expect(form.valid).toBeTrue();
+    expect(form.valid).toBe(true);
     const submitButton = rootElement.querySelector('button');
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
 
-    mockChefService.updateChef.and.returnValue(of(mockChefEmailResponse));
+    mockChefService.updateChef.mockReturnValue(of(mockChefEmailResponse));
     submitButton?.click();
     expect(mockChefService.updateChef).toHaveBeenCalledWith({
       type: ChefUpdateType.Password,
       email: mockEmail,
     });
-    expect(forgotPasswordComponent.emailSent()).toBeTrue();
+    expect(forgotPasswordComponent.emailSent()).toBe(true);
   });
 });

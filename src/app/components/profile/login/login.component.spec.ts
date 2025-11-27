@@ -6,6 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { of } from 'rxjs';
+import { vi, type MockedObject } from 'vitest';
 
 import { LoginComponent } from './login.component';
 import { ChefService } from 'src/app/services/chef.service';
@@ -20,13 +21,13 @@ describe('LoginComponent', () => {
   let fixture: ComponentFixture<LoginComponent>;
   let rootElement: HTMLElement;
   let router: Router;
-  let mockChefService: jasmine.SpyObj<ChefService>;
+  let mockChefService: MockedObject<ChefService>;
 
   beforeEach(async () => {
-    mockChefService = jasmine.createSpyObj('ChefService', [
-      'login',
-      'verifyEmail',
-    ]);
+    mockChefService = vi.mockObject({
+      login: vi.fn().mockName('ChefService.login'),
+      verifyEmail: vi.fn().mockName('ChefService.verifyEmail'),
+    } as unknown as ChefService);
 
     await TestBed.configureTestingModule({
       imports: [LoginComponent, RouterModule.forRoot([])],
@@ -63,12 +64,12 @@ describe('LoginComponent', () => {
     expect(usernameField.inputMode).toBe('email');
     expect(usernameField.autocapitalize).toBe('none');
     expect(usernameField.autocomplete).toBe('off');
-    expect(usernameField.spellcheck).toBeFalse();
+    expect(usernameField.spellcheck).toBe(false);
 
     expect(passwordField.type).toBe('password');
     expect(passwordField.autocapitalize).toBe('none');
     expect(passwordField.autocomplete).toBe('off');
-    expect(passwordField.spellcheck).toBeFalse();
+    expect(passwordField.spellcheck).toBe(false);
 
     loginComponent.showPassword.set(true);
     fixture.detectChanges();
@@ -84,14 +85,14 @@ describe('LoginComponent', () => {
     form.controls.password.setValue(null);
     fixture.detectChanges();
 
-    expect(form.valid).toBeFalse();
-    expect(form.controls.username.hasError('required')).toBeTrue();
-    expect(form.controls.password.hasError('required')).toBeTrue();
+    expect(form.valid).toBe(false);
+    expect(form.controls.username.hasError('required')).toBe(true);
+    expect(form.controls.password.hasError('required')).toBe(true);
 
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeTrue();
+    expect(submitButton?.disabled).toBe(true);
   });
 
   it('should enable the submit button if all fields are valid', () => {
@@ -102,15 +103,15 @@ describe('LoginComponent', () => {
     form.controls.password.setValue(mockPassword);
     fixture.detectChanges();
 
-    expect(form.valid).toBeTrue();
+    expect(form.valid).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
-    expect(submitButton?.disabled).toBeFalse();
+    expect(submitButton?.disabled).toBe(false);
 
-    mockChefService.login.and.returnValue(of(mockLoginResponse(false)));
-    mockChefService.verifyEmail.and.returnValue(of(mockChefEmailResponse));
-    const navigateSpy = spyOn(router, 'navigate');
+    mockChefService.login.mockReturnValue(of(mockLoginResponse(false)));
+    mockChefService.verifyEmail.mockReturnValue(of(mockChefEmailResponse));
+    const navigateSpy = vi.spyOn(router, 'navigate');
     submitButton?.click();
     fixture.detectChanges();
 
