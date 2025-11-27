@@ -14,6 +14,7 @@ import { RouterModule } from '@angular/router';
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
 import { ShorthandPipe } from 'src/app/pipes/shorthand.pipe';
+import { mockTermStoreStr } from 'src/app/models/term-store.mock';
 
 describe('RecipeComponent', () => {
   let recipeComponent: RecipeComponent;
@@ -28,6 +29,11 @@ describe('RecipeComponent', () => {
         provideHttpClientTesting(),
       ],
     }).compileComponents();
+
+    const localStorageProto = Object.getPrototypeOf(localStorage);
+    spyOn(localStorageProto, 'getItem').and.returnValue(mockTermStoreStr());
+    spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
+    spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
     fixture = TestBed.createComponent(RecipeComponent);
     fixture.detectChanges();
