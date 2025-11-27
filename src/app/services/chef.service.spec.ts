@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { vi } from 'vitest';
+import { expect, vi } from 'vitest';
 
 import { ChefService } from './chef.service';
 import {
@@ -77,7 +77,7 @@ describe('ChefService', () => {
     );
     req.flush(mockChef);
 
-    await expectAsync(chefPromise).toBeResolvedTo(mockChef);
+    await expect(chefPromise).resolves.toBe(mockChef);
     expect(chefService.chef()).toBe(mockChef);
   });
 
@@ -91,7 +91,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -112,7 +112,7 @@ describe('ChefService', () => {
     const loginResponse = mockLoginResponse(false);
     req.flush(loginResponse);
 
-    await expectAsync(chefPromise).toBeResolvedTo(loginResponse);
+    await expect(chefPromise).resolves.toBe(loginResponse);
     expect(chefService.chef()).toEqual({
       uid: loginResponse.uid,
       email: credentials.email,
@@ -138,7 +138,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -161,7 +161,7 @@ describe('ChefService', () => {
     expect(req.request.body).toBe(fields);
     req.flush(mockChefEmailResponse);
 
-    await expectAsync(chefPromise).toBeResolvedTo(mockChefEmailResponse);
+    await expect(chefPromise).resolves.toBe(mockChefEmailResponse);
   });
 
   it('should update a chef without a token', async () => {
@@ -180,7 +180,7 @@ describe('ChefService', () => {
     expect(req.request.body).toBe(fields);
     req.flush(mockChefEmailResponse);
 
-    await expectAsync(chefPromise).toBeResolvedTo(mockChefEmailResponse);
+    await expect(chefPromise).resolves.toBe(mockChefEmailResponse);
   });
 
   it('should return an error if the PATCH chef API fails', async () => {
@@ -197,7 +197,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
   });
 
   it('should delete a chef', async () => {
@@ -213,7 +213,7 @@ describe('ChefService', () => {
     );
     req.flush(null);
 
-    await expectAsync(chefPromise).toBeResolvedTo(null);
+    await expect(chefPromise).resolves.toBe(null);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -227,7 +227,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -245,7 +245,7 @@ describe('ChefService', () => {
     expect(req.request.body).toBeNull();
     req.flush(mockChefEmailResponse);
 
-    await expectAsync(chefPromise).toBeResolvedTo(mockChefEmailResponse);
+    await expect(chefPromise).resolves.toBe(mockChefEmailResponse);
   });
 
   it('should return an error if the verify email API fails', async () => {
@@ -258,7 +258,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
   });
 
   it('should login', async () => {
@@ -278,7 +278,7 @@ describe('ChefService', () => {
     const loginResponse = mockLoginResponse();
     req.flush(loginResponse);
 
-    await expectAsync(chefPromise).toBeResolvedTo(loginResponse);
+    await expect(chefPromise).resolves.toBe(loginResponse);
     expect(chefService.chef()).toEqual({
       uid: loginResponse.uid,
       email: credentials.email,
@@ -304,7 +304,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -322,7 +322,7 @@ describe('ChefService', () => {
     expect(req.request.body).toBeNull();
     req.flush(null);
 
-    await expectAsync(chefPromise).toBeResolvedTo(null);
+    await expect(chefPromise).resolves.toBe(null);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -336,7 +336,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 });

@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable } from 'rxjs';
-import { vi } from 'vitest';
+import { expect, vi } from 'vitest';
 
 import { environment } from 'src/environments/environment';
 import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
@@ -86,7 +86,7 @@ describe('RecipeService', () => {
 
   it('should not be mocked', () => {
     // Make sure network calls aren't mocked in production
-    expect(environment.mock).withContext('Turn off debug mode!').toBe(false);
+    expect(environment.mock, 'Turn off debug mode!').toBe(false);
   });
 
   it('should fetch a random recipe', async () => {
@@ -108,7 +108,7 @@ describe('RecipeService', () => {
     req.flush(mockRecipe);
 
     // When observable resolves, result should match test data
-    await expectAsync(recipePromise).toBeResolvedTo(mockRecipe);
+    await expect(recipePromise).resolves.toBe(mockRecipe);
     expect(recipeService.recipe()).toBe(mockRecipe);
   });
 
@@ -124,7 +124,7 @@ describe('RecipeService', () => {
     // Respond with mock error
     req.error(mockError);
 
-    await expectAsync(chefPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
     expect(recipeService.recipe()).toBeNull();
   });
 
@@ -139,7 +139,7 @@ describe('RecipeService', () => {
     });
     req.flush(mockRecipe);
 
-    await expectAsync(recipePromise).toBeResolvedTo(mockRecipe);
+    await expect(recipePromise).resolves.toBe(mockRecipe);
     expect(recipeService.recipe()).toBe(mockRecipe);
   });
 
@@ -154,7 +154,7 @@ describe('RecipeService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
     expect(recipeService.recipe()).toBeNull();
   });
 
@@ -201,7 +201,7 @@ describe('RecipeService', () => {
     );
     req.flush(mockRecipes);
 
-    await expectAsync(recipePromise).toBeResolvedTo(mockRecipes);
+    await expect(recipePromise).resolves.toBe(mockRecipes);
   });
 
   it('should return an error if the filter recipe API fails', async () => {
@@ -217,7 +217,7 @@ describe('RecipeService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
   });
 
   it('should update a recipe', async () => {
@@ -243,7 +243,7 @@ describe('RecipeService', () => {
     expect(req.request.body).toBe(fields);
     req.flush(mockToken);
 
-    await expectAsync(recipePromise).toBeResolvedTo(mockToken);
+    await expect(recipePromise).resolves.toBe(mockToken);
   });
 
   it('should update a recipe without a token', async () => {
@@ -265,7 +265,7 @@ describe('RecipeService', () => {
     expect(req.request.body).toBe(fields);
     req.flush({});
 
-    await expectAsync(recipePromise).toBeResolvedTo({});
+    await expect(recipePromise).resolves.toStrictEqual({});
   });
 
   it('should return an error if the update recipe API fails', async () => {
@@ -289,7 +289,7 @@ describe('RecipeService', () => {
     expect(req.request.body).toBe(fields);
     req.error(mockError);
 
-    await expectAsync(recipePromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
   });
 
   it('should return a mock recipe', async () => {

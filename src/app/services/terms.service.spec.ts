@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { vi } from 'vitest';
+import { expect, vi } from 'vitest';
 
 import { TermsService } from './terms.service';
 import Constants from '../constants/constants';
@@ -67,7 +67,7 @@ describe('TermsService', () => {
     });
     req.flush(mockTerms);
 
-    await expectAsync(termsPromise).toBeResolvedTo(mockTerms);
+    await expect(termsPromise).resolves.toBe(mockTerms);
   });
 
   it('should return an error if the terms API fails', async () => {
@@ -80,7 +80,7 @@ describe('TermsService', () => {
     });
     req.error(mockError);
 
-    await expectAsync(termsPromise).toBeRejectedWithError(mockErrorMessage);
+    await expect(termsPromise).rejects.toThrowError(mockErrorMessage);
   });
 
   it('should return null if no terms are stored in localStorage', () => {
