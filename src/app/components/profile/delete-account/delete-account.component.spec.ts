@@ -16,11 +16,15 @@ describe('DeleteAccountComponent', () => {
   let deleteAccountComponent: DeleteAccountComponent;
   let fixture: ComponentFixture<DeleteAccountComponent>;
   let rootElement: HTMLElement;
-  let router: Router;
+  let router: jasmine.SpyObj<Router>;
   let mockChefService: jasmine.SpyObj<ChefService>;
 
   beforeEach(async () => {
     mockChefService = jasmine.createSpyObj('ChefService', ['deleteChef']);
+    router = jasmine.createSpyObj('Router', [
+      'lastSuccessfulNavigation',
+      'navigate',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [DeleteAccountComponent],
@@ -31,6 +35,10 @@ describe('DeleteAccountComponent', () => {
           provide: ChefService,
           useValue: mockChefService,
         },
+        {
+          provide: Router,
+          useValue: router,
+        },
       ],
     }).compileComponents();
 
@@ -39,8 +47,7 @@ describe('DeleteAccountComponent', () => {
     spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
     spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
-    router = TestBed.inject(Router);
-    spyOnProperty(router, 'lastSuccessfulNavigation').and.returnValue({
+    router.lastSuccessfulNavigation.and.returnValue({
       extras: { state: { email: mockChef.email } },
       id: 0,
       initialUrl: new UrlTree(),
@@ -117,11 +124,10 @@ describe('DeleteAccountComponent', () => {
     expect(submitButton?.disabled).toBeFalse();
 
     mockChefService.deleteChef.and.returnValue(of(null));
-    const navigateSpy = spyOn(router, 'navigate');
     submitButton?.click();
     fixture.detectChanges();
 
     expect(mockChefService.deleteChef).toHaveBeenCalledWith();
-    expect(navigateSpy).toHaveBeenCalledWith([routes.profile.path]);
+    expect(router.navigate).toHaveBeenCalledWith([routes.profile.path]);
   });
 });

@@ -17,11 +17,15 @@ describe('UpdatePasswordComponent', () => {
   let updatePasswordComponent: UpdatePasswordComponent;
   let fixture: ComponentFixture<UpdatePasswordComponent>;
   let rootElement: HTMLElement;
-  let router: Router;
+  let router: jasmine.SpyObj<Router>;
   let mockChefService: jasmine.SpyObj<ChefService>;
 
   beforeEach(async () => {
     mockChefService = jasmine.createSpyObj('ChefService', ['updateChef']);
+    router = jasmine.createSpyObj('Router', [
+      'lastSuccessfulNavigation',
+      'navigate',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [UpdatePasswordComponent],
@@ -32,6 +36,10 @@ describe('UpdatePasswordComponent', () => {
           provide: ChefService,
           useValue: mockChefService,
         },
+        {
+          provide: Router,
+          useValue: router,
+        },
       ],
     }).compileComponents();
 
@@ -40,8 +48,7 @@ describe('UpdatePasswordComponent', () => {
     spyOn(localStorageProto, 'setItem').and.callFake(() => undefined);
     spyOn(localStorageProto, 'removeItem').and.callFake(() => undefined);
 
-    router = TestBed.inject(Router);
-    spyOnProperty(router, 'lastSuccessfulNavigation').and.returnValue({
+    router.lastSuccessfulNavigation.and.returnValue({
       extras: { state: { email: mockChef.email } },
       id: 0,
       initialUrl: new UrlTree(),
@@ -161,7 +168,6 @@ describe('UpdatePasswordComponent', () => {
     expect(submitButton?.disabled).toBeFalse();
 
     mockChefService.updateChef.and.returnValue(of(mockChefEmailResponse));
-    const navigateSpy = spyOn(router, 'navigate');
     submitButton?.click();
     fixture.detectChanges();
 
@@ -170,6 +176,6 @@ describe('UpdatePasswordComponent', () => {
       email: mockChef.email,
       password: mockPassword,
     });
-    expect(navigateSpy).toHaveBeenCalledWith([profileRoutes.login.path]);
+    expect(router.navigate).toHaveBeenCalledWith([profileRoutes.login.path]);
   });
 });

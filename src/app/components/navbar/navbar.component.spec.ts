@@ -26,11 +26,12 @@ describe('NavbarComponent', () => {
   beforeEach(async () => {
     mockRecipeService = jasmine.createSpyObj(
       'RecipeService',
-      ['updateRecipe'],
+      ['updateRecipe', 'toggleFavoriteRecentRecipe'],
       {
         recipe: signal(mockRecipe),
       }
     );
+    mockRecipeService.toggleFavoriteRecentRecipe.and.resolveTo();
 
     await TestBed.configureTestingModule({
       imports: [RouterModule.forRoot([]), NavbarComponent],
