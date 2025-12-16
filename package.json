@@ -32,12 +32,12 @@
     "@types/jasmine": "~5.1.13",
     "@vitest/coverage-v8": "^4.0.15",
     "angular-eslint": "21.1.0",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "fake-indexeddb": "^6.2.5",
     "jasmine-core": "~5.13.0",
     "jsdom": "^27.3.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "8.49.0",
+    "typescript-eslint": "8.50.0",
     "vitest": "^4.0.14"
   }
 }
