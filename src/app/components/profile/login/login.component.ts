@@ -16,8 +16,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { ChefService } from 'src/app/services/chef.service';
-import { LoginCredentials } from 'src/app/models/profile.model';
+import { LoginCredentials, Provider } from 'src/app/models/profile.model';
 import { profileRoutes, routes } from 'src/app/app-routing.module';
+import { OauthButtonComponent } from '../../utils/oauth-button/oauth-button.component';
 
 @Component({
   selector: 'app-login',
@@ -27,6 +28,7 @@ import { profileRoutes, routes } from 'src/app/app-routing.module';
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    OauthButtonComponent,
     ReactiveFormsModule,
     RouterModule,
   ],
@@ -39,11 +41,14 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
+
   profileRoutes = profileRoutes;
+  allProviders = Object.values(Provider);
 
   showPassword = signal(false);
   isLoading = signal(false);
   isStepUp = signal(false);
+  authUrls = signal<Partial<Record<Provider, string>>>({});
 
   readonly formControls = {
     username: 'username',
@@ -63,6 +68,23 @@ export class LoginComponent implements OnInit {
     if (typeof isStepUp === 'boolean') {
       this.isStepUp.set(isStepUp);
     }
+
+    this.chefService
+      .getAuthUrls(`${window.location.origin}/oauth/callback`)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (authUrls) => {
+          this.authUrls.set(
+            Object.fromEntries(
+              authUrls.map(({ providerId, authUrl }) => [providerId, authUrl])
+            )
+          );
+        },
+        error: (error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+          this.authUrls.set({});
+        },
+      });
   }
 
   togglePasswordVisibility(event: MouseEvent) {

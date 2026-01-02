@@ -1,3 +1,4 @@
+import { ProviderStyle, Provider } from '../models/profile.model';
 import { RecentRecipe } from '../models/recipe.model';
 
 abstract class Constants {
@@ -27,6 +28,28 @@ abstract class Constants {
 
   static readonly emailCooldownSeconds = 30;
   static readonly passwordMinLength = 8;
+
+  // Source: https://github.com/firebase/firebaseui-web/blob/main/packages/styles/src/base.css
+  static readonly providerStyles: Record<Provider, ProviderStyle> = {
+    [Provider.Google]: {
+      label: 'Google',
+      backgroundColor: '#fff',
+      contentColor: '#757575',
+      icon: 'google.svg',
+    },
+    [Provider.Facebook]: {
+      label: 'Facebook',
+      backgroundColor: '#1877f2',
+      contentColor: '#fff',
+      icon: 'facebook.svg',
+    },
+    [Provider.GitHub]: {
+      label: 'GitHub',
+      backgroundColor: '#24292e',
+      contentColor: '#fff',
+      icon: 'github.svg',
+    },
+  };
 
   static LocalStorage = class {
     static readonly terms = 'terms';
