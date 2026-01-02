@@ -12,6 +12,7 @@ import { expect, vi } from 'vitest';
 
 import { ChefService } from './chef.service';
 import {
+  mockAuthUrls,
   mockChef,
   mockChefEmailResponse,
   mockLoginResponse,
@@ -22,7 +23,10 @@ import {
   ChefUpdate,
   ChefUpdateType,
   LoginCredentials,
+  OAuthRequest,
+  Provider,
 } from '../models/profile.model';
+import { mockToken } from '../models/recipe.mock';
 
 describe('ChefService', () => {
   let chefService: ChefService;
@@ -117,6 +121,7 @@ describe('ChefService', () => {
       uid: loginResponse.uid,
       email: credentials.email,
       emailVerified: false,
+      providerData: [],
       ratings: {},
       recentRecipes: {},
       favoriteRecipes: [],
@@ -283,6 +288,7 @@ describe('ChefService', () => {
       uid: loginResponse.uid,
       email: credentials.email,
       emailVerified: true,
+      providerData: [],
       ratings: {},
       recentRecipes: {},
       favoriteRecipes: [],
@@ -333,6 +339,138 @@ describe('ChefService', () => {
     const req = httpTestingController.expectOne({
       method: 'POST',
       url: `${baseUrl}/logout`,
+    });
+    req.error(mockError);
+
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
+  });
+
+  it('should return all the auth URLs', async () => {
+    const redirectUrl = 'https://www.example.com/oauth/callback';
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.getAuthUrls(redirectUrl));
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/oauth?redirectUrl=${redirectUrl}`,
+    });
+    req.flush(mockAuthUrls);
+
+    await expect(chefPromise).resolves.toBe(mockAuthUrls);
+  });
+
+  it('should return an error if the auth URL API fails', async () => {
+    const redirectUrl = 'https://www.example.com/oauth/callback';
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.getAuthUrls(redirectUrl));
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/oauth?redirectUrl=${redirectUrl}`,
+    });
+    req.error(mockError);
+
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+  });
+
+  it('should login with an OAuth provider without a token', async () => {
+    const oAuthRequest: OAuthRequest = {
+      code: 'code',
+      providerId: Provider.Google,
+      redirectUrl: 'https://www.example.com/oauth/callback',
+    };
+    mockLocalStorage(null);
+    const chefPromise = firstValueFrom(
+      chefService.loginWithOAuth(oAuthRequest)
+    );
+
+    const req = httpTestingController.expectOne({
+      method: 'POST',
+      url: `${baseUrl}/oauth`,
+    });
+    expect(req.request.headers.get('Authorization')).toBeNull();
+    expect(req.request.body).toBe(oAuthRequest);
+    const loginResponse = mockLoginResponse();
+    req.flush(loginResponse);
+
+    await expect(chefPromise).resolves.toBe(loginResponse);
+  });
+
+  it('should link an OAuth provider with a token', async () => {
+    const oAuthRequest: OAuthRequest = {
+      code: 'code',
+      providerId: Provider.Google,
+      redirectUrl: 'https://www.example.com/oauth/callback',
+    };
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(
+      chefService.loginWithOAuth(oAuthRequest)
+    );
+
+    const req = httpTestingController.expectOne({
+      method: 'POST',
+      url: `${baseUrl}/oauth`,
+    });
+    expect(req.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`
+    );
+    expect(req.request.body).toBe(oAuthRequest);
+    const loginResponse = mockLoginResponse();
+    req.flush(loginResponse);
+
+    await expect(chefPromise).resolves.toBe(loginResponse);
+  });
+
+  it('should return an error if the OAuth login API fails', async () => {
+    const oAuthRequest: OAuthRequest = {
+      code: 'code',
+      providerId: Provider.Google,
+      redirectUrl: 'https://www.example.com/oauth/callback',
+    };
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(
+      chefService.loginWithOAuth(oAuthRequest)
+    );
+
+    const req = httpTestingController.expectOne({
+      method: 'POST',
+      url: `${baseUrl}/oauth`,
+    });
+    req.error(mockError);
+
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+  });
+
+  it('should unlink an OAuth provider', async () => {
+    const provider = Provider.Facebook;
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(
+      chefService.unlinkOAuthProvider(provider)
+    );
+
+    const req = httpTestingController.expectOne({
+      method: 'DELETE',
+      url: `${baseUrl}/oauth?providerId=${provider}`,
+    });
+    expect(req.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`
+    );
+    req.flush(mockToken);
+
+    await expect(chefPromise).resolves.toBe(mockToken);
+  });
+
+  it('should return an error if the unlink OAuth API fails', async () => {
+    const provider = Provider.Facebook;
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(
+      chefService.unlinkOAuthProvider(provider)
+    );
+
+    const req = httpTestingController.expectOne({
+      method: 'DELETE',
+      url: `${baseUrl}/oauth?providerId=${provider}`,
     });
     req.error(mockError);
 

@@ -92,6 +92,10 @@ export const routes: Record<string, Route> = {
     component: ProfileComponent,
   },
   ...profileRoutes,
+  oauthCallback: {
+    path: 'oauth/callback',
+    redirectTo: 'profile',
+  },
   // The default route should be listed between the static routes and wildcard routes
   home: { path: '', title: 'Home', component: HomeComponent },
   // Show a 404 page for any other route

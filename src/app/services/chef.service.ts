@@ -3,21 +3,27 @@ import { Injectable, inject, signal } from '@angular/core';
 import { catchError, Observable, of, tap, throwError } from 'rxjs';
 
 import {
+  AuthUrl,
   Chef,
   ChefEmailResponse,
   ChefUpdate,
   ChefUpdateType,
   LoginCredentials,
   LoginResponse,
+  OAuthRequest,
+  Provider,
 } from '../models/profile.model';
 import { environment } from 'src/environments/environment';
 import Constants from '../constants/constants';
 import {
+  mockAuthUrls,
   mockChef,
   mockChefEmailResponse,
   mockLoginResponse,
 } from '../models/profile.mock';
 import handleError from '../helpers/handleError';
+import { Token } from '../models/recipe.model';
+import { mockToken } from '../models/recipe.mock';
 
 @Injectable({
   providedIn: 'root',
@@ -73,6 +79,7 @@ export class ChefService {
             uid,
             email: credentials.email,
             emailVerified,
+            providerData: [],
             ratings: {},
             recentRecipes: {},
             favoriteRecipes: [],
@@ -191,6 +198,7 @@ export class ChefService {
             uid,
             email: credentials.email,
             emailVerified,
+            providerData: [],
             ratings: {},
             recentRecipes: {},
             favoriteRecipes: [],
@@ -230,6 +238,68 @@ export class ChefService {
         }),
         catchError(handleError)
       );
+  }
+
+  getAuthUrls(redirectUrl: string): Observable<AuthUrl[]> {
+    if (this.isMocking) {
+      return of(mockAuthUrls);
+    }
+
+    return this.http
+      .get<AuthUrl[]>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/oauth`,
+        {
+          params: {
+            redirectUrl,
+          },
+        }
+      )
+      .pipe(catchError(handleError));
+  }
+
+  loginWithOAuth(oAuthRequest: OAuthRequest): Observable<LoginResponse> {
+    if (this.isMocking) {
+      return of(mockLoginResponse());
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+
+    return this.http
+      .post<LoginResponse>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/oauth`,
+        oAuthRequest,
+        {
+          headers: {
+            ...(token !== null && this.authHeader(token)),
+          },
+        }
+      )
+      .pipe(catchError(handleError));
+  }
+
+  unlinkOAuthProvider(providerId: Provider): Observable<Token> {
+    if (this.isMocking) {
+      return of(mockToken);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      return this.noTokenFound();
+    }
+
+    return this.http
+      .delete<Token>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/oauth`,
+        {
+          params: {
+            providerId,
+          },
+          headers: {
+            ...(token !== null && this.authHeader(token)),
+          },
+        }
+      )
+      .pipe(catchError(handleError));
   }
 
   // Helpers
