@@ -11,6 +11,7 @@ import { vi, type MockedObject } from 'vitest';
 import { LoginComponent } from './login.component';
 import { ChefService } from 'src/app/services/chef.service';
 import {
+  mockAuthUrls,
   mockChefEmailResponse,
   mockLoginResponse,
 } from 'src/app/models/profile.mock';
@@ -27,6 +28,10 @@ describe('LoginComponent', () => {
     mockChefService = vi.mockObject({
       login: vi.fn().mockName('ChefService.login'),
       verifyEmail: vi.fn().mockName('ChefService.verifyEmail'),
+      getAuthUrls: vi
+        .fn()
+        .mockName('ChefService.getAuthUrls')
+        .mockReturnValue(of(mockAuthUrls)),
     } as unknown as ChefService);
 
     await TestBed.configureTestingModule({

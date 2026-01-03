@@ -381,19 +381,20 @@ describe('ChefService', () => {
       chefService.loginWithOAuth(oAuthRequest)
     );
 
-    const req = httpTestingController.expectOne({
+    const oauthReq = httpTestingController.expectOne({
       method: 'POST',
       url: `${baseUrl}/oauth`,
     });
-    expect(req.request.headers.get('Authorization')).toBeNull();
-    expect(req.request.body).toBe({
+    expect(oauthReq.request.headers.get('Authorization')).toBeNull();
+    expect(oauthReq.request.body).toStrictEqual({
       ...oAuthRequest,
       redirectUrl: Constants.redirectUrl,
     });
     const loginResponse = mockLoginResponse();
-    req.flush(loginResponse);
+    oauthReq.flush(loginResponse);
 
-    await expect(chefPromise).resolves.toBe(loginResponse);
+    // Since localStorage is mocked to not have a token, GET chef fails in this case
+    await expect(chefPromise).rejects.toThrowError(Constants.noTokenFound);
   });
 
   it('should link an OAuth provider with a token', async () => {
@@ -406,21 +407,31 @@ describe('ChefService', () => {
       chefService.loginWithOAuth(oAuthRequest)
     );
 
-    const req = httpTestingController.expectOne({
+    const oauthReq = httpTestingController.expectOne({
       method: 'POST',
       url: `${baseUrl}/oauth`,
     });
-    expect(req.request.headers.get('Authorization')).toBe(
+    expect(oauthReq.request.headers.get('Authorization')).toBe(
       `Bearer ${mockChef.token}`
     );
-    expect(req.request.body).toBe({
+    expect(oauthReq.request.body).toStrictEqual({
       ...oAuthRequest,
       redirectUrl: Constants.redirectUrl,
     });
     const loginResponse = mockLoginResponse();
-    req.flush(loginResponse);
+    oauthReq.flush(loginResponse);
 
-    await expect(chefPromise).resolves.toBe(loginResponse);
+    const chefReq = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
+    expect(chefReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`
+    );
+    chefReq.flush(mockChef);
+
+    await expect(chefPromise).resolves.toBe(mockChef);
+    expect(chefService.chef()).toBe(mockChef);
   });
 
   it('should return an error if the OAuth login API fails', async () => {
