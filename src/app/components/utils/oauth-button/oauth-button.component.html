@@ -2,11 +2,12 @@
   mat-raised-button
   class="oauth-button"
   [disabled]="authUrl() === undefined"
-  [style.color]="providerStyle().backgroundColor"
+  [style.color]="providerStyle().contentColor"
+  [style.background-color]="providerStyle().backgroundColor"
   (click)="startOAuthFlow($event)"
 >
-  <img [src]="'assets/' + providerStyle().icon" alt="" />
-  <span [style.color]="providerStyle().contentColor">{{
-    providerStyle().label
-  }}</span>
+  <div class="oauth-button-content">
+    <mat-icon [svgIcon]="providerIcon()" />
+    <span>{{ providerStyle().label }}</span>
+  </div>
 </button>
