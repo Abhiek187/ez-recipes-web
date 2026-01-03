@@ -75,8 +75,6 @@ export class OauthButtonComponent implements OnInit {
         'Pop-ups are required to sign in a new tab. Please enable them to continue.',
         'Dismiss'
       );
-    } else {
-      this.isLoading.set(true);
     }
   }
 
@@ -86,6 +84,7 @@ export class OauthButtonComponent implements OnInit {
       return;
     }
     this.isSelectedProvider.set(false);
+    this.isLoading.set(true);
 
     // Extract the authorization code from the redirect and then exchange it for an ID token
     const authCode = event.data?.code;
