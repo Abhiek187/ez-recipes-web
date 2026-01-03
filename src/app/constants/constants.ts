@@ -25,6 +25,7 @@ abstract class Constants {
   static readonly recipesPath = '/api/recipes';
   static readonly termsPath = '/api/terms';
   static readonly chefsPath = '/api/chefs';
+  static readonly redirectUrl = `${window.location.origin}/oauth/callback`;
 
   static readonly emailCooldownSeconds = 30;
   static readonly passwordMinLength = 8;

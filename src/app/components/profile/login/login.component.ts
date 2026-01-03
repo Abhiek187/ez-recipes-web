@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.chefService
-      .getAuthUrls(`${window.location.origin}/oauth/callback`)
+      .getAuthUrls()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (authUrls) => {

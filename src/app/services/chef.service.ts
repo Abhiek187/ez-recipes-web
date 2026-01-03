@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { catchError, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, Observable, of, switchMap, tap, throwError } from 'rxjs';
 
 import {
   AuthUrl,
@@ -240,7 +240,7 @@ export class ChefService {
       );
   }
 
-  getAuthUrls(redirectUrl: string): Observable<AuthUrl[]> {
+  getAuthUrls(): Observable<AuthUrl[]> {
     if (this.isMocking) {
       return of(mockAuthUrls);
     }
@@ -250,16 +250,18 @@ export class ChefService {
         `${environment.serverBaseUrl}${Constants.chefsPath}/oauth`,
         {
           params: {
-            redirectUrl,
+            redirectUrl: Constants.redirectUrl,
           },
         }
       )
       .pipe(catchError(handleError));
   }
 
-  loginWithOAuth(oAuthRequest: OAuthRequest): Observable<LoginResponse> {
+  loginWithOAuth(
+    oAuthRequest: Omit<OAuthRequest, 'redirectUrl'>
+  ): Observable<Chef> {
     if (this.isMocking) {
-      return of(mockLoginResponse());
+      return of(mockChef);
     }
 
     const token = localStorage.getItem(Constants.LocalStorage.token);
@@ -267,14 +269,39 @@ export class ChefService {
     return this.http
       .post<LoginResponse>(
         `${environment.serverBaseUrl}${Constants.chefsPath}/oauth`,
-        oAuthRequest,
+        {
+          ...oAuthRequest,
+          redirectUrl: Constants.redirectUrl,
+        },
         {
           headers: {
             ...(token !== null && this.authHeader(token)),
           },
         }
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        switchMap(({ uid, token, emailVerified }) => {
+          localStorage.setItem(Constants.LocalStorage.token, token);
+
+          if (this.chef() === undefined) {
+            this.chef.set({
+              uid,
+              // The email will be gotten from the GET chef response
+              email: '',
+              emailVerified,
+              providerData: [],
+              ratings: {},
+              recentRecipes: {},
+              favoriteRecipes: [],
+              token,
+            });
+          }
+
+          // Fetch the rest of the chef's profile
+          return this.getChef();
+        }),
+        catchError(handleError)
+      );
   }
 
   unlinkOAuthProvider(providerId: Provider): Observable<Token> {

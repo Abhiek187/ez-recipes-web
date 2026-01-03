@@ -23,7 +23,6 @@ import {
   ChefUpdate,
   ChefUpdateType,
   LoginCredentials,
-  OAuthRequest,
   Provider,
 } from '../models/profile.model';
 import { mockToken } from '../models/recipe.mock';
@@ -347,13 +346,12 @@ describe('ChefService', () => {
   });
 
   it('should return all the auth URLs', async () => {
-    const redirectUrl = 'https://www.example.com/oauth/callback';
     mockLocalStorage();
-    const chefPromise = firstValueFrom(chefService.getAuthUrls(redirectUrl));
+    const chefPromise = firstValueFrom(chefService.getAuthUrls());
 
     const req = httpTestingController.expectOne({
       method: 'GET',
-      url: `${baseUrl}/oauth?redirectUrl=${redirectUrl}`,
+      url: `${baseUrl}/oauth?redirectUrl=${Constants.redirectUrl}`,
     });
     req.flush(mockAuthUrls);
 
@@ -361,13 +359,12 @@ describe('ChefService', () => {
   });
 
   it('should return an error if the auth URL API fails', async () => {
-    const redirectUrl = 'https://www.example.com/oauth/callback';
     mockLocalStorage();
-    const chefPromise = firstValueFrom(chefService.getAuthUrls(redirectUrl));
+    const chefPromise = firstValueFrom(chefService.getAuthUrls());
 
     const req = httpTestingController.expectOne({
       method: 'GET',
-      url: `${baseUrl}/oauth?redirectUrl=${redirectUrl}`,
+      url: `${baseUrl}/oauth?redirectUrl=${Constants.redirectUrl}`,
     });
     req.error(mockError);
 
@@ -375,10 +372,9 @@ describe('ChefService', () => {
   });
 
   it('should login with an OAuth provider without a token', async () => {
-    const oAuthRequest: OAuthRequest = {
+    const oAuthRequest: Parameters<typeof chefService.loginWithOAuth>[0] = {
       code: 'code',
       providerId: Provider.Google,
-      redirectUrl: 'https://www.example.com/oauth/callback',
     };
     mockLocalStorage(null);
     const chefPromise = firstValueFrom(
@@ -390,7 +386,10 @@ describe('ChefService', () => {
       url: `${baseUrl}/oauth`,
     });
     expect(req.request.headers.get('Authorization')).toBeNull();
-    expect(req.request.body).toBe(oAuthRequest);
+    expect(req.request.body).toBe({
+      ...oAuthRequest,
+      redirectUrl: Constants.redirectUrl,
+    });
     const loginResponse = mockLoginResponse();
     req.flush(loginResponse);
 
@@ -398,10 +397,9 @@ describe('ChefService', () => {
   });
 
   it('should link an OAuth provider with a token', async () => {
-    const oAuthRequest: OAuthRequest = {
+    const oAuthRequest: Parameters<typeof chefService.loginWithOAuth>[0] = {
       code: 'code',
       providerId: Provider.Google,
-      redirectUrl: 'https://www.example.com/oauth/callback',
     };
     mockLocalStorage();
     const chefPromise = firstValueFrom(
@@ -415,7 +413,10 @@ describe('ChefService', () => {
     expect(req.request.headers.get('Authorization')).toBe(
       `Bearer ${mockChef.token}`
     );
-    expect(req.request.body).toBe(oAuthRequest);
+    expect(req.request.body).toBe({
+      ...oAuthRequest,
+      redirectUrl: Constants.redirectUrl,
+    });
     const loginResponse = mockLoginResponse();
     req.flush(loginResponse);
 
@@ -423,10 +424,9 @@ describe('ChefService', () => {
   });
 
   it('should return an error if the OAuth login API fails', async () => {
-    const oAuthRequest: OAuthRequest = {
+    const oAuthRequest: Parameters<typeof chefService.loginWithOAuth>[0] = {
       code: 'code',
       providerId: Provider.Google,
-      redirectUrl: 'https://www.example.com/oauth/callback',
     };
     mockLocalStorage();
     const chefPromise = firstValueFrom(

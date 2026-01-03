@@ -81,3 +81,8 @@ export interface OAuthRequest {
   providerId: Provider;
   redirectUrl: string;
 }
+
+export interface OAuthResponse {
+  code: string;
+  state: string;
+}
