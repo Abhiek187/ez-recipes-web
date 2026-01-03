@@ -42,13 +42,20 @@ export class OauthButtonComponent implements OnInit {
   readonly provider = input.required<Provider>();
   readonly authUrl = input<string>();
 
-  isSelectedProvider = signal(false);
   isLoading = signal(false);
 
   readonly providerStyle = computed(
     () => Constants.providerStyles[this.provider()]
   );
   readonly providerIcon = computed(() => this.providerStyle().label);
+  /* Keep track of which provider we're signing into
+   * so the right oauth-button responds on redirect
+   */
+  readonly providerState = computed<string | null>(() => {
+    if (this.authUrl() === undefined) return null;
+    const authUrl = new URL(this.authUrl() ?? '');
+    return authUrl.searchParams.get('state');
+  });
 
   ngOnInit(): void {
     // Add all the SVGs inline so they can be stylized
@@ -64,10 +71,6 @@ export class OauthButtonComponent implements OnInit {
     event.preventDefault();
     if (this.authUrl() === undefined) return;
 
-    /* Keep track of which provider we're signing into
-     * so the right oauth-button responds on redirect
-     */
-    this.isSelectedProvider.set(true);
     const newWindow = window.open(this.authUrl());
 
     if (newWindow === null || newWindow.closed) {
@@ -80,11 +83,10 @@ export class OauthButtonComponent implements OnInit {
 
   onMessage(event: MessageEvent<OAuthResponse>) {
     // Discard messages that don't come from the OAuth flow
-    if (event.origin !== window.location.origin || !this.isSelectedProvider()) {
+    if (event.origin !== window.location.origin) return;
+    const authState = event.data?.state;
+    if (this.providerState() === null || authState !== this.providerState())
       return;
-    }
-    this.isSelectedProvider.set(false);
-    this.isLoading.set(true);
 
     // Extract the authorization code from the redirect and then exchange it for an ID token
     const authCode = event.data?.code;
@@ -93,6 +95,7 @@ export class OauthButtonComponent implements OnInit {
       return;
     }
 
+    this.isLoading.set(true);
     const oAuthRequest: Parameters<typeof this.chefService.loginWithOAuth>[0] =
       {
         code: authCode,

@@ -20,7 +20,11 @@ export class OauthCallbackComponent {
     const queryParams = this.route.snapshot.queryParamMap;
     const opener = window.opener as Window | null;
 
-    if (opener !== null && queryParams.has('code')) {
+    if (
+      opener !== null &&
+      queryParams.has('code') &&
+      queryParams.has('state')
+    ) {
       const oAuthResponse: OAuthResponse = {
         code: queryParams.get('code') ?? '',
         state: queryParams.get('state') ?? '',
