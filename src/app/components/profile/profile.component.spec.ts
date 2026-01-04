@@ -125,6 +125,28 @@ describe('ProfileComponent', () => {
       }
     );
 
+    expect(rootElement.textContent).toContain('Linked Accounts');
+    const linkedAccountsSection = rootElement.querySelector(
+      '.profile-linked-accounts'
+    );
+    let accountI = 0;
+
+    for (const [, emails] of profileComponent.linkedAccountEntries()) {
+      const linkedAccountContainer = linkedAccountsSection?.querySelectorAll(
+        '.profile-linked-account-container'
+      )?.[accountI];
+      const unlinkButton = linkedAccountContainer?.querySelector(
+        '.profile-linked-account-buttons'
+      )?.children?.[1] as HTMLButtonElement | null | undefined;
+      expect(unlinkButton).toBeTruthy();
+      expect(unlinkButton?.disabled).toBe(emails.length === 0);
+
+      for (const email of emails) {
+        expect(linkedAccountContainer?.textContent).toContain(email);
+      }
+      accountI++;
+    }
+
     logoutButton.click();
     await fixture.whenStable();
     expect(profileComponent.authState()).toBe(AuthState.Unauthenticated);

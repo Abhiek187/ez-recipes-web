@@ -4,7 +4,6 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterModule } from '@angular/router';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 
@@ -28,7 +27,7 @@ describe('OauthButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OauthButtonComponent, RouterModule.forRoot([])],
+      imports: [OauthButtonComponent],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -116,6 +115,7 @@ describe('OauthButtonComponent', () => {
   });
 
   it('should login if the redirect was successful', async () => {
+    const successEmitSpy = vi.spyOn(component.success, 'emit');
     fixture.componentRef.setInput('authUrl', authUrl.toString());
     window.dispatchEvent(
       new MessageEvent('message', {
@@ -132,5 +132,6 @@ describe('OauthButtonComponent', () => {
       code: authUrl.searchParams.get('code'),
       providerId: component.provider(),
     });
+    expect(successEmitSpy).toHaveBeenCalledWith(mockChef);
   });
 });
