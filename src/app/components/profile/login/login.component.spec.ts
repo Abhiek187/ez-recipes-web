@@ -60,6 +60,7 @@ describe('LoginComponent', () => {
     expect(rootElement.textContent).toContain('Username');
     expect(rootElement.textContent).toContain('Password');
     expect(rootElement.textContent).toContain('Forgot Password?');
+    expect(rootElement.textContent).toContain('Or sign in using:');
 
     const loginFields = rootElement.querySelector('.login-fields');
     const [usernameField, passwordField] = Array.from(
@@ -78,6 +79,10 @@ describe('LoginComponent', () => {
     loginComponent.showPassword.set(false);
     fixture.detectChanges();
     expect(passwordField.type).toBe('password');
+
+    expect(rootElement.querySelectorAll('.oauth-button').length).toBe(
+      mockAuthUrls.length
+    );
   });
 
   it("should show an error if the username or password isn't provided", () => {
