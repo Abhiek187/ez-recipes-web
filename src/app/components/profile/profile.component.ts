@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,10 +15,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
-import { AuthState, ProfileAction } from 'src/app/models/profile.model';
+import {
+  AuthState,
+  ProfileAction,
+  Provider,
+} from 'src/app/models/profile.model';
 import { profileRoutes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
+import { OauthButtonComponent } from '../utils/oauth-button/oauth-button.component';
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +33,7 @@ import { ChefService } from 'src/app/services/chef.service';
     MatDividerModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    OauthButtonComponent,
     RouterModule,
   ],
   templateUrl: './profile.component.html',
@@ -30,9 +44,14 @@ export class ProfileComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
+  private destroyRef = inject(DestroyRef);
 
   AuthState = AuthState;
   authState = signal(AuthState.Loading);
+  selectedProvider = signal(Provider.Google);
+  showUnlinkConfirmation = signal(false);
+  authUrls = signal<Partial<Record<Provider, string>>>({});
+  isLoading = signal(false);
   chef = this.chefService.chef;
   profileRoutes = profileRoutes;
 
@@ -44,6 +63,25 @@ export class ProfileComponent implements OnInit {
   );
   readonly totalRecipesRated = computed(
     () => Object.keys(this.chef()?.ratings ?? {}).length
+  );
+  readonly linkedAccounts = computed(() => {
+    // Start with all the supported providers
+    const initialResult = Object.fromEntries<string[]>(
+      Object.values(Provider).map((provider) => [provider, []])
+    ) as Record<Provider, string[]>;
+    // A chef can link 0 or more emails with a provider
+    return (this.chef()?.providerData ?? []).reduce((result, providerData) => {
+      if (
+        Object.values(Provider).includes(providerData.providerId as Provider)
+      ) {
+        result[providerData.providerId as Provider].push(providerData.email);
+      }
+
+      return result;
+    }, initialResult);
+  });
+  readonly linkedAccountEntries = computed(
+    () => Object.entries(this.linkedAccounts()) as [Provider, string[]][]
   );
 
   ngOnInit(): void {
@@ -91,6 +129,23 @@ export class ProfileComponent implements OnInit {
           'Dismiss'
         );
     }
+
+    this.chefService
+      .getAuthUrls()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (authUrls) => {
+          this.authUrls.set(
+            Object.fromEntries(
+              authUrls.map(({ providerId, authUrl }) => [providerId, authUrl])
+            )
+          );
+        },
+        error: (error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+          this.authUrls.set({});
+        },
+      });
   }
 
   logout() {
@@ -116,5 +171,11 @@ export class ProfileComponent implements OnInit {
         email: this.chef()?.email,
       },
     });
+  }
+
+  openUnlinkAlert(provider: Provider) {
+    // Confirm before unlinking
+    this.selectedProvider.set(provider);
+    this.showUnlinkConfirmation.set(true);
   }
 }
