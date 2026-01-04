@@ -5,6 +5,7 @@ import {
   inject,
   input,
   OnInit,
+  output,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -13,13 +14,11 @@ import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router, ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import Constants from 'src/app/constants/constants';
-import { OAuthResponse, Provider } from 'src/app/models/profile.model';
+import { Chef, OAuthResponse, Provider } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
-import { profileRoutes, routes } from 'src/app/app-routing.module';
 
 @Component({
   selector: 'app-oauth-button',
@@ -36,11 +35,10 @@ export class OauthButtonComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private chefService = inject(ChefService);
   private destroyRef = inject(DestroyRef);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
 
   readonly provider = input.required<Provider>();
   readonly authUrl = input<string>();
+  readonly success = output<Chef>();
 
   isLoading = signal(false);
 
@@ -110,27 +108,8 @@ export class OauthButtonComponent implements OnInit {
         })
       )
       .subscribe({
-        next: ({ email, emailVerified }) => {
-          // Check if the user signed up, but didn't verify their email yet
-          if (!emailVerified) {
-            // Don't update the chef's verified status until they click the redirect link
-            this.chefService.verifyEmail().subscribe();
-            this.router.navigate([profileRoutes.verifyEmail.path], {
-              state: { email },
-            });
-          } else {
-            // If a redirect URL is present in the query params, navigate to it
-            // Otherwise, navigate to the profile page
-            const redirectUrl = this.route.snapshot.queryParamMap.get('next');
-            if (redirectUrl !== null) {
-              this.router.navigateByUrl(redirectUrl, {
-                // Several pages require the chef's email
-                state: { email },
-              });
-            } else {
-              this.router.navigate([routes.profile.path]);
-            }
-          }
+        next: (chef) => {
+          this.success.emit(chef);
         },
         error: (error) => {
           this.snackBar.open(error.message, 'Dismiss');

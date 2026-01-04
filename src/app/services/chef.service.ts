@@ -23,7 +23,6 @@ import {
 } from '../models/profile.mock';
 import handleError from '../helpers/handleError';
 import { Token } from '../models/recipe.model';
-import { mockToken } from '../models/recipe.mock';
 
 @Injectable({
   providedIn: 'root',
@@ -304,9 +303,9 @@ export class ChefService {
       );
   }
 
-  unlinkOAuthProvider(providerId: Provider): Observable<Token> {
+  unlinkOAuthProvider(providerId: Provider): Observable<Chef> {
     if (this.isMocking) {
-      return of(mockToken);
+      return of(mockChef);
     }
 
     const token = localStorage.getItem(Constants.LocalStorage.token);
@@ -326,7 +325,17 @@ export class ChefService {
           },
         }
       )
-      .pipe(catchError(handleError));
+      .pipe(
+        switchMap(({ token }) => {
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+
+          // Get the chef's updated provider data
+          return this.getChef();
+        }),
+        catchError(handleError)
+      );
   }
 
   // Helpers

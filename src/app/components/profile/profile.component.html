@@ -57,6 +57,7 @@
         <app-oauth-button
           [provider]="provider"
           [authUrl]="authUrls()[provider]"
+          (success)="onLinkSuccess()"
         />
         <button
           mat-raised-button
@@ -64,7 +65,11 @@
           [disabled]="emails.length === 0 || isLoading()"
           (click)="openUnlinkAlert(provider)"
         >
-          Unlink
+          <span class="unlink-button-span">
+            Unlink @if (isLoading()) {
+            <mat-spinner diameter="25" />
+            }
+          </span>
         </button>
       </span>
       @if (emails.length > 0) {

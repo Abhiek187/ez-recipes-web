@@ -110,30 +110,34 @@ export class LoginComponent implements OnInit {
       )
       .subscribe({
         next: ({ emailVerified }) => {
-          // Check if the user signed up, but didn't verify their email yet
-          if (!emailVerified) {
-            // Don't update the chef's verified status until they click the redirect link
-            this.chefService.verifyEmail().subscribe();
-            this.router.navigate([profileRoutes.verifyEmail.path], {
-              state: { email: username },
-            });
-          } else {
-            // If a redirect URL is present in the query params, navigate to it
-            // Otherwise, navigate to the profile page
-            const redirectUrl = this.route.snapshot.queryParamMap.get('next');
-            if (redirectUrl !== null) {
-              this.router.navigateByUrl(redirectUrl, {
-                // Several pages require the chef's email
-                state: { email: username },
-              });
-            } else {
-              this.router.navigate([routes.profile.path]);
-            }
-          }
+          this.onLoginSuccess(emailVerified, username);
         },
         error: (error) => {
           this.snackBar.open(error.message, 'Dismiss');
         },
       });
+  }
+
+  onLoginSuccess(emailVerified: boolean, email?: string | null) {
+    // Check if the user signed up, but didn't verify their email yet
+    if (!emailVerified) {
+      // Don't update the chef's verified status until they click the redirect link
+      this.chefService.verifyEmail().subscribe();
+      this.router.navigate([profileRoutes.verifyEmail.path], {
+        state: { email },
+      });
+    } else {
+      // If a redirect URL is present in the query params, navigate to it
+      // Otherwise, navigate to the profile page
+      const redirectUrl = this.route.snapshot.queryParamMap.get('next');
+      if (redirectUrl !== null) {
+        this.router.navigateByUrl(redirectUrl, {
+          // Several pages require the chef's email
+          state: { email },
+        });
+      } else {
+        this.router.navigate([routes.profile.path]);
+      }
+    }
   }
 }

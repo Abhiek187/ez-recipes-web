@@ -460,16 +460,26 @@ describe('ChefService', () => {
       chefService.unlinkOAuthProvider(provider)
     );
 
-    const req = httpTestingController.expectOne({
+    const oauthReq = httpTestingController.expectOne({
       method: 'DELETE',
       url: `${baseUrl}/oauth?providerId=${provider}`,
     });
-    expect(req.request.headers.get('Authorization')).toBe(
+    expect(oauthReq.request.headers.get('Authorization')).toBe(
       `Bearer ${mockChef.token}`
     );
-    req.flush(mockToken);
+    oauthReq.flush(mockToken);
 
-    await expect(chefPromise).resolves.toBe(mockToken);
+    const chefReq = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
+    expect(chefReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`
+    );
+    chefReq.flush(mockChef);
+
+    await expect(chefPromise).resolves.toBe(mockChef);
+    expect(chefService.chef()).toBe(mockChef);
   });
 
   it('should return an error if the unlink OAuth API fails', async () => {

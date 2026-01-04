@@ -44,6 +44,12 @@ $green-800: #2e7d32;
 
   .profile-linked-account-buttons {
     margin-bottom: 8px;
+
+    .unlink-button-span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
   }
 
   .profile-linked-account-emails {

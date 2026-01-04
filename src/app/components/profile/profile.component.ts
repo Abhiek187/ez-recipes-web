@@ -9,11 +9,13 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import {
   AuthState,
@@ -24,6 +26,7 @@ import { profileRoutes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
 import { OauthButtonComponent } from '../utils/oauth-button/oauth-button.component';
+import { DialogComponent, DialogData } from '../utils/dialog/dialog.component';
 
 @Component({
   selector: 'app-profile',
@@ -45,11 +48,11 @@ export class ProfileComponent implements OnInit {
   private chefService = inject(ChefService);
   private snackBar = inject(MatSnackBar);
   private destroyRef = inject(DestroyRef);
+  private dialog = inject(MatDialog);
 
   AuthState = AuthState;
   authState = signal(AuthState.Loading);
   selectedProvider = signal(Provider.Google);
-  showUnlinkConfirmation = signal(false);
   authUrls = signal<Partial<Record<Provider, string>>>({});
   isLoading = signal(false);
   chef = this.chefService.chef;
@@ -173,9 +176,48 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  onLinkSuccess() {
+    this.snackBar.open(
+      `Successfully linked ${this.selectedProvider()}!`,
+      'Dismiss'
+    );
+  }
+
   openUnlinkAlert(provider: Provider) {
     // Confirm before unlinking
-    this.selectedProvider.set(provider);
-    this.showUnlinkConfirmation.set(true);
+    const dialogRef = this.dialog.open<DialogComponent, DialogData>(
+      DialogComponent,
+      {
+        data: {
+          message: `Are you sure you want to unlink ${provider}?`,
+          dismissText: 'No',
+          confirmText: 'Yes',
+          isConfirmDestructive: true,
+        },
+      }
+    );
+
+    dialogRef.afterClosed().subscribe((didConfirm: boolean) => {
+      if (!didConfirm) return;
+      this.isLoading.set(true);
+      this.selectedProvider.set(provider);
+
+      this.chefService
+        .unlinkOAuthProvider(provider)
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          finalize(() => {
+            this.isLoading.set(false);
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.snackBar.open(`Successfully unlinked ${provider}!`, 'Dismiss');
+          },
+          error: (error) => {
+            this.snackBar.open(error.message, 'Dismiss');
+          },
+        });
+    });
   }
 }
