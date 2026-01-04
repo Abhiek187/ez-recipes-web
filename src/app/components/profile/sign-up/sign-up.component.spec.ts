@@ -45,10 +45,10 @@ describe('SignUpComponent', () => {
     fixture = TestBed.createComponent(SignUpComponent);
     signUpComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
-  it('should create', () => {
+  it('should create', async () => {
     expect(signUpComponent).toBeTruthy();
     expect(rootElement.textContent).toContain('Sign Up');
     expect(rootElement.textContent).toContain('Sign In');
@@ -74,26 +74,26 @@ describe('SignUpComponent', () => {
     expect(confirmPasswordField.autocomplete).toBe('off');
 
     signUpComponent.showPassword.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(passwordField.type).toBe('text');
     signUpComponent.showPassword.set(false);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(passwordField.type).toBe('password');
 
     signUpComponent.showPasswordConfirm.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(confirmPasswordField.type).toBe('text');
     signUpComponent.showPasswordConfirm.set(false);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(confirmPasswordField.type).toBe('password');
   });
 
-  it("should show an error if any field isn't provided", () => {
+  it("should show an error if any field isn't provided", async () => {
     const form = signUpComponent.formGroup;
     form.controls.email.setValue(null);
     form.controls.password.setValue(null);
     form.controls.passwordConfirm.setValue(null);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -114,10 +114,10 @@ describe('SignUpComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it("should show an error if the email isn't valid", () => {
+  it("should show an error if the email isn't valid", async () => {
     const form = signUpComponent.formGroup;
     form.controls.email.setValue('not an email');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -129,10 +129,10 @@ describe('SignUpComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should show an error if the password is too short', () => {
+  it('should show an error if the password is too short', async () => {
     const form = signUpComponent.formGroup;
     form.controls.password.setValue('123');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -146,11 +146,11 @@ describe('SignUpComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it("should show an error if the passwords don't match", () => {
+  it("should show an error if the passwords don't match", async () => {
     const form = signUpComponent.formGroup;
     form.controls.password.setValue('password1');
     form.controls.passwordConfirm.setValue('password2');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(form.hasError(signUpComponent.formErrors.passwordMismatch)).toBe(
@@ -162,14 +162,14 @@ describe('SignUpComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should enable the submit button if all fields are valid', () => {
+  it('should enable the submit button if all fields are valid', async () => {
     const form = signUpComponent.formGroup;
     const mockEmail = 'test@example.com';
     const mockPassword = 'password123';
     form.controls.email.setValue(mockEmail);
     form.controls.password.setValue(mockPassword);
     form.controls.passwordConfirm.setValue(mockPassword);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(true);
     const submitButton = rootElement
@@ -181,7 +181,7 @@ describe('SignUpComponent', () => {
     mockChefService.verifyEmail.mockReturnValue(of(mockChefEmailResponse));
     const navigateSpy = vi.spyOn(router, 'navigate');
     submitButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(mockChefService.createChef).toHaveBeenCalledWith({
       email: mockEmail,

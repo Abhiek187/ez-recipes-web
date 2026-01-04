@@ -67,10 +67,10 @@ describe('UpdatePasswordComponent', () => {
     fixture = TestBed.createComponent(UpdatePasswordComponent);
     updatePasswordComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
-  it('should create', () => {
+  it('should create', async () => {
     expect(updatePasswordComponent).toBeTruthy();
     expect(rootElement.textContent).toContain('Change Password');
     expect(rootElement.textContent).toContain('New Password');
@@ -92,24 +92,24 @@ describe('UpdatePasswordComponent', () => {
     expect(confirmPasswordField.autocomplete).toBe('off');
 
     updatePasswordComponent.showPassword.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(passwordField.type).toBe('text');
     updatePasswordComponent.showPassword.set(false);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(passwordField.type).toBe('password');
 
     updatePasswordComponent.showPasswordConfirm.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(confirmPasswordField.type).toBe('text');
     updatePasswordComponent.showPasswordConfirm.set(false);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(confirmPasswordField.type).toBe('password');
   });
 
-  it("should show an error if the password isn't provided", () => {
+  it("should show an error if the password isn't provided", async () => {
     const form = updatePasswordComponent.formGroup;
     form.controls.password.setValue(null);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -124,10 +124,10 @@ describe('UpdatePasswordComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should show an error if the password is too short', () => {
+  it('should show an error if the password is too short', async () => {
     const form = updatePasswordComponent.formGroup;
     form.controls.password.setValue('123');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -141,11 +141,11 @@ describe('UpdatePasswordComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it("should show an error if the passwords don't match", () => {
+  it("should show an error if the passwords don't match", async () => {
     const form = updatePasswordComponent.formGroup;
     form.controls.password.setValue('password1');
     form.controls.passwordConfirm.setValue('password2');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -157,12 +157,12 @@ describe('UpdatePasswordComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should enable the submit button if the email is valid', () => {
+  it('should enable the submit button if the email is valid', async () => {
     const form = updatePasswordComponent.formGroup;
     const mockPassword = 'password123';
     form.controls.password.setValue(mockPassword);
     form.controls.passwordConfirm.setValue(mockPassword);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(true);
     const submitButton = rootElement
@@ -172,7 +172,7 @@ describe('UpdatePasswordComponent', () => {
 
     mockChefService.updateChef.mockReturnValue(of(mockChefEmailResponse));
     submitButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(mockChefService.updateChef).toHaveBeenCalledWith({
       type: ChefUpdateType.Password,

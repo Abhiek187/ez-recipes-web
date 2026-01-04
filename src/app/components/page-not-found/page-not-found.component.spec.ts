@@ -16,7 +16,7 @@ describe('PageNotFoundComponent', () => {
     fixture = TestBed.createComponent(PageNotFoundComponent);
     rootComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should show the 404 page', () => {

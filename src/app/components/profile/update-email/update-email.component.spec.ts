@@ -50,7 +50,7 @@ describe('UpdateEmailComponent', () => {
     fixture = TestBed.createComponent(UpdateEmailComponent);
     updateEmailComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -65,10 +65,10 @@ describe('UpdateEmailComponent', () => {
     expect(emailField?.autocomplete).toBe('off');
   });
 
-  it("should show an error if the email isn't provided", () => {
+  it("should show an error if the email isn't provided", async () => {
     const form = updateEmailComponent.formGroup;
     form.controls.email.setValue(null);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -81,10 +81,10 @@ describe('UpdateEmailComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it("should show an error if the email isn't valid", () => {
+  it("should show an error if the email isn't valid", async () => {
     const form = updateEmailComponent.formGroup;
     form.controls.email.setValue('not an email');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -97,11 +97,11 @@ describe('UpdateEmailComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should enable the submit button if the email is valid', () => {
+  it('should enable the submit button if the email is valid', async () => {
     const form = updateEmailComponent.formGroup;
     const mockEmail = 'test@example.com';
     form.controls.email.setValue(mockEmail);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(true);
     const submitButton = rootElement
@@ -111,7 +111,7 @@ describe('UpdateEmailComponent', () => {
 
     mockChefService.updateChef.mockReturnValue(of(mockChefEmailResponse));
     submitButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(mockChefService.updateChef).toHaveBeenCalledWith({
       type: ChefUpdateType.Email,
@@ -122,11 +122,11 @@ describe('UpdateEmailComponent', () => {
     );
   });
 
-  it('should ask the user to login again if the credentials are too old', () => {
+  it('should ask the user to login again if the credentials are too old', async () => {
     const form = updateEmailComponent.formGroup;
     const mockEmail = 'test@example.com';
     form.controls.email.setValue(mockEmail);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(true);
     const submitButton = rootElement
@@ -139,7 +139,7 @@ describe('UpdateEmailComponent', () => {
     );
     const navigateSpy = vi.spyOn(router, 'navigate');
     submitButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(mockChefService.updateChef).toHaveBeenCalledWith({
       type: ChefUpdateType.Email,

@@ -49,16 +49,16 @@ describe('ProfileComponent', () => {
     profileComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
     router.initialNavigation();
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(profileComponent).toBeTruthy();
   });
 
-  it('should show a loading message when the auth state is loading', () => {
+  it('should show a loading message when the auth state is loading', async () => {
     profileComponent.authState.set(AuthState.Loading);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(rootElement.textContent).toContain('Getting your profile ready… 🧑‍🍳');
   });
@@ -78,7 +78,7 @@ describe('ProfileComponent', () => {
   it('should show the profile page if the user is authenticated', async () => {
     profileComponent.authState.set(AuthState.Authenticated);
     profileComponent.chef.set(mockChef);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const profileStats = rootElement.querySelector('.profile-stats');
     expect(profileStats?.textContent).toContain(
@@ -126,7 +126,7 @@ describe('ProfileComponent', () => {
     );
 
     logoutButton.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(profileComponent.authState()).toBe(AuthState.Unauthenticated);
   });
 });

@@ -34,11 +34,11 @@ describe('RecipeComponent', () => {
     );
 
     fixture = TestBed.createComponent(RecipeComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     recipeComponent = fixture.componentInstance;
     recipeComponent.recipe.set(mockRecipe);
     rootElement = fixture.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   const expectLinkToOpenInNewTab = (link: HTMLAnchorElement) => {
@@ -294,10 +294,10 @@ describe('RecipeComponent', () => {
     expectLinkToOpenInNewTab(apiLink);
   });
 
-  it('should show a spinner while loading', () => {
+  it('should show a spinner while loading', async () => {
     // Check that the material spinner shows when isLoading is true
     recipeComponent.isLoading.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
     // The show recipe button should be disabled
     expect(

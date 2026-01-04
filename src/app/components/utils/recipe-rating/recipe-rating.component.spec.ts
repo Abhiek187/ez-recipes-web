@@ -8,7 +8,7 @@ describe('RecipeRatingComponent', () => {
   let recipeRatingRef: ComponentRef<RecipeRatingComponent>;
   let fixture: ComponentFixture<RecipeRatingComponent>;
 
-  const initializeRecipeRating = ({
+  const initializeRecipeRating = async ({
     averageRating,
     totalRatings,
     myRating,
@@ -23,7 +23,7 @@ describe('RecipeRatingComponent', () => {
     recipeRatingRef.setInput('totalRatings', totalRatings);
     recipeRatingRef.setInput('myRating', myRating);
     recipeRatingComponent.hoveringStar.set(hoveringStar);
-    fixture.detectChanges();
+    await fixture.whenStable();
   };
 
   beforeEach(async () => {
@@ -43,9 +43,9 @@ describe('RecipeRatingComponent', () => {
     expect(recipeRatingComponent.starRatingInputLabel(5)).toBe('Rate 5 stars');
   });
 
-  it('should show a full star rating', () => {
+  it('should show a full star rating', async () => {
     // Given an average rating of 4
-    initializeRecipeRating({
+    await initializeRecipeRating({
       averageRating: 4,
       totalRatings: 1,
     });
@@ -61,9 +61,9 @@ describe('RecipeRatingComponent', () => {
     );
   });
 
-  it('should show a half-star rating', () => {
+  it('should show a half-star rating', async () => {
     // Given an average rating of 2.5
-    initializeRecipeRating({
+    await initializeRecipeRating({
       averageRating: 2.5,
       totalRatings: 4,
     });
@@ -80,9 +80,9 @@ describe('RecipeRatingComponent', () => {
     );
   });
 
-  it('should round down a decimal rating', () => {
+  it('should round down a decimal rating', async () => {
     // Given an average rating of 26/6 (4.333)
-    initializeRecipeRating({
+    await initializeRecipeRating({
       averageRating: 26 / 6,
       totalRatings: 6,
     });
@@ -98,9 +98,9 @@ describe('RecipeRatingComponent', () => {
     );
   });
 
-  it('should round up a decimal rating', () => {
+  it('should round up a decimal rating', async () => {
     // Given an average rating of 28/6 (4.667)
-    initializeRecipeRating({
+    await initializeRecipeRating({
       averageRating: 28 / 6,
       totalRatings: 6,
     });
@@ -116,9 +116,9 @@ describe('RecipeRatingComponent', () => {
     );
   });
 
-  it('should omit the average rating if not available', () => {
+  it('should omit the average rating if not available', async () => {
     // Given no ratings
-    initializeRecipeRating({
+    await initializeRecipeRating({
       averageRating: null,
       totalRatings: 0,
     });
@@ -131,9 +131,9 @@ describe('RecipeRatingComponent', () => {
     expect(recipeRatingComponent.ratingLabel()).toBe('No ratings available');
   });
 
-  it('should display my rating if available', () => {
+  it('should display my rating if available', async () => {
     // Given a chef's rating
-    initializeRecipeRating({
+    await initializeRecipeRating({
       averageRating: 3,
       totalRatings: 2,
       myRating: 1,
@@ -150,9 +150,9 @@ describe('RecipeRatingComponent', () => {
     );
   });
 
-  it('should fill all stars to the left if hovering', () => {
+  it('should fill all stars to the left if hovering', async () => {
     // Given a hovered rating
-    initializeRecipeRating({
+    await initializeRecipeRating({
       averageRating: 3.5,
       totalRatings: 4,
       hoveringStar: 2,

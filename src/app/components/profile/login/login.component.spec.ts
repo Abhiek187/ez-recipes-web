@@ -50,10 +50,10 @@ describe('LoginComponent', () => {
     fixture = TestBed.createComponent(LoginComponent);
     loginComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
-  it('should create', () => {
+  it('should create', async () => {
     expect(loginComponent).toBeTruthy();
     expect(rootElement.textContent).toContain('Login');
     expect(rootElement.textContent).toContain('Sign Up');
@@ -74,10 +74,10 @@ describe('LoginComponent', () => {
     expect(passwordField.autocomplete).toBe('off');
 
     loginComponent.showPassword.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(passwordField.type).toBe('text');
     loginComponent.showPassword.set(false);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(passwordField.type).toBe('password');
 
     expect(rootElement.querySelectorAll('.oauth-button').length).toBe(
@@ -85,11 +85,11 @@ describe('LoginComponent', () => {
     );
   });
 
-  it("should show an error if the username or password isn't provided", () => {
+  it("should show an error if the username or password isn't provided", async () => {
     const form = loginComponent.formGroup;
     form.controls.username.setValue(null);
     form.controls.password.setValue(null);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(form.controls.username.hasError('required')).toBe(true);
@@ -101,13 +101,13 @@ describe('LoginComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should enable the submit button if all fields are valid', () => {
+  it('should enable the submit button if all fields are valid', async () => {
     const form = loginComponent.formGroup;
     const mockEmail = 'test@example.com';
     const mockPassword = 'password123';
     form.controls.username.setValue(mockEmail);
     form.controls.password.setValue(mockPassword);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(true);
     const submitButton = rootElement
@@ -119,7 +119,7 @@ describe('LoginComponent', () => {
     mockChefService.verifyEmail.mockReturnValue(of(mockChefEmailResponse));
     const navigateSpy = vi.spyOn(router, 'navigate');
     submitButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(mockChefService.login).toHaveBeenCalledWith({
       email: mockEmail,
@@ -131,9 +131,9 @@ describe('LoginComponent', () => {
     });
   });
 
-  it('should show the step-up message if enabled', () => {
+  it('should show the step-up message if enabled', async () => {
     loginComponent.isStepUp.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const loginForm = rootElement.querySelector('.login-form');
     expect(loginForm?.textContent).toContain('This is a sensitive operation');

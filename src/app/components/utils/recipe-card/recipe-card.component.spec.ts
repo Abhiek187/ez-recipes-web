@@ -58,7 +58,7 @@ describe('RecipeCardComponent', () => {
     recipeCardComponent = fixture.componentInstance;
     fixture.componentRef.setInput('recipe', mockRecipe); // input is required
     rootElement = fixture.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create a recipe card', () => {
@@ -88,9 +88,9 @@ describe('RecipeCardComponent', () => {
     );
   });
 
-  it('should disable the favorite button if unauthenticated', () => {
+  it('should disable the favorite button if unauthenticated', async () => {
     recipeCardComponent.chef.set(undefined);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const favoriteButton = rootElement.querySelector<HTMLButtonElement>(
       '.recipe-favorite-icon'
@@ -99,10 +99,10 @@ describe('RecipeCardComponent', () => {
     expect(recipeCardComponent.isFavorite()).toBe(false);
   });
 
-  it('should toggle isFavorite', () => {
+  it('should toggle isFavorite', async () => {
     // Check that isFavorite toggles when the heart button is clicked
     recipeCardComponent.chef.set(mockChef);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(recipeCardComponent.isFavorite()).toBe(false);
 
     const favoriteButton = rootElement.querySelector<HTMLButtonElement>(
@@ -110,7 +110,7 @@ describe('RecipeCardComponent', () => {
     );
     mockRecipeService.updateRecipe.mockReturnValue(of(mockToken));
     favoriteButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
       isFavorite: true,
     });
@@ -120,7 +120,7 @@ describe('RecipeCardComponent', () => {
     expect(recipeCardComponent.isFavorite()).toBe(true);
 
     favoriteButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
       isFavorite: false,
     });

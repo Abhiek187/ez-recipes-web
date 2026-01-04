@@ -66,7 +66,7 @@ describe('DeleteAccountComponent', () => {
     fixture = TestBed.createComponent(DeleteAccountComponent);
     deleteAccountComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -81,10 +81,10 @@ describe('DeleteAccountComponent', () => {
     expect(usernameField?.autocomplete).toBe('off');
   });
 
-  it("should disable account deletion if the username isn't provided", () => {
+  it("should disable account deletion if the username isn't provided", async () => {
     const form = deleteAccountComponent.formGroup;
     form.controls.username.setValue(null);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -99,10 +99,10 @@ describe('DeleteAccountComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it("should disable account deletion if the username doesn't match", () => {
+  it("should disable account deletion if the username doesn't match", async () => {
     const form = deleteAccountComponent.formGroup;
     form.controls.username.setValue('mock chef');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(false);
     expect(
@@ -117,10 +117,10 @@ describe('DeleteAccountComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should enable account deletion if the username matches', () => {
+  it('should enable account deletion if the username matches', async () => {
     const form = deleteAccountComponent.formGroup;
     form.controls.username.setValue(mockChef.email);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(form.valid).toBe(true);
     const submitButton = rootElement
@@ -130,7 +130,7 @@ describe('DeleteAccountComponent', () => {
 
     mockChefService.deleteChef.mockReturnValue(of(null));
     submitButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(mockChefService.deleteChef).toHaveBeenCalledWith();
     expect(router.navigate).toHaveBeenCalledWith([routes.profile.path]);
