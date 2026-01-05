@@ -26,11 +26,11 @@ describe('HomeComponent', () => {
   let rootElement: HTMLElement;
   let chefService: ChefService;
 
-  const mockRecentRecipes = async (value: RecentRecipe[]) => {
+  const mockRecentRecipes = (value: RecentRecipe[]) => {
     vi.spyOn(RecipeService.prototype, 'getRecentRecipes').mockReturnValue(
       of(value) as unknown as DObservable
     );
-    await fixture.whenStable();
+    fixture.detectChanges();
   };
 
   beforeEach(async () => {
@@ -58,15 +58,15 @@ describe('HomeComponent', () => {
     vi.useRealTimers();
   });
 
-  it('should create the app', async () => {
+  it('should create the app', () => {
     // Check that the component can render
-    await fixture.whenStable(); // re-render the component
+    fixture.detectChanges(); // re-render the component
     expect(homeComponent).toBeTruthy();
   });
 
-  it(`shouldn't show a recipe initially`, async () => {
+  it(`shouldn't show a recipe initially`, () => {
     // Check that the page initially shows the "Find Me a Recipe!" button
-    await fixture.whenStable();
+    fixture.detectChanges();
     const findRecipeButton = rootElement.querySelector<HTMLButtonElement>(
       '.find-recipe-button'
     );
@@ -98,10 +98,10 @@ describe('HomeComponent', () => {
     expect(ratingsAccordion?.textContent).toContain('Ratings');
   });
 
-  it('should load a random recipe after clicking the find recipe button', async () => {
+  it('should load a random recipe after clicking the find recipe button', () => {
     // Check that the getRandomRecipe method is called after clicking the find recipe button
     vi.useFakeTimers();
-    await fixture.whenStable();
+    fixture.detectChanges();
     vi.spyOn(homeComponent, 'getRandomRecipe');
 
     const findRecipeButton = rootElement.querySelector<HTMLButtonElement>(
@@ -115,10 +115,10 @@ describe('HomeComponent', () => {
     vi.clearAllTimers();
   });
 
-  it('should show a spinner while loading', async () => {
+  it('should show a spinner while loading', () => {
     // Check that the material spinner shows when isLoading is true
     homeComponent.isLoadingRecipe.set(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(rootElement.querySelector('.progress-spinner')).not.toBeNull();
     expect(rootElement.querySelector('.loading-message')).not.toBeNull();
@@ -129,18 +129,18 @@ describe('HomeComponent', () => {
     ).toBe(true);
   });
 
-  it('should show a random message while loading', async () => {
+  it('should show a random message while loading', () => {
     // The loading message should start blank, then show a random message after some time
-    await fixture.whenStable();
+    fixture.detectChanges();
     homeComponent.showLoadingMessages();
     expect(homeComponent.loadingMessage()).toBe('');
     vi.advanceTimersByTime(3000);
     expect(Constants.loadingMessages).toContain(homeComponent.loadingMessage());
   });
 
-  it('should show the sign in message if the user is unauthenticated', async () => {
+  it('should show the sign in message if the user is unauthenticated', () => {
     chefService.chef.set(undefined);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const favoritesAccordion = rootElement.querySelector(
       '.favorites-accordion'
@@ -154,18 +154,18 @@ describe('HomeComponent', () => {
     );
   });
 
-  it("should show no recipes found if there aren't any recent recipes", async () => {
+  it("should show no recipes found if there aren't any recent recipes", () => {
     chefService.chef.set(undefined);
-    await mockRecentRecipes([]);
+    mockRecentRecipes([]);
 
     const recentsAccordion =
       rootElement.querySelector<HTMLElement>('.recents-accordion');
     expect(recentsAccordion?.textContent).toContain('No recipes found');
   });
 
-  it('should show locally stored recipes if there are recent recipes and the user is unauthenticated', async () => {
+  it('should show locally stored recipes if there are recent recipes and the user is unauthenticated', () => {
     chefService.chef.set(undefined);
-    await mockRecentRecipes(
+    mockRecentRecipes(
       mockRecipes.map((recipe) => ({
         ...recipe,
         timestamp: mockTime,
@@ -181,7 +181,7 @@ describe('HomeComponent', () => {
     expect(recentsList?.childElementCount).toBe(mockRecipes.length);
   });
 
-  it("should show no recipes found if the user is authenticated but hasn't saved any recipe", async () => {
+  it("should show no recipes found if the user is authenticated but hasn't saved any recipe", () => {
     chefService.chef.set({
       ...mockChef,
       favoriteRecipes: [],
@@ -191,7 +191,7 @@ describe('HomeComponent', () => {
     homeComponent.onExpandFavorites();
     homeComponent.onExpandRecents();
     homeComponent.onExpandRatings();
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const favoritesAccordion = rootElement.querySelector(
       '.favorites-accordion'
@@ -205,7 +205,7 @@ describe('HomeComponent', () => {
     expect(ratingsAccordion?.textContent).toContain('No recipes found');
   });
 
-  it('should populate all the accordions if authenticated', async () => {
+  it('should populate all the accordions if authenticated', () => {
     vi.spyOn(RecipeService.prototype, 'getRecipeById').mockReturnValue(
       of(mockRecipe)
     );
@@ -213,7 +213,7 @@ describe('HomeComponent', () => {
     homeComponent.onExpandFavorites();
     homeComponent.onExpandRecents();
     homeComponent.onExpandRatings();
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const favoritesAccordion = rootElement.querySelector(
       '.favorites-accordion'

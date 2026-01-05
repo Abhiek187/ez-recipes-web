@@ -55,7 +55,7 @@ describe('NavbarComponent', () => {
     fixture = TestBed.createComponent(NavbarComponent);
     navbarComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement as HTMLElement;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should display button links on large screens', () => {
@@ -85,10 +85,10 @@ describe('NavbarComponent', () => {
     expect(shareIcon).toBeNull();
   });
 
-  it('should display the hamburger menu on small screens', async () => {
+  it('should display the hamburger menu on small screens', () => {
     // Check that the navbar contains the app name and a hamburger icon
     navbarComponent.isSmallScreen.set(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
     expect(menuIcon).not.toBeNull();
@@ -108,10 +108,10 @@ describe('NavbarComponent', () => {
     expect(shareIcon).toBeNull();
   });
 
-  it('should toggle the sidenav when clicking the hamburger icon', async () => {
+  it('should toggle the sidenav when clicking the hamburger icon', () => {
     // Check that the sidenav appears and disappears when clicking the hamburger icon
     navbarComponent.isSmallScreen.set(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const sidenav = rootElement.querySelector<HTMLDivElement>('.sidenav');
     expect(sidenav).not.toBeNull();
@@ -119,7 +119,7 @@ describe('NavbarComponent', () => {
 
     const menuIcon = rootElement.querySelector<HTMLButtonElement>('.menu-icon');
     menuIcon?.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(sidenav?.classList).toContain('mat-drawer-opened');
 
     for (const navItem of navbarComponent.navItems) {
@@ -127,18 +127,18 @@ describe('NavbarComponent', () => {
     }
 
     menuIcon?.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(sidenav?.classList).not.toContain('mat-drawer-opened');
   });
 
-  it('should toggle between light and dark mode', async () => {
+  it('should toggle between light and dark mode', () => {
     expect(navbarComponent.isDarkMode()).toBe(false);
     expect(document.body.style.colorScheme).toBe(Theme.Light);
     const themeIcon = document.querySelector<HTMLButtonElement>('.theme-icon');
     expect(themeIcon?.ariaLabel).toBe('Switch to dark mode');
 
     themeIcon?.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(navbarComponent.isDarkMode()).toBe(true);
     expect(setItemSpy).toHaveBeenCalledWith(
       Constants.LocalStorage.theme,
@@ -148,7 +148,7 @@ describe('NavbarComponent', () => {
     expect(themeIcon?.ariaLabel).toBe('Switch to light mode');
 
     themeIcon?.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(navbarComponent.isDarkMode()).toBe(false);
     expect(setItemSpy).toHaveBeenCalledWith(
       Constants.LocalStorage.theme,
@@ -158,10 +158,10 @@ describe('NavbarComponent', () => {
     expect(themeIcon?.ariaLabel).toBe('Switch to dark mode');
   });
 
-  it('should disable the favorite button if unauthenticated', async () => {
+  it('should disable the favorite button if unauthenticated', () => {
     navbarComponent.isRecipePage.set(true);
     navbarComponent.chef.set(undefined);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const favoriteButton =
       rootElement.querySelector<HTMLButtonElement>('.favorite-icon');
@@ -169,11 +169,11 @@ describe('NavbarComponent', () => {
     expect(navbarComponent.isFavorite()).toBe(false);
   });
 
-  it('should toggle isFavorite', async () => {
+  it('should toggle isFavorite', () => {
     // Check that the toggleFavoriteRecipe method toggles the isFavorite property
     navbarComponent.isRecipePage.set(true);
     navbarComponent.chef.set(mockChef);
-    await fixture.whenStable();
+    fixture.detectChanges();
     // Recipe shouldn't be liked by default
     expect(navbarComponent.isFavorite()).toBe(false);
 
@@ -186,7 +186,7 @@ describe('NavbarComponent', () => {
     mockRecipeService.updateRecipe.mockReturnValue(of(mockToken));
 
     favoriteButton?.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
       isFavorite: true,
     });
@@ -198,7 +198,7 @@ describe('NavbarComponent', () => {
     expect(favoriteButton?.ariaLabel).toBe('Unfavorite this recipe');
 
     favoriteButton?.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(mockRecipeService.updateRecipe).toHaveBeenCalledWith(mockRecipe.id, {
       isFavorite: false,
     });
@@ -210,17 +210,17 @@ describe('NavbarComponent', () => {
     expect(favoriteButton?.ariaLabel).toBe('Favorite this recipe');
   });
 
-  it('should call shareRecipe after clicking the share button', async () => {
+  it('should call shareRecipe after clicking the share button', () => {
     // Check that shareRecipe is called after clicking the share button
     vi.spyOn(navbarComponent, 'shareRecipe');
     navbarComponent.isRecipePage.set(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const shareIcon =
       rootElement.querySelector<HTMLButtonElement>('.share-icon');
     shareIcon?.click();
 
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(navbarComponent.shareRecipe).toHaveBeenCalled();
   });
 });

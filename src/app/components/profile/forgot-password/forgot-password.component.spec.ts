@@ -39,7 +39,7 @@ describe('ForgotPasswordComponent', () => {
     fixture = TestBed.createComponent(ForgotPasswordComponent);
     forgotPasswordComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should ask for an email initially', () => {
@@ -57,17 +57,17 @@ describe('ForgotPasswordComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should show that an email was sent', async () => {
+  it('should show that an email was sent', () => {
     forgotPasswordComponent.emailSent.set(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(rootElement.textContent).toContain('We sent an email to');
   });
 
-  it("should show an error if the email isn't provided", async () => {
+  it("should show an error if the email isn't provided", () => {
     const form = forgotPasswordComponent.formGroup;
     form.controls.email.setValue(null);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(form.valid).toBe(false);
     expect(
@@ -77,10 +77,10 @@ describe('ForgotPasswordComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it("should show an error if the email isn't valid", async () => {
+  it("should show an error if the email isn't valid", () => {
     const form = forgotPasswordComponent.formGroup;
     form.controls.email.setValue('not an email');
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(form.valid).toBe(false);
     expect(
@@ -92,11 +92,11 @@ describe('ForgotPasswordComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should enable the submit button if all fields are valid', async () => {
+  it('should enable the submit button if all fields are valid', () => {
     const form = forgotPasswordComponent.formGroup;
     const mockEmail = 'test@example.com';
     form.controls.email.setValue(mockEmail);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(form.valid).toBe(true);
     const submitButton = rootElement.querySelector('button');

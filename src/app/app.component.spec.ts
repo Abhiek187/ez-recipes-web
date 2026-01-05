@@ -36,22 +36,22 @@ describe('AppComponent', () => {
     vi.spyOn(TermsService.prototype, 'getTerms').mockReturnValue(of(mockTerms));
   });
 
-  it('should create the app', async () => {
+  it('should create the app', () => {
     // Check that the component can render
     vi.spyOn(TermsService.prototype, 'getCachedTerms').mockReturnValue(
       mockTerms
     );
     // Re-render the component after setting up mocks
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(appComponent).toBeTruthy();
     expect(TermsService.prototype.getCachedTerms).toHaveBeenCalled();
     expect(TermsService.prototype.getTerms).not.toHaveBeenCalled();
   });
 
-  it("should fetch all the terms if they're not saved", async () => {
+  it("should fetch all the terms if they're not saved", () => {
     vi.spyOn(TermsService.prototype, 'getCachedTerms').mockReturnValue(null);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(TermsService.prototype.getCachedTerms).toHaveBeenCalled();
     expect(TermsService.prototype.getTerms).toHaveBeenCalled();

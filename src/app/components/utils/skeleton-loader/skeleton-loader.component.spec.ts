@@ -15,7 +15,7 @@ describe('SkeletonLoaderComponent', () => {
     component = fixture.componentInstance;
     fixture.componentRef.setInput('width', '100%');
     fixture.componentRef.setInput('height', '20px');
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

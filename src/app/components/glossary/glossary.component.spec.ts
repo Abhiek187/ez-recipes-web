@@ -30,7 +30,7 @@ describe('GlossaryComponent', () => {
       mockTerms
     );
     rootElement = fixture.nativeElement;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should show all the terms', () => {

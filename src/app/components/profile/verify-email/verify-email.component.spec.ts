@@ -49,7 +49,7 @@ describe('VerifyEmailComponent', () => {
     fixture = TestBed.createComponent(VerifyEmailComponent);
     verifyEmailComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -61,9 +61,9 @@ describe('VerifyEmailComponent', () => {
     expect(rootElement.textContent).toContain('Logout');
   });
 
-  it('should re-send the verification email', async () => {
+  it('should re-send the verification email', () => {
     verifyEmailComponent.enableResend.set(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     mockChefService.verifyEmail.mockReturnValue(of(mockChefEmailResponse));
     const resendButton = rootElement
@@ -75,13 +75,13 @@ describe('VerifyEmailComponent', () => {
     expect(verifyEmailComponent.enableResend()).toBe(false);
   });
 
-  it('should logout', async () => {
+  it('should logout', () => {
     mockChefService.logout.mockReturnValue(of(null));
     const navigateSpy = vi.spyOn(router, 'navigate');
     const logoutButton =
       rootElement.querySelector<HTMLButtonElement>('.logout-button');
     logoutButton?.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(mockChefService.logout).toHaveBeenCalledWith();
     expect(navigateSpy).toHaveBeenCalledWith([routes.profile.path]);

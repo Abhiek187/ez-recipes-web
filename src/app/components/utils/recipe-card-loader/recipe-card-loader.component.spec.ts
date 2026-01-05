@@ -13,7 +13,7 @@ describe('RecipeCardLoaderComponent', () => {
 
     fixture = TestBed.createComponent(RecipeCardLoaderComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
