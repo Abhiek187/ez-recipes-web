@@ -29,6 +29,7 @@ describe('DialogComponent', () => {
     fixture = TestBed.createComponent(DialogComponent);
     component = fixture.componentInstance;
     rootElement = fixture.nativeElement;
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 

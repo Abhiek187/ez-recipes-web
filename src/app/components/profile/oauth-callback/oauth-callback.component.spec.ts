@@ -69,6 +69,7 @@ describe('OauthCallbackComponent', () => {
     fixture = TestBed.createComponent(OauthCallbackComponent);
     component = fixture.componentInstance;
     rootElement = fixture.nativeElement;
+    fixture.detectChanges();
     await fixture.whenStable();
   };
 

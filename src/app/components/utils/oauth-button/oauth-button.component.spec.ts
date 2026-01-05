@@ -42,6 +42,7 @@ describe('OauthButtonComponent', () => {
     fixture.componentRef.setInput('provider', provider);
     component = fixture.componentInstance;
     rootElement = fixture.nativeElement;
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 
@@ -57,6 +58,7 @@ describe('OauthButtonComponent', () => {
 
   it('should start the login flow when clicked', async () => {
     fixture.componentRef.setInput('authUrl', authUrl.toString());
+    fixture.detectChanges();
     await fixture.whenStable();
     expect(component.providerState()).toBe('1234');
 
@@ -64,6 +66,7 @@ describe('OauthButtonComponent', () => {
       rootElement.querySelector<HTMLButtonElement>('.oauth-button');
     expect(oauthButton?.disabled).toBe(false);
     oauthButton?.click();
+    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(component.isLoading()).toBe(false);
@@ -78,6 +81,7 @@ describe('OauthButtonComponent', () => {
         data: undefined,
       })
     );
+    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(mockLoginWithOAuth).not.toHaveBeenCalled();
@@ -94,6 +98,7 @@ describe('OauthButtonComponent', () => {
         },
       })
     );
+    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(mockLoginWithOAuth).not.toHaveBeenCalled();
@@ -109,6 +114,7 @@ describe('OauthButtonComponent', () => {
         },
       })
     );
+    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(mockLoginWithOAuth).not.toHaveBeenCalled();
@@ -126,6 +132,7 @@ describe('OauthButtonComponent', () => {
         },
       })
     );
+    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(mockLoginWithOAuth).toHaveBeenCalledWith({
