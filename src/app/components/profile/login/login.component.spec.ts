@@ -50,7 +50,7 @@ describe('LoginComponent', () => {
     fixture = TestBed.createComponent(LoginComponent);
     loginComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', async () => {
@@ -74,10 +74,10 @@ describe('LoginComponent', () => {
     expect(passwordField.autocomplete).toBe('off');
 
     loginComponent.showPassword.set(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(passwordField.type).toBe('text');
     loginComponent.showPassword.set(false);
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(passwordField.type).toBe('password');
 
     expect(rootElement.querySelectorAll('.oauth-button').length).toBe(
@@ -89,7 +89,7 @@ describe('LoginComponent', () => {
     const form = loginComponent.formGroup;
     form.controls.username.setValue(null);
     form.controls.password.setValue(null);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(form.valid).toBe(false);
     expect(form.controls.username.hasError('required')).toBe(true);
@@ -107,7 +107,7 @@ describe('LoginComponent', () => {
     const mockPassword = 'password123';
     form.controls.username.setValue(mockEmail);
     form.controls.password.setValue(mockPassword);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(form.valid).toBe(true);
     const submitButton = rootElement
@@ -119,7 +119,7 @@ describe('LoginComponent', () => {
     mockChefService.verifyEmail.mockReturnValue(of(mockChefEmailResponse));
     const navigateSpy = vi.spyOn(router, 'navigate');
     submitButton?.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(mockChefService.login).toHaveBeenCalledWith({
       email: mockEmail,
@@ -133,7 +133,7 @@ describe('LoginComponent', () => {
 
   it('should show the step-up message if enabled', async () => {
     loginComponent.isStepUp.set(true);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const loginForm = rootElement.querySelector('.login-form');
     expect(loginForm?.textContent).toContain('This is a sensitive operation');

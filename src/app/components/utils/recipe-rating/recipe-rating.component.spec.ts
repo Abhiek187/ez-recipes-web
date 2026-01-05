@@ -25,7 +25,7 @@ describe('RecipeRatingComponent', () => {
     recipeRatingRef.setInput('totalRatings', totalRatings);
     recipeRatingRef.setInput('myRating', myRating);
     recipeRatingComponent.hoveringStar.set(hoveringStar);
-    await fixture.whenStable();
+    fixture.detectChanges();
   };
 
   beforeEach(async () => {

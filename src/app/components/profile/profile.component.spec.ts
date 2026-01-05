@@ -49,7 +49,7 @@ describe('ProfileComponent', () => {
     profileComponent = fixture.componentInstance;
     rootElement = fixture.nativeElement;
     router.initialNavigation();
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -58,7 +58,7 @@ describe('ProfileComponent', () => {
 
   it('should show a loading message when the auth state is loading', async () => {
     profileComponent.authState.set(AuthState.Loading);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(rootElement.textContent).toContain('Getting your profile ready… 🧑‍🍳');
   });
@@ -71,14 +71,14 @@ describe('ProfileComponent', () => {
     );
     const loginButton = fixture.debugElement.query(By.directive(RouterLink));
     loginButton.nativeElement.click();
-    await fixture.whenStable(); // wait for routing to finish
+    fixture.detectChanges(); // wait for routing to finish
     expect(location.path()).toBe(`/${profileRoutes.login.path}`);
   });
 
   it('should show the profile page if the user is authenticated', async () => {
     profileComponent.authState.set(AuthState.Authenticated);
     profileComponent.chef.set(mockChef);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const profileStats = rootElement.querySelector('.profile-stats');
     expect(profileStats?.textContent).toContain(
@@ -148,7 +148,7 @@ describe('ProfileComponent', () => {
     }
 
     logoutButton.click();
-    await fixture.whenStable();
+    fixture.detectChanges();
     expect(profileComponent.authState()).toBe(AuthState.Unauthenticated);
   });
 });
