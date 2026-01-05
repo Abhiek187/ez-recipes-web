@@ -13,6 +13,7 @@ import { SearchComponent } from './components/search/search.component';
 import { GlossaryComponent } from './components/glossary/glossary.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { authGuard } from './guards/auth.guard';
+import { OauthCallbackComponent } from './components/profile/oauth-callback/oauth-callback.component';
 
 // Child routes require router-outlet, but these routes are relative to the profile component
 export const profileRoutes: Record<string, Route> = {
@@ -92,6 +93,11 @@ export const routes: Record<string, Route> = {
     component: ProfileComponent,
   },
   ...profileRoutes,
+  oauthCallback: {
+    path: 'oauth/callback',
+    title: 'OAuth Redirect',
+    component: OauthCallbackComponent,
+  },
   // The default route should be listed between the static routes and wildcard routes
   home: { path: '', title: 'Home', component: HomeComponent },
   // Show a 404 page for any other route

@@ -1,0 +1,16 @@
+<button
+  mat-raised-button
+  class="oauth-button"
+  [disabled]="authUrl() === undefined || isLoading()"
+  [style.color]="providerStyle().contentColor"
+  [style.background-color]="providerStyle().backgroundColor"
+  (click)="startOAuthFlow($event)"
+>
+  <div class="oauth-button-content">
+    <mat-icon [svgIcon]="providerIcon()" />
+    <span>{{ providerStyle().label }}</span>
+    @if (isLoading()) {
+    <mat-spinner diameter="25" />
+    }
+  </div>
+</button>

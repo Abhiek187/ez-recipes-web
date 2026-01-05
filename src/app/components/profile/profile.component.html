@@ -1,6 +1,7 @@
 <div class="profile-container">
   @if (authState() === AuthState.Authenticated && chef() !== undefined) {
   <h1>Chef {{ chef()?.email }}</h1>
+
   <span class="profile-stats">
     <span [ngPlural]="totalRecipesFavorited()">
       <ng-template ngPluralCase="1">
@@ -29,6 +30,7 @@
       </ng-template>
     </span>
   </span>
+
   <div class="profile-actions">
     <button mat-raised-button class="btn-primary" (click)="logout()">
       Logout
@@ -42,6 +44,42 @@
     <button mat-raised-button class="btn-warn" (click)="deleteAccount()">
       Delete Account
     </button>
+  </div>
+
+  <mat-divider class="profile-linked-accounts-divider" />
+  <h2>Linked Accounts</h2>
+  <div class="profile-linked-accounts">
+    @for (linkedAccount of linkedAccountEntries(); track linkedAccount[0]) {
+    @let provider = linkedAccount[0]; @let emails = linkedAccount[1];
+
+    <div class="profile-linked-account-container">
+      <span class="profile-linked-account-buttons">
+        <app-oauth-button
+          [provider]="provider"
+          [authUrl]="authUrls()[provider]"
+          (success)="onLinkSuccess()"
+        />
+        <button
+          mat-raised-button
+          class="btn-warn"
+          [disabled]="emails.length === 0 || isLoading()"
+          (click)="openUnlinkAlert(provider)"
+        >
+          <span class="unlink-button-span">
+            Unlink @if (isLoading()) {
+            <mat-spinner diameter="25" />
+            }
+          </span>
+        </button>
+      </span>
+      @if (emails.length > 0) {
+      <span class="profile-linked-account-emails">
+        <mat-icon fontIcon="check" />
+        {{ emails.join(", ") }}
+      </span>
+      }
+    </div>
+    }
   </div>
   } @else if (authState() === AuthState.Unauthenticated) {
   <h2 class="profile-unauth-header">

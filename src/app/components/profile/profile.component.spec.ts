@@ -56,7 +56,7 @@ describe('ProfileComponent', () => {
     expect(profileComponent).toBeTruthy();
   });
 
-  it('should show a loading message when the auth state is loading', () => {
+  it('should show a loading message when the auth state is loading', async () => {
     profileComponent.authState.set(AuthState.Loading);
     fixture.detectChanges();
 
@@ -71,7 +71,7 @@ describe('ProfileComponent', () => {
     );
     const loginButton = fixture.debugElement.query(By.directive(RouterLink));
     loginButton.nativeElement.click();
-    await fixture.whenStable(); // wait for routing to finish
+    fixture.detectChanges(); // wait for routing to finish
     expect(location.path()).toBe(`/${profileRoutes.login.path}`);
   });
 
@@ -124,6 +124,28 @@ describe('ProfileComponent', () => {
         },
       }
     );
+
+    expect(rootElement.textContent).toContain('Linked Accounts');
+    const linkedAccountsSection = rootElement.querySelector(
+      '.profile-linked-accounts'
+    );
+    let accountI = 0;
+
+    for (const [, emails] of profileComponent.linkedAccountEntries()) {
+      const linkedAccountContainer = linkedAccountsSection?.querySelectorAll(
+        '.profile-linked-account-container'
+      )?.[accountI];
+      const unlinkButton = linkedAccountContainer?.querySelector(
+        '.profile-linked-account-buttons'
+      )?.children?.[1] as HTMLButtonElement | null | undefined;
+      expect(unlinkButton).toBeTruthy();
+      expect(unlinkButton?.disabled).toBe(emails.length === 0);
+
+      for (const email of emails) {
+        expect(linkedAccountContainer?.textContent).toContain(email);
+      }
+      accountI++;
+    }
 
     logoutButton.click();
     fixture.detectChanges();

@@ -1,0 +1,20 @@
+@if (title !== undefined) {
+<h2 mat-dialog-title>{{ title }}</h2>
+}
+<mat-dialog-content>
+  <p>{{ message }}</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  @if (dismissText !== undefined) {
+  <button mat-raised-button [mat-dialog-close]="false">
+    {{ dismissText }}
+  </button>
+  }
+  <button
+    mat-raised-button
+    [mat-dialog-close]="true"
+    [class.btn-warn]="isConfirmDestructive"
+  >
+    {{ confirmText }}
+  </button>
+</mat-dialog-actions>

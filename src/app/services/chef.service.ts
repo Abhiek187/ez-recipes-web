@@ -1,23 +1,28 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { catchError, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, Observable, of, switchMap, tap, throwError } from 'rxjs';
 
 import {
+  AuthUrl,
   Chef,
   ChefEmailResponse,
   ChefUpdate,
   ChefUpdateType,
   LoginCredentials,
   LoginResponse,
+  OAuthRequest,
+  Provider,
 } from '../models/profile.model';
 import { environment } from 'src/environments/environment';
 import Constants from '../constants/constants';
 import {
+  mockAuthUrls,
   mockChef,
   mockChefEmailResponse,
   mockLoginResponse,
 } from '../models/profile.mock';
 import handleError from '../helpers/handleError';
+import { Token } from '../models/recipe.model';
 
 @Injectable({
   providedIn: 'root',
@@ -73,6 +78,7 @@ export class ChefService {
             uid,
             email: credentials.email,
             emailVerified,
+            providerData: [],
             ratings: {},
             recentRecipes: {},
             favoriteRecipes: [],
@@ -191,6 +197,7 @@ export class ChefService {
             uid,
             email: credentials.email,
             emailVerified,
+            providerData: [],
             ratings: {},
             recentRecipes: {},
             favoriteRecipes: [],
@@ -227,6 +234,105 @@ export class ChefService {
         tap(() => {
           localStorage.removeItem(Constants.LocalStorage.token);
           this.chef.set(undefined);
+        }),
+        catchError(handleError)
+      );
+  }
+
+  getAuthUrls(): Observable<AuthUrl[]> {
+    if (this.isMocking) {
+      return of(mockAuthUrls);
+    }
+
+    return this.http
+      .get<AuthUrl[]>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/oauth`,
+        {
+          params: {
+            redirectUrl: Constants.redirectUrl,
+          },
+        }
+      )
+      .pipe(catchError(handleError));
+  }
+
+  loginWithOAuth(
+    oAuthRequest: Omit<OAuthRequest, 'redirectUrl'>
+  ): Observable<Chef> {
+    if (this.isMocking) {
+      return of(mockChef);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+
+    return this.http
+      .post<LoginResponse>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/oauth`,
+        {
+          ...oAuthRequest,
+          redirectUrl: Constants.redirectUrl,
+        },
+        {
+          headers: {
+            ...(token !== null && this.authHeader(token)),
+          },
+        }
+      )
+      .pipe(
+        switchMap(({ uid, token, emailVerified }) => {
+          localStorage.setItem(Constants.LocalStorage.token, token);
+
+          if (this.chef() === undefined) {
+            this.chef.set({
+              uid,
+              // The email will be gotten from the GET chef response
+              email: '',
+              emailVerified,
+              providerData: [],
+              ratings: {},
+              recentRecipes: {},
+              favoriteRecipes: [],
+              token,
+            });
+          }
+
+          // Fetch the rest of the chef's profile
+          return this.getChef();
+        }),
+        catchError(handleError)
+      );
+  }
+
+  unlinkOAuthProvider(providerId: Provider): Observable<Chef> {
+    if (this.isMocking) {
+      return of(mockChef);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      return this.noTokenFound();
+    }
+
+    return this.http
+      .delete<Token>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/oauth`,
+        {
+          params: {
+            providerId,
+          },
+          headers: {
+            ...(token !== null && this.authHeader(token)),
+          },
+        }
+      )
+      .pipe(
+        switchMap(({ token }) => {
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+
+          // Get the chef's updated provider data
+          return this.getChef();
         }),
         catchError(handleError)
       );

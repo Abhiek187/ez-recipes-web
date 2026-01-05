@@ -11,6 +11,7 @@ import { vi, type MockedObject } from 'vitest';
 import { LoginComponent } from './login.component';
 import { ChefService } from 'src/app/services/chef.service';
 import {
+  mockAuthUrls,
   mockChefEmailResponse,
   mockLoginResponse,
 } from 'src/app/models/profile.mock';
@@ -27,6 +28,10 @@ describe('LoginComponent', () => {
     mockChefService = vi.mockObject({
       login: vi.fn().mockName('ChefService.login'),
       verifyEmail: vi.fn().mockName('ChefService.verifyEmail'),
+      getAuthUrls: vi
+        .fn()
+        .mockName('ChefService.getAuthUrls')
+        .mockReturnValue(of(mockAuthUrls)),
     } as unknown as ChefService);
 
     await TestBed.configureTestingModule({
@@ -48,13 +53,14 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create', async () => {
     expect(loginComponent).toBeTruthy();
     expect(rootElement.textContent).toContain('Login');
     expect(rootElement.textContent).toContain('Sign Up');
     expect(rootElement.textContent).toContain('Username');
     expect(rootElement.textContent).toContain('Password');
     expect(rootElement.textContent).toContain('Forgot Password?');
+    expect(rootElement.textContent).toContain('Or sign in using:');
 
     const loginFields = rootElement.querySelector('.login-fields');
     const [usernameField, passwordField] = Array.from(
@@ -73,9 +79,13 @@ describe('LoginComponent', () => {
     loginComponent.showPassword.set(false);
     fixture.detectChanges();
     expect(passwordField.type).toBe('password');
+
+    expect(rootElement.querySelectorAll('.oauth-button').length).toBe(
+      mockAuthUrls.length
+    );
   });
 
-  it("should show an error if the username or password isn't provided", () => {
+  it("should show an error if the username or password isn't provided", async () => {
     const form = loginComponent.formGroup;
     form.controls.username.setValue(null);
     form.controls.password.setValue(null);
@@ -91,7 +101,7 @@ describe('LoginComponent', () => {
     expect(submitButton?.disabled).toBe(true);
   });
 
-  it('should enable the submit button if all fields are valid', () => {
+  it('should enable the submit button if all fields are valid', async () => {
     const form = loginComponent.formGroup;
     const mockEmail = 'test@example.com';
     const mockPassword = 'password123';
@@ -121,7 +131,7 @@ describe('LoginComponent', () => {
     });
   });
 
-  it('should show the step-up message if enabled', () => {
+  it('should show the step-up message if enabled', async () => {
     loginComponent.isStepUp.set(true);
     fixture.detectChanges();
 
