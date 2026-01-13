@@ -29,15 +29,15 @@
     "@angular/build": "^21.0.5",
     "@angular/cli": "~21.0.5",
     "@angular/compiler-cli": "^21.0.8",
-    "@types/jasmine": "~5.1.13",
-    "@vitest/coverage-v8": "^4.0.16",
+    "@types/jasmine": "~5.1.15",
+    "@vitest/coverage-v8": "^4.0.17",
     "angular-eslint": "21.1.0",
     "eslint": "^9.39.2",
     "fake-indexeddb": "^6.2.5",
     "jasmine-core": "~5.13.0",
     "jsdom": "^27.4.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "8.52.0",
+    "typescript-eslint": "8.53.0",
     "vitest": "^4.0.14"
   }
 }
