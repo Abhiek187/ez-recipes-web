@@ -34,10 +34,10 @@
     "angular-eslint": "21.1.0",
     "eslint": "^9.39.2",
     "fake-indexeddb": "^6.2.5",
-    "jasmine-core": "~5.13.0",
+    "jasmine-core": "~6.0.1",
     "jsdom": "^27.4.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "8.53.0",
+    "typescript-eslint": "8.53.1",
     "vitest": "^4.0.14"
   }
 }
