@@ -1,101 +1,102 @@
 <div class="profile-container">
   @if (authState() === AuthState.Authenticated && chef() !== undefined) {
-  <h1>Chef {{ chef()?.email }}</h1>
+    <h1>Chef {{ chef()?.email }}</h1>
 
-  <span class="profile-stats">
-    <span [ngPlural]="totalRecipesFavorited()">
-      <ng-template ngPluralCase="1">
-        {{ totalRecipesFavorited() }} favorite
-      </ng-template>
-      <ng-template ngPluralCase="other">
-        {{ totalRecipesFavorited() }} favorites
-      </ng-template>
-    </span>
-    <mat-divider [vertical]="true" />
-    <span [ngPlural]="totalRecipesViewed()">
-      <ng-template ngPluralCase="1">
-        {{ totalRecipesViewed() }} recipe viewed
-      </ng-template>
-      <ng-template ngPluralCase="other">
-        {{ totalRecipesViewed() }} recipes viewed
-      </ng-template>
-    </span>
-    <mat-divider [vertical]="true" />
-    <span [ngPlural]="totalRecipesRated()">
-      <ng-template ngPluralCase="1">
-        {{ totalRecipesRated() }} rating</ng-template
-      >
-      <ng-template ngPluralCase="other">
-        {{ totalRecipesRated() }} ratings
-      </ng-template>
-    </span>
-  </span>
-
-  <div class="profile-actions">
-    <button mat-raised-button class="btn-primary" (click)="logout()">
-      Logout
-    </button>
-    <button mat-raised-button class="btn-primary" (click)="changeEmail()">
-      Change Email
-    </button>
-    <button mat-raised-button class="btn-primary" (click)="changePassword()">
-      Change Password
-    </button>
-    <button mat-raised-button class="btn-warn" (click)="deleteAccount()">
-      Delete Account
-    </button>
-  </div>
-
-  <mat-divider class="profile-linked-accounts-divider" />
-  <h2>Linked Accounts</h2>
-  <div class="profile-linked-accounts">
-    @for (linkedAccount of linkedAccountEntries(); track linkedAccount[0]) {
-    @let provider = linkedAccount[0]; @let emails = linkedAccount[1];
-
-    <div class="profile-linked-account-container">
-      <span class="profile-linked-account-buttons">
-        <app-oauth-button
-          [provider]="provider"
-          [authUrl]="authUrls()[provider]"
-          (success)="onLinkSuccess()"
-        />
-        <button
-          mat-raised-button
-          class="btn-warn"
-          [disabled]="emails.length === 0 || isLoading()"
-          (click)="openUnlinkAlert(provider)"
+    <span class="profile-stats">
+      <span [ngPlural]="totalRecipesFavorited()">
+        <ng-template ngPluralCase="1">
+          {{ totalRecipesFavorited() }} favorite
+        </ng-template>
+        <ng-template ngPluralCase="other">
+          {{ totalRecipesFavorited() }} favorites
+        </ng-template>
+      </span>
+      <mat-divider [vertical]="true" />
+      <span [ngPlural]="totalRecipesViewed()">
+        <ng-template ngPluralCase="1">
+          {{ totalRecipesViewed() }} recipe viewed
+        </ng-template>
+        <ng-template ngPluralCase="other">
+          {{ totalRecipesViewed() }} recipes viewed
+        </ng-template>
+      </span>
+      <mat-divider [vertical]="true" />
+      <span [ngPlural]="totalRecipesRated()">
+        <ng-template ngPluralCase="1">
+          {{ totalRecipesRated() }} rating</ng-template
         >
-          <span class="unlink-button-span">
-            Unlink @if (isLoading()) {
-            <mat-spinner diameter="25" />
-            }
+        <ng-template ngPluralCase="other">
+          {{ totalRecipesRated() }} ratings
+        </ng-template>
+      </span>
+    </span>
+
+    <div class="profile-actions">
+      <button mat-raised-button class="btn-primary" (click)="logout()">
+        Logout
+      </button>
+      <button mat-raised-button class="btn-primary" (click)="changeEmail()">
+        Change Email
+      </button>
+      <button mat-raised-button class="btn-primary" (click)="changePassword()">
+        Change Password
+      </button>
+      <button mat-raised-button class="btn-warn" (click)="deleteAccount()">
+        Delete Account
+      </button>
+    </div>
+
+    <mat-divider class="profile-linked-accounts-divider" />
+    <h2>Linked Accounts</h2>
+    <div class="profile-linked-accounts">
+      @for (linkedAccount of linkedAccountEntries(); track linkedAccount[0]) {
+        @let provider = linkedAccount[0]; @let emails = linkedAccount[1];
+
+        <div class="profile-linked-account-container">
+          <span class="profile-linked-account-buttons">
+            <app-oauth-button
+              [provider]="provider"
+              [authUrl]="authUrls()[provider]"
+              (success)="onLinkSuccess()"
+            />
+            <button
+              mat-raised-button
+              class="btn-warn"
+              [disabled]="emails.length === 0 || isLoading()"
+              (click)="openUnlinkAlert(provider)"
+            >
+              <span class="unlink-button-span">
+                Unlink
+                @if (isLoading()) {
+                  <mat-spinner diameter="25" />
+                }
+              </span>
+            </button>
           </span>
-        </button>
-      </span>
-      @if (emails.length > 0) {
-      <span class="profile-linked-account-emails">
-        <mat-icon fontIcon="check" />
-        {{ emails.join(", ") }}
-      </span>
+          @if (emails.length > 0) {
+            <span class="profile-linked-account-emails">
+              <mat-icon fontIcon="check" />
+              {{ emails.join(", ") }}
+            </span>
+          }
+        </div>
       }
     </div>
-    }
-  </div>
   } @else if (authState() === AuthState.Unauthenticated) {
-  <h2 class="profile-unauth-header">
-    Signing up for an account is free and gives you great perks, including:
-  </h2>
-  <ul class="profile-unauth-perks">
-    <li>Saving your favorite recipes</li>
-    <li>Saving more than 10 recently viewed recipes</li>
-    <li>Rating recipes</li>
-    <li>Syncing recipes across the web and mobile apps</li>
-  </ul>
-  <button mat-raised-button [routerLink]="'/' + profileRoutes.login.path">
-    Login
-  </button>
+    <h2 class="profile-unauth-header">
+      Signing up for an account is free and gives you great perks, including:
+    </h2>
+    <ul class="profile-unauth-perks">
+      <li>Saving your favorite recipes</li>
+      <li>Saving more than 10 recently viewed recipes</li>
+      <li>Rating recipes</li>
+      <li>Syncing recipes across the web and mobile apps</li>
+    </ul>
+    <button mat-raised-button [routerLink]="'/' + profileRoutes.login.path">
+      Login
+    </button>
   } @else {
-  <mat-spinner diameter="50" class="profile-spinner" />
-  <p>Getting your profile ready… 🧑‍🍳</p>
+    <mat-spinner diameter="50" class="profile-spinner" />
+    <p>Getting your profile ready… 🧑‍🍳</p>
   }
 </div>
