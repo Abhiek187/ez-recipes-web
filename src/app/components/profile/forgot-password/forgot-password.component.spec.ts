@@ -50,7 +50,7 @@ describe('ForgotPasswordComponent', () => {
     expect(emailField).toBeTruthy();
     expect(emailField?.type).toBe('email');
     expect(emailField?.inputMode).toBe('email');
-    expect(emailField?.autocomplete).toBe('off');
+    expect(emailField?.autocomplete).toBe('email');
 
     const submitButton = rootElement.querySelector('button');
     expect(submitButton).toBeTruthy();
@@ -71,7 +71,7 @@ describe('ForgotPasswordComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.email.hasError(forgotPasswordComponent.formErrors.required)
+      form.controls.email.hasError(forgotPasswordComponent.formErrors.required),
     ).toBe(true);
     const submitButton = rootElement.querySelector('button');
     expect(submitButton?.disabled).toBe(true);
@@ -85,8 +85,8 @@ describe('ForgotPasswordComponent', () => {
     expect(form.valid).toBe(false);
     expect(
       form.controls.email.hasError(
-        forgotPasswordComponent.formErrors.emailInvalid
-      )
+        forgotPasswordComponent.formErrors.emailInvalid,
+      ),
     ).toBe(true);
     const submitButton = rootElement.querySelector('button');
     expect(submitButton?.disabled).toBe(true);

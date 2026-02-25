@@ -42,7 +42,7 @@ describe('ChefService', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(token);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
   };
 
@@ -76,7 +76,7 @@ describe('ChefService', () => {
       url: baseUrl,
     });
     expect(req.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     req.flush(mockChef);
 
@@ -121,6 +121,7 @@ describe('ChefService', () => {
       email: credentials.email,
       emailVerified: false,
       providerData: [],
+      passkeys: [],
       ratings: {},
       recentRecipes: {},
       favoriteRecipes: [],
@@ -160,7 +161,7 @@ describe('ChefService', () => {
       url: baseUrl,
     });
     expect(req.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     expect(req.request.body).toBe(fields);
     req.flush(mockChefEmailResponse);
@@ -213,7 +214,7 @@ describe('ChefService', () => {
       url: baseUrl,
     });
     expect(req.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     req.flush(null);
 
@@ -244,7 +245,7 @@ describe('ChefService', () => {
       url: `${baseUrl}/verify`,
     });
     expect(req.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     expect(req.request.body).toBeNull();
     req.flush(mockChefEmailResponse);
@@ -288,6 +289,7 @@ describe('ChefService', () => {
       email: credentials.email,
       emailVerified: true,
       providerData: [],
+      passkeys: [],
       ratings: {},
       recentRecipes: {},
       favoriteRecipes: [],
@@ -322,7 +324,7 @@ describe('ChefService', () => {
       url: `${baseUrl}/logout`,
     });
     expect(req.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     expect(req.request.body).toBeNull();
     req.flush(null);
@@ -378,7 +380,7 @@ describe('ChefService', () => {
     };
     mockLocalStorage(null);
     const chefPromise = firstValueFrom(
-      chefService.loginWithOAuth(oAuthRequest)
+      chefService.loginWithOAuth(oAuthRequest),
     );
 
     const oauthReq = httpTestingController.expectOne({
@@ -404,7 +406,7 @@ describe('ChefService', () => {
     };
     mockLocalStorage();
     const chefPromise = firstValueFrom(
-      chefService.loginWithOAuth(oAuthRequest)
+      chefService.loginWithOAuth(oAuthRequest),
     );
 
     const oauthReq = httpTestingController.expectOne({
@@ -412,7 +414,7 @@ describe('ChefService', () => {
       url: `${baseUrl}/oauth`,
     });
     expect(oauthReq.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     expect(oauthReq.request.body).toStrictEqual({
       ...oAuthRequest,
@@ -426,7 +428,7 @@ describe('ChefService', () => {
       url: baseUrl,
     });
     expect(chefReq.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     chefReq.flush(mockChef);
 
@@ -441,7 +443,7 @@ describe('ChefService', () => {
     };
     mockLocalStorage();
     const chefPromise = firstValueFrom(
-      chefService.loginWithOAuth(oAuthRequest)
+      chefService.loginWithOAuth(oAuthRequest),
     );
 
     const req = httpTestingController.expectOne({
@@ -457,7 +459,7 @@ describe('ChefService', () => {
     const provider = Provider.Facebook;
     mockLocalStorage();
     const chefPromise = firstValueFrom(
-      chefService.unlinkOAuthProvider(provider)
+      chefService.unlinkOAuthProvider(provider),
     );
 
     const oauthReq = httpTestingController.expectOne({
@@ -465,7 +467,7 @@ describe('ChefService', () => {
       url: `${baseUrl}/oauth?providerId=${provider}`,
     });
     expect(oauthReq.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     oauthReq.flush(mockToken);
 
@@ -474,7 +476,7 @@ describe('ChefService', () => {
       url: baseUrl,
     });
     expect(chefReq.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     chefReq.flush(mockChef);
 
@@ -486,7 +488,7 @@ describe('ChefService', () => {
     const provider = Provider.Facebook;
     mockLocalStorage();
     const chefPromise = firstValueFrom(
-      chefService.unlinkOAuthProvider(provider)
+      chefService.unlinkOAuthProvider(provider),
     );
 
     const req = httpTestingController.expectOne({

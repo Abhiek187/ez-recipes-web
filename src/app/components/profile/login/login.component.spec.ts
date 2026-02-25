@@ -64,14 +64,14 @@ describe('LoginComponent', () => {
 
     const loginFields = rootElement.querySelector('.login-fields');
     const [usernameField, passwordField] = Array.from(
-      loginFields?.querySelectorAll<HTMLInputElement>('input') ?? []
+      loginFields?.querySelectorAll<HTMLInputElement>('input') ?? [],
     );
     expect(usernameField.type).toBe('email');
     expect(usernameField.inputMode).toBe('email');
-    expect(usernameField.autocomplete).toBe('off');
+    expect(usernameField.autocomplete).toBe('username webauthn');
 
     expect(passwordField.type).toBe('password');
-    expect(passwordField.autocomplete).toBe('off');
+    expect(passwordField.autocomplete).toBe('current-password webauthn');
 
     loginComponent.showPassword.set(true);
     fixture.detectChanges();
@@ -81,7 +81,7 @@ describe('LoginComponent', () => {
     expect(passwordField.type).toBe('password');
 
     expect(rootElement.querySelectorAll('.oauth-button').length).toBe(
-      mockAuthUrls.length
+      mockAuthUrls.length,
     );
   });
 

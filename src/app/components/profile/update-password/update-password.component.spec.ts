@@ -52,7 +52,7 @@ describe('UpdatePasswordComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     router.lastSuccessfulNavigation.mockReturnValue({
@@ -76,20 +76,20 @@ describe('UpdatePasswordComponent', () => {
     expect(rootElement.textContent).toContain('New Password');
     expect(rootElement.textContent).toContain('Confirm Password');
     expect(rootElement.textContent).toContain(
-      'Password must be at least 8 characters long'
+      'Password must be at least 8 characters long',
     );
     expect(rootElement.textContent).toContain('Submit');
 
     const signUpFields = rootElement.querySelector('.password-fields');
     const [passwordField, confirmPasswordField] = Array.from(
-      signUpFields?.querySelectorAll<HTMLInputElement>('input') ?? []
+      signUpFields?.querySelectorAll<HTMLInputElement>('input') ?? [],
     );
 
     expect(passwordField.type).toBe('password');
-    expect(passwordField.autocomplete).toBe('off');
+    expect(passwordField.autocomplete).toBe('new-password');
 
     expect(confirmPasswordField.type).toBe('password');
-    expect(confirmPasswordField.autocomplete).toBe('off');
+    expect(confirmPasswordField.autocomplete).toBe('new-password');
 
     updatePasswordComponent.showPassword.set(true);
     fixture.detectChanges();
@@ -114,8 +114,8 @@ describe('UpdatePasswordComponent', () => {
     expect(form.valid).toBe(false);
     expect(
       form.controls.password.hasError(
-        updatePasswordComponent.formErrors.required
-      )
+        updatePasswordComponent.formErrors.required,
+      ),
     ).toBe(true);
 
     const submitButton = rootElement
@@ -132,8 +132,8 @@ describe('UpdatePasswordComponent', () => {
     expect(form.valid).toBe(false);
     expect(
       form.controls.password.hasError(
-        updatePasswordComponent.formErrors.passwordMinLength
-      )
+        updatePasswordComponent.formErrors.passwordMinLength,
+      ),
     ).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -149,7 +149,7 @@ describe('UpdatePasswordComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.hasError(updatePasswordComponent.formErrors.passwordMismatch)
+      form.hasError(updatePasswordComponent.formErrors.passwordMismatch),
     ).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
