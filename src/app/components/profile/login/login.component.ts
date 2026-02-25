@@ -19,6 +19,7 @@ import { ChefService } from 'src/app/services/chef.service';
 import { LoginCredentials, Provider } from 'src/app/models/profile.model';
 import { profileRoutes, routes } from 'src/app/app-routing.module';
 import { OauthButtonComponent } from '../../utils/oauth-button/oauth-button.component';
+import { PasskeyButtonComponent } from '../../utils/passkey-button/passkey-button.component';
 
 @Component({
   selector: 'app-login',
@@ -29,6 +30,7 @@ import { OauthButtonComponent } from '../../utils/oauth-button/oauth-button.comp
     MatInputModule,
     MatProgressSpinnerModule,
     OauthButtonComponent,
+    PasskeyButtonComponent,
     ReactiveFormsModule,
     RouterModule,
   ],
@@ -76,8 +78,8 @@ export class LoginComponent implements OnInit {
         next: (authUrls) => {
           this.authUrls.set(
             Object.fromEntries(
-              authUrls.map(({ providerId, authUrl }) => [providerId, authUrl])
-            )
+              authUrls.map(({ providerId, authUrl }) => [providerId, authUrl]),
+            ),
           );
         },
         error: (error) => {
@@ -106,7 +108,7 @@ export class LoginComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: ({ emailVerified }) => {

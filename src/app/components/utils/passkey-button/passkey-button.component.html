@@ -1,0 +1,18 @@
+<button
+  mat-raised-button
+  class="passkey-button"
+  [disabled]="disabled()"
+  (click)="loginWithPasskey($event)"
+>
+  <div class="passkey-button-content">
+    <!-- fontIcon doesn't work with outlined symbols -->
+    <mat-icon fontSet="material-symbols-outlined">passkey</mat-icon>
+    <span>Sign in with a passkey</span>
+    @if (isLoading()) {
+      <mat-spinner diameter="25" />
+    }
+  </div>
+</button>
+<p [style.visibility]="disabled() ? 'visible' : 'hidden'">
+  Username is required to sign in with a passkey
+</p>
