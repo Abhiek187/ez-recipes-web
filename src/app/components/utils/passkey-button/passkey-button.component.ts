@@ -1,7 +1,19 @@
-import { Component, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs';
+
+import { ChefService } from 'src/app/services/chef.service';
 
 @Component({
   selector: 'app-passkey-button',
@@ -10,27 +22,75 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrl: './passkey-button.component.scss',
 })
 export class PasskeyButtonComponent {
-  readonly disabled = input(false);
+  private chefService = inject(ChefService);
+  private destroyRef = inject(DestroyRef);
+  private snackBar = inject(MatSnackBar);
+
+  readonly username = input<string | null | undefined>();
   isLoading = signal(false);
+  isDisabled = computed(() => !this.username() || this.isLoading());
 
   async loginWithPasskey(event: PointerEvent) {
     event.preventDefault();
+    const username = this.username();
 
     // Check if the browser supports passkeys
     if (
+      !username ||
       !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) ||
       !(await PublicKeyCredential.isConditionalMediationAvailable())
     ) {
       return;
     }
 
+    this.isLoading.set(true);
     // Request a challenge from the server
-    // const options = {};
-    // // Answer the challenge
-    // const passkeyOptions =
-    //   PublicKeyCredential.parseCreationOptionsFromJSON(options);
-    // const passkeyCredential = await navigator.credentials.get(passkeyOptions);
-    // // Verify the response
-    // const passkeyValidateResult = passkeyCredential.toJSON();
+    this.chefService
+      .getExistingPasskeyChallenge(username)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        }),
+      )
+      .subscribe({
+        next: async (options) => {
+          this.isLoading.set(false);
+          let passkeyCredential: Credential;
+
+          // Answer the challenge
+          try {
+            const passkeyOptions =
+              PublicKeyCredential.parseRequestOptionsFromJSON(options);
+            const credential = await navigator.credentials.get({
+              publicKey: passkeyOptions,
+            });
+
+            if (credential === null) {
+              throw 'An unknown error occurred';
+            } else {
+              passkeyCredential = credential;
+            }
+          } catch (err) {
+            const error = err as Error;
+            console.error('Error logging in with passkey:', error);
+            this.snackBar.open(error.message, 'Dismiss');
+            return;
+          }
+
+          // Verify the response
+          this.isLoading.set(true);
+          this.chefService
+            .validatePasskey(passkeyCredential, username)
+            .subscribe({
+              next: () => {
+                console.log('Success!');
+              },
+            });
+        },
+        error: (error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
   }
 }

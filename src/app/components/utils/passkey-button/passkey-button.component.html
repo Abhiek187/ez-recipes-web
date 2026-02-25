@@ -1,7 +1,7 @@
 <button
   mat-raised-button
   class="passkey-button"
-  [disabled]="disabled()"
+  [disabled]="isDisabled()"
   (click)="loginWithPasskey($event)"
 >
   <div class="passkey-button-content">
@@ -13,6 +13,6 @@
     }
   </div>
 </button>
-<p [style.visibility]="disabled() ? 'visible' : 'hidden'">
+<p [style.visibility]="isDisabled() ? 'visible' : 'hidden'">
   Username is required to sign in with a passkey
 </p>

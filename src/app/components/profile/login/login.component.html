@@ -76,7 +76,7 @@
       />
     }
   </div>
-  <app-passkey-button [disabled]="!formGroup.value.username || isLoading()" />
+  <app-passkey-button [username]="formGroup.value.username" />
 
   <span class="submit-row">
     <button
