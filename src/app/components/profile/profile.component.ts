@@ -19,6 +19,7 @@ import { finalize } from 'rxjs';
 
 import {
   AuthState,
+  Passkey,
   ProfileAction,
   Provider,
 } from 'src/app/models/profile.model';
@@ -230,7 +231,40 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  deletePasskey() {
-    console.log('Delete passkey');
+  deletePasskey(passkey: Passkey) {
+    // Confirm before deleting a passkey
+    const dialogRef = this.dialog.open<DialogComponent, DialogData>(
+      DialogComponent,
+      {
+        data: {
+          message: `Are you sure you want to delete this passkey? ${passkey.name}`,
+          dismissText: 'No',
+          confirmText: 'Yes',
+          isConfirmDestructive: true,
+        },
+      },
+    );
+
+    dialogRef.afterClosed().subscribe((didConfirm: boolean) => {
+      if (!didConfirm) return;
+      this.isLoading.set(true);
+
+      this.chefService
+        .deletePasskey(passkey.id)
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          finalize(() => {
+            this.isLoading.set(false);
+          }),
+        )
+        .subscribe({
+          next: () => {
+            this.snackBar.open('Passkey deleted', 'Dismiss');
+          },
+          error: (error) => {
+            this.snackBar.open(error.message, 'Dismiss');
+          },
+        });
+    });
   }
 }

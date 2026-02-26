@@ -98,13 +98,13 @@
               mat-icon-button
               class="icon-warn"
               aria-label="Delete passkey"
-              (click)="deletePasskey()"
+              (click)="deletePasskey(passkey)"
             >
               <mat-icon fontIcon="delete" />
             </button>
           </span>
           <span class="profile-passkey-last-used">
-            Last used: {{ passkey.lastUsed }}
+            Last used: {{ passkey.lastUsed | date: "medium" }}
           </span>
         </div>
       }
