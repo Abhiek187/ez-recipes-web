@@ -85,6 +85,12 @@ export class PasskeyButtonComponent {
           this.isLoading.set(true);
           this.chefService
             .validatePasskey(passkeyCredential, username)
+            .pipe(
+              takeUntilDestroyed(this.destroyRef),
+              finalize(() => {
+                this.isLoading.set(false);
+              }),
+            )
             .subscribe({
               next: () => {
                 console.log('Success!');
@@ -145,11 +151,40 @@ export class PasskeyButtonComponent {
 
           // Verify the response
           this.isLoading.set(true);
-          this.chefService.validatePasskey(passkeyCredential).subscribe({
-            next: () => {
-              console.log('Success!');
-            },
-          });
+          this.chefService
+            .validatePasskey(passkeyCredential)
+            .pipe(
+              takeUntilDestroyed(this.destroyRef),
+              finalize(() => {
+                this.isLoading.set(false);
+              }),
+            )
+            .subscribe({
+              next: () => {
+                console.log('Success!');
+              },
+              error: async (error) => {
+                // Attempt to delete the passkey saved in the authenticator
+                if (
+                  Object.hasOwn(PublicKeyCredential, 'signalUnknownCredential')
+                ) {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  await (PublicKeyCredential as any).signalUnknownCredential({
+                    rpId: options.rp.id,
+                    credentialId: passkeyCredential.id,
+                  });
+                  this.snackBar.open(
+                    `${error.message}. Please try again.`,
+                    'Dismiss',
+                  );
+                } else {
+                  this.snackBar.open(
+                    `${error.message}. Please delete the passkey from your device and try again.`,
+                    'Dismiss',
+                  );
+                }
+              },
+            });
         },
         error: (error) => {
           this.snackBar.open(error.message, 'Dismiss');
