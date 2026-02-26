@@ -26,9 +26,12 @@ export class PasskeyButtonComponent {
   private destroyRef = inject(DestroyRef);
   private snackBar = inject(MatSnackBar);
 
+  readonly create = input(false);
   readonly username = input<string | null | undefined>();
   isLoading = signal(false);
-  isDisabled = computed(() => !this.username() || this.isLoading());
+  isDisabled = computed(
+    () => (!this.create() && !this.username()) || this.isLoading(),
+  );
 
   async loginWithPasskey(event: PointerEvent) {
     event.preventDefault();
@@ -87,6 +90,66 @@ export class PasskeyButtonComponent {
                 console.log('Success!');
               },
             });
+        },
+        error: (error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
+  }
+
+  async createNewPasskey(event: PointerEvent) {
+    event.preventDefault();
+
+    // Check if the browser supports passkeys
+    if (
+      !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) ||
+      !(await PublicKeyCredential.isConditionalMediationAvailable())
+    ) {
+      return;
+    }
+
+    this.isLoading.set(true);
+    // Request a challenge from the server
+    this.chefService
+      .getNewPasskeyChallenge()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.isLoading.set(false);
+        }),
+      )
+      .subscribe({
+        next: async (options) => {
+          this.isLoading.set(false);
+          let passkeyCredential: Credential;
+
+          // Answer the challenge
+          try {
+            const passkeyOptions =
+              PublicKeyCredential.parseCreationOptionsFromJSON(options);
+            const credential = await navigator.credentials.create({
+              publicKey: passkeyOptions,
+            });
+
+            if (credential === null) {
+              throw 'An unknown error occurred';
+            } else {
+              passkeyCredential = credential;
+            }
+          } catch (err) {
+            const error = err as Error;
+            console.error('Error creating a new passkey:', error);
+            this.snackBar.open(error.message, 'Dismiss');
+            return;
+          }
+
+          // Verify the response
+          this.isLoading.set(true);
+          this.chefService.validatePasskey(passkeyCredential).subscribe({
+            next: () => {
+              console.log('Success!');
+            },
+          });
         },
         error: (error) => {
           this.snackBar.open(error.message, 'Dismiss');

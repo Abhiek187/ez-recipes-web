@@ -109,7 +109,7 @@
         </div>
       }
     </div>
-    <app-passkey-button />
+    <app-passkey-button [create]="true" />
   } @else if (authState() === AuthState.Unauthenticated) {
     <h2 class="profile-unauth-header">
       Signing up for an account is free and gives you great perks, including:
