@@ -82,6 +82,34 @@
         </div>
       }
     </div>
+
+    <mat-divider class="profile-passkeys-divider" />
+    <h2>Passkeys</h2>
+    <div class="profile-passkeys">
+      @for (passkey of passkeys(); track passkey.id) {
+        <div class="profile-passkey-container">
+          <span class="profile-passkey-info">
+            <img
+              [src]="isDarkMode() ? passkey.iconDark : passkey.iconLight"
+              alt=""
+            />
+            <h3 class="profile-passkey-name">{{ passkey.name }}</h3>
+            <button
+              mat-icon-button
+              class="icon-warn"
+              aria-label="Delete passkey"
+              (click)="deletePasskey()"
+            >
+              <mat-icon fontIcon="delete" />
+            </button>
+          </span>
+          <span class="profile-passkey-last-used">
+            Last used: {{ passkey.lastUsed }}
+          </span>
+        </div>
+      }
+    </div>
+    <app-passkey-button />
   } @else if (authState() === AuthState.Unauthenticated) {
     <h2 class="profile-unauth-header">
       Signing up for an account is free and gives you great perks, including:

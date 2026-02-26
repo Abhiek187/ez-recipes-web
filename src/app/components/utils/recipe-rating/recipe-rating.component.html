@@ -1,32 +1,32 @@
 <div class="recipe-rating" [attr.aria-label]="ratingLabel()">
   @for (i of RATINGS; track i) {
-  <button
-    matButton
-    class="rating-button"
-    (click)="onClick($event, i)"
-    (mouseenter)="onHoverStart(i)"
-    (mouseleave)="onHoverEnd()"
-    [disabled]="!enabled()"
-    [attr.aria-label]="starRatingInputLabel(i)"
-    [style]="{
-      color: !enabled()
-        ? null
-        : hoveringStar() !== undefined || myRating() !== undefined
-        ? ORANGE_900
-        : AMBER_700
-    }"
-  >
-    <mat-icon [fontIcon]="starIcon(i)" />
-  </button>
+    <button
+      matButton
+      class="rating-button"
+      (click)="onClick($event, i)"
+      (mouseenter)="onHoverStart(i)"
+      (mouseleave)="onHoverEnd()"
+      [disabled]="!enabled()"
+      [attr.aria-label]="starRatingInputLabel(i)"
+      [style]="{
+        color: !enabled()
+          ? null
+          : hoveringStar() !== undefined || myRating() !== undefined
+            ? ORANGE_900
+            : AMBER_700,
+      }"
+    >
+      <mat-icon [fontIcon]="starIcon(i)" />
+    </button>
   }
   <p class="rating-text">
     @if (averageRating() !== null) {
-    <!-- Round rating to 1 decimal place -->
-    ({{ averageRating() | number : "1.0-1" }}/5,
-    {{ totalRatings() | shorthand }}
-    {{ totalRatings() === 1 ? "rating" : "ratings" }}) } @else { ({{
-      totalRatings() | shorthand
-    }}
-    ratings) }
+      <!-- Round rating to 1 decimal place -->
+      ({{ averageRating() | number: "1.0-1" }}/5,
+      {{ totalRatings() | shorthand }}
+      {{ totalRatings() === 1 ? "rating" : "ratings" }})
+    } @else {
+      ({{ totalRatings() | shorthand }} ratings)
+    }
   </p>
 </div>

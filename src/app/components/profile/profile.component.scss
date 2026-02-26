@@ -23,23 +23,34 @@ $green-800: #2e7d32;
   gap: 16px;
 }
 
-.profile-linked-accounts-divider {
+.profile-linked-accounts-divider,
+.profile-passkeys-divider {
   width: 100%;
   margin-top: 8px;
   margin-bottom: 8px;
 }
 
-.profile-linked-accounts {
+.profile-linked-accounts,
+.profile-passkeys {
   display: flex;
   flex-direction: column;
   gap: 16px;
 
+  .profile-passkey-container {
+    margin-bottom: 16px;
+  }
+
   .profile-linked-account-buttons,
-  .profile-linked-account-emails {
+  .profile-linked-account-emails,
+  .profile-passkey-info {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
+
+    .profile-passkey-name {
+      margin-bottom: 0;
+    }
   }
 
   .profile-linked-account-buttons {
@@ -58,6 +69,11 @@ $green-800: #2e7d32;
         color: light-dark($green-800, $green-300),
       )
     );
+  }
+
+  .profile-passkey-last-used {
+    display: flex;
+    justify-content: center;
   }
 }
 

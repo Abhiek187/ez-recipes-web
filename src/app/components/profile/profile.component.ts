@@ -27,6 +27,8 @@ import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
 import { OauthButtonComponent } from '../utils/oauth-button/oauth-button.component';
 import { DialogComponent, DialogData } from '../utils/dialog/dialog.component';
+import Theme from 'src/app/models/theme.model';
+import { PasskeyButtonComponent } from '../utils/passkey-button/passkey-button.component';
 
 @Component({
   selector: 'app-profile',
@@ -37,6 +39,7 @@ import { DialogComponent, DialogData } from '../utils/dialog/dialog.component';
     MatIconModule,
     MatProgressSpinnerModule,
     OauthButtonComponent,
+    PasskeyButtonComponent,
     RouterModule,
   ],
   templateUrl: './profile.component.html',
@@ -55,22 +58,27 @@ export class ProfileComponent implements OnInit {
   selectedProvider = signal(Provider.Google);
   authUrls = signal<Partial<Record<Provider, string>>>({});
   isLoading = signal(false);
+  isDarkMode = signal(
+    localStorage.getItem(Constants.LocalStorage.theme) === null
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : localStorage.getItem(Constants.LocalStorage.theme) === Theme.Dark,
+  );
   chef = this.chefService.chef;
   profileRoutes = profileRoutes;
 
   readonly totalRecipesFavorited = computed(
-    () => this.chef()?.favoriteRecipes.length ?? 0
+    () => this.chef()?.favoriteRecipes.length ?? 0,
   );
   readonly totalRecipesViewed = computed(
-    () => Object.keys(this.chef()?.recentRecipes ?? {}).length
+    () => Object.keys(this.chef()?.recentRecipes ?? {}).length,
   );
   readonly totalRecipesRated = computed(
-    () => Object.keys(this.chef()?.ratings ?? {}).length
+    () => Object.keys(this.chef()?.ratings ?? {}).length,
   );
   readonly linkedAccounts = computed(() => {
     // Start with all the supported providers
     const initialResult = Object.fromEntries<string[]>(
-      Object.values(Provider).map((provider) => [provider, []])
+      Object.values(Provider).map((provider) => [provider, []]),
     ) as Record<Provider, string[]>;
     // A chef can link 0 or more emails with a provider
     return (this.chef()?.providerData ?? []).reduce((result, providerData) => {
@@ -84,8 +92,9 @@ export class ProfileComponent implements OnInit {
     }, initialResult);
   });
   readonly linkedAccountEntries = computed(
-    () => Object.entries(this.linkedAccounts()) as [Provider, string[]][]
+    () => Object.entries(this.linkedAccounts()) as [Provider, string[]][],
   );
+  readonly passkeys = computed(() => this.chef()?.passkeys ?? []);
 
   ngOnInit(): void {
     // Check if the user is authenticated every time the profile tab is launched
@@ -104,7 +113,7 @@ export class ProfileComponent implements OnInit {
       this.chefService.getChef().subscribe({
         next: ({ emailVerified }) => {
           this.authState.set(
-            emailVerified ? AuthState.Authenticated : AuthState.Unauthenticated
+            emailVerified ? AuthState.Authenticated : AuthState.Unauthenticated,
           );
         },
         error: (error) => {
@@ -123,13 +132,13 @@ export class ProfileComponent implements OnInit {
       case ProfileAction.ChangeEmail:
         this.snackBar.open(
           'Email updated successfully! Please sign in again.',
-          'Dismiss'
+          'Dismiss',
         );
         break;
       case ProfileAction.ResetPassword:
         this.snackBar.open(
           'Password updated successfully! Please sign in again.',
-          'Dismiss'
+          'Dismiss',
         );
     }
 
@@ -140,8 +149,8 @@ export class ProfileComponent implements OnInit {
         next: (authUrls) => {
           this.authUrls.set(
             Object.fromEntries(
-              authUrls.map(({ providerId, authUrl }) => [providerId, authUrl])
-            )
+              authUrls.map(({ providerId, authUrl }) => [providerId, authUrl]),
+            ),
           );
         },
         error: (error) => {
@@ -179,7 +188,7 @@ export class ProfileComponent implements OnInit {
   onLinkSuccess() {
     this.snackBar.open(
       `Successfully linked ${this.selectedProvider()}!`,
-      'Dismiss'
+      'Dismiss',
     );
   }
 
@@ -194,7 +203,7 @@ export class ProfileComponent implements OnInit {
           confirmText: 'Yes',
           isConfirmDestructive: true,
         },
-      }
+      },
     );
 
     dialogRef.afterClosed().subscribe((didConfirm: boolean) => {
@@ -208,7 +217,7 @@ export class ProfileComponent implements OnInit {
           takeUntilDestroyed(this.destroyRef),
           finalize(() => {
             this.isLoading.set(false);
-          })
+          }),
         )
         .subscribe({
           next: () => {
@@ -219,5 +228,9 @@ export class ProfileComponent implements OnInit {
           },
         });
     });
+  }
+
+  deletePasskey() {
+    console.log('Delete passkey');
   }
 }
