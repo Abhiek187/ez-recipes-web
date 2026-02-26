@@ -258,8 +258,21 @@ export class ProfileComponent implements OnInit {
           }),
         )
         .subscribe({
-          next: () => {
-            this.snackBar.open('Passkey deleted', 'Dismiss');
+          next: async () => {
+            // Attempt to delete the passkey saved in the authenticator
+            if (Object.hasOwn(PublicKeyCredential, 'signalUnknownCredential')) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              await (PublicKeyCredential as any).signalUnknownCredential({
+                rpId: location.hostname,
+                credentialId: passkey.id,
+              });
+              this.snackBar.open('Passkey deleted', 'Dismiss');
+            } else {
+              this.snackBar.open(
+                'Passkey deleted. Make sure to also delete the passkey from your device.',
+                'Dismiss',
+              );
+            }
           },
           error: (error) => {
             this.snackBar.open(error.message, 'Dismiss');

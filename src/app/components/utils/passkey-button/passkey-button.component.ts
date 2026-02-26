@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
+import Constants from 'src/app/constants/constants';
 
 import { ChefService } from 'src/app/services/chef.service';
 
@@ -43,6 +44,7 @@ export class PasskeyButtonComponent {
       !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) ||
       !(await PublicKeyCredential.isConditionalMediationAvailable())
     ) {
+      this.snackBar.open(Constants.passkeyUnsupported, 'Dismiss');
       return;
     }
 
@@ -111,6 +113,7 @@ export class PasskeyButtonComponent {
       !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) ||
       !(await PublicKeyCredential.isConditionalMediationAvailable())
     ) {
+      this.snackBar.open(Constants.passkeyUnsupported, 'Dismiss');
       return;
     }
 
