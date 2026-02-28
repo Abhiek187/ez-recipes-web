@@ -4,6 +4,7 @@ import {
   DestroyRef,
   inject,
   input,
+  output,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -12,8 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
-import Constants from 'src/app/constants/constants';
 
+import Constants from 'src/app/constants/constants';
+import { Chef } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
 
 @Component({
@@ -29,6 +31,7 @@ export class PasskeyButtonComponent {
 
   readonly create = input(false);
   readonly username = input<string | null | undefined>();
+  readonly success = output<Chef>();
   isLoading = signal(false);
   isDisabled = computed(
     () => (!this.create() && !this.username()) || this.isLoading(),
@@ -94,8 +97,8 @@ export class PasskeyButtonComponent {
               }),
             )
             .subscribe({
-              next: () => {
-                console.log('Success!');
+              next: (chef) => {
+                this.success.emit(chef);
               },
             });
         },
@@ -163,8 +166,8 @@ export class PasskeyButtonComponent {
               }),
             )
             .subscribe({
-              next: () => {
-                console.log('Success!');
+              next: (chef) => {
+                this.success.emit(chef);
               },
               error: async (error) => {
                 // Attempt to delete the passkey saved in the authenticator

@@ -193,6 +193,10 @@ export class ProfileComponent implements OnInit {
     );
   }
 
+  onPasskeyCreateSuccess() {
+    this.snackBar.open('Passkey created successfully', 'Dismiss');
+  }
+
   openUnlinkAlert(provider: Provider) {
     // Confirm before unlinking
     const dialogRef = this.dialog.open<DialogComponent, DialogData>(
@@ -266,10 +270,10 @@ export class ProfileComponent implements OnInit {
                 rpId: location.hostname,
                 credentialId: passkey.id,
               });
-              this.snackBar.open('Passkey deleted', 'Dismiss');
+              this.snackBar.open('Passkey deleted successfully', 'Dismiss');
             } else {
               this.snackBar.open(
-                'Passkey deleted. Make sure to also delete the passkey from your device.',
+                'Passkey deleted successfully. Make sure to also delete the passkey from your device.',
                 'Dismiss',
               );
             }

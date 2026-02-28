@@ -76,7 +76,10 @@
       />
     }
   </div>
-  <app-passkey-button [username]="formGroup.value.username" />
+  <app-passkey-button
+    [username]="formGroup.value.username"
+    (success)="onLoginSuccess($event.emailVerified, $event.email)"
+  />
 
   <span class="submit-row">
     <button
