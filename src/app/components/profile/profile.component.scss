@@ -36,7 +36,7 @@ $green-800: #2e7d32;
   flex-direction: column;
   gap: 16px;
 
-  .profile-passkey-container {
+  .profile-passkey-container:last-child {
     margin-bottom: 16px;
   }
 

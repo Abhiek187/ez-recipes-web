@@ -14,7 +14,7 @@
   </div>
 </button>
 @if (!create()) {
-  <p [style.visibility]="isDisabled() ? 'visible' : 'hidden'">
+  <p [style.visibility]="isDisabled() && !isLoading() ? 'visible' : 'hidden'">
     Username is required to sign in with a passkey
   </p>
 }
