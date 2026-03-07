@@ -55,7 +55,7 @@ describe('PasskeyButtonComponent', () => {
     await fixture.whenStable();
   });
 
-  it('should create a new passkey', () => {
+  it('should create a new passkey', async () => {
     expect(component).toBeTruthy();
     fixture.componentRef.setInput('create', true);
     fixture.detectChanges();
@@ -66,11 +66,11 @@ describe('PasskeyButtonComponent', () => {
     expect(passkeyButton?.textContent).toContain('Create a passkey');
 
     passkeyButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(successEmitSpy).toHaveBeenCalledWith(mockChef);
   });
 
-  it('should login with an existing passkey', () => {
+  it('should login with an existing passkey', async () => {
     expect(component).toBeTruthy();
     fixture.componentRef.setInput('create', false);
     fixture.componentRef.setInput('username', null);
@@ -87,7 +87,7 @@ describe('PasskeyButtonComponent', () => {
     expect(passkeyButton?.disabled).toBe(false);
 
     passkeyButton?.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(successEmitSpy).toHaveBeenCalledWith(mockChef);
   });
 });

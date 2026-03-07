@@ -1,5 +1,11 @@
+import { TestBed } from '@angular/core/testing';
 import 'fake-indexeddb/auto';
 import { vi } from 'vitest';
+
+afterEach(() => {
+  // Prevent flaky TestBed errors when using fixture.whenStable() with Vitest
+  TestBed.resetTestingModule();
+});
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -90,8 +96,8 @@ globalThis.PublicKeyCredential = class {
 
 Object.defineProperty(navigator, 'credentials', {
   value: {
-    create: async () => Promise.resolve({ id: 'mock-id' }),
-    get: async () => Promise.resolve({ id: 'mock-id' }),
+    create: async () => Promise.resolve({ id: 'mock-id', type: 'public-key' }),
+    get: async () => Promise.resolve({ id: 'mock-id', type: 'public-key' }),
   },
   writable: true,
 });
