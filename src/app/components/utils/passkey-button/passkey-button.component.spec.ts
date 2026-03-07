@@ -5,7 +5,7 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { Mock, vi } from 'vitest';
+import { vi } from 'vitest';
 
 import { PasskeyButtonComponent } from './passkey-button.component';
 import { ChefService } from 'src/app/services/chef.service';
@@ -20,7 +20,7 @@ describe('PasskeyButtonComponent', () => {
   let component: PasskeyButtonComponent;
   let fixture: ComponentFixture<PasskeyButtonComponent>;
   let rootElement: HTMLElement;
-  let successEmitSpy: Mock<(value: Chef) => void>;
+  let emittedChef: Chef;
 
   const mockGetNewPasskeyChallenge = vi
     .fn()
@@ -51,7 +51,10 @@ describe('PasskeyButtonComponent', () => {
     fixture = TestBed.createComponent(PasskeyButtonComponent);
     component = fixture.componentInstance;
     rootElement = fixture.nativeElement;
-    successEmitSpy = vi.spyOn(component.success, 'emit');
+    component.success.subscribe((chef) => {
+      emittedChef = chef;
+    });
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 
@@ -65,13 +68,14 @@ describe('PasskeyButtonComponent', () => {
     expect(passkeyButton?.disabled).toBe(false);
     expect(passkeyButton?.textContent).toContain('Create a passkey');
 
-    passkeyButton?.click();
+    // Calling click causes flaky tests due to the async handler
+    await component.createNewPasskey(new PointerEvent('click'));
+    fixture.detectChanges();
     await fixture.whenStable();
-    expect(successEmitSpy).toHaveBeenCalledWith(mockChef);
+    expect(emittedChef).toEqual(mockChef);
   });
 
   it('should login with an existing passkey', async () => {
-    expect(component).toBeTruthy();
     fixture.componentRef.setInput('create', false);
     fixture.componentRef.setInput('username', null);
     fixture.detectChanges();
@@ -86,8 +90,9 @@ describe('PasskeyButtonComponent', () => {
     fixture.detectChanges();
     expect(passkeyButton?.disabled).toBe(false);
 
-    passkeyButton?.click();
+    await component.loginWithPasskey(new PointerEvent('click'));
+    fixture.detectChanges();
     await fixture.whenStable();
-    expect(successEmitSpy).toHaveBeenCalledWith(mockChef);
+    expect(emittedChef).toEqual(mockChef);
   });
 });

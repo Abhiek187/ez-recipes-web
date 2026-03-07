@@ -117,7 +117,6 @@ export class PasskeyButtonComponent {
       const chef = await firstValueFrom(
         this.chefService.validatePasskey(passkeyCredential),
       );
-
       this.success.emit(chef);
     } catch (err) {
       const error = err as Error;

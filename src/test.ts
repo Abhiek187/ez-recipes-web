@@ -1,11 +1,5 @@
-import { TestBed } from '@angular/core/testing';
 import 'fake-indexeddb/auto';
 import { vi } from 'vitest';
-
-afterEach(() => {
-  // Prevent flaky TestBed errors when using fixture.whenStable() with Vitest
-  TestBed.resetTestingModule();
-});
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
