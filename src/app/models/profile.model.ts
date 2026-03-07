@@ -9,6 +9,7 @@ export interface Chef {
   email: string;
   emailVerified: boolean;
   providerData: ProviderData[];
+  passkeys: Passkey[];
   ratings: Record<string, number>;
   recentRecipes: Record<string, string>;
   favoriteRecipes: string[];
@@ -85,4 +86,18 @@ export interface OAuthRequest {
 export interface OAuthResponse {
   code: string;
   state: string;
+}
+
+export interface Passkey {
+  webAuthnUserID?: string;
+  id: string;
+  publicKey: string;
+  counter: number;
+  transports?: string[];
+  deviceType: string;
+  backedUp: boolean;
+  name: string;
+  lastUsed: string;
+  iconLight?: string;
+  iconDark?: string;
 }

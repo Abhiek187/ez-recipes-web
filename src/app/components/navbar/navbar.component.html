@@ -1,30 +1,30 @@
 <mat-toolbar class="toolbar">
   @if (isSmallScreen()) {
-  <!-- Show a hamburger menu on small screens -->
-  <!-- All material icons are found at: https://fonts.google.com/icons -->
-  <button
-    mat-icon-button
-    class="menu-icon"
-    aria-label="Open menu"
-    (click)="snav.toggle()"
-  >
-    <mat-icon fontIcon="menu" />
-  </button>
-  <span class="toolbar-title">EZ Recipes</span>
-  } @else {
-  <!-- Show all the links side-by-side if there's enough screen space -->
-  <nav class="nav-links">
-    @for (nav of navItems; track nav.path) {
+    <!-- Show a hamburger menu on small screens -->
+    <!-- All material icons are found at: https://fonts.google.com/icons -->
     <button
-      mat-button
-      [routerLink]="nav.path"
-      [routerLinkActive]="nav.path === '' ? '' : 'selected'"
-      [style]="{ 'font-size': nav.path === '' ? '20px' : '16px' }"
+      mat-icon-button
+      class="menu-icon"
+      aria-label="Open menu"
+      (click)="snav.toggle()"
     >
-      {{ nav.path === "" ? "EZ Recipes" : nav.title }}
+      <mat-icon fontIcon="menu" />
     </button>
-    }
-  </nav>
+    <span class="toolbar-title">EZ Recipes</span>
+  } @else {
+    <!-- Show all the links side-by-side if there's enough screen space -->
+    <nav class="nav-links">
+      @for (nav of navItems; track nav.path) {
+        <button
+          mat-button
+          [routerLink]="nav.path"
+          [routerLinkActive]="nav.path === '' ? '' : 'selected'"
+          [style]="{ 'font-size': nav.path === '' ? '20px' : '16px' }"
+        >
+          {{ nav.path === "" ? "EZ Recipes" : nav.title }}
+        </button>
+      }
+    </nav>
   }
   <span class="spacer"></span>
   <button
@@ -39,25 +39,25 @@
   </button>
   <!-- Update the material icon to match the corresponding boolean value -->
   @if (isRecipePage()) {
-  <button
-    mat-icon-button
-    class="favorite-icon"
-    [attr.aria-label]="
-      (isFavorite() ? 'Unfavorite' : 'Favorite') + ' this recipe'
-    "
-    (click)="toggleFavoriteRecipe()"
-    [disabled]="chef() === undefined"
-  >
-    <mat-icon [fontIcon]="isFavorite() ? 'favorite' : 'favorite_border'" />
-  </button>
-  <button
-    mat-icon-button
-    class="share-icon"
-    aria-label="Share this recipe"
-    (click)="shareRecipe()"
-  >
-    <mat-icon fontIcon="share" />
-  </button>
+    <button
+      mat-icon-button
+      class="favorite-icon"
+      [attr.aria-label]="
+        (isFavorite() ? 'Unfavorite' : 'Favorite') + ' this recipe'
+      "
+      (click)="toggleFavoriteRecipe()"
+      [disabled]="chef() === undefined"
+    >
+      <mat-icon [fontIcon]="isFavorite() ? 'favorite' : 'favorite_border'" />
+    </button>
+    <button
+      mat-icon-button
+      class="share-icon"
+      aria-label="Share this recipe"
+      (click)="shareRecipe()"
+    >
+      <mat-icon fontIcon="share" />
+    </button>
   }
 </mat-toolbar>
 
@@ -74,9 +74,9 @@
   >
     <mat-nav-list>
       @for (nav of navItems; track nav.path) {
-      <a mat-list-item [routerLink]="nav.path">
-        {{ nav.title }}
-      </a>
+        <a mat-list-item [routerLink]="nav.path">
+          {{ nav.title }}
+        </a>
       }
     </mat-nav-list>
   </mat-sidenav>

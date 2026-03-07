@@ -20,6 +20,8 @@ abstract class Constants {
   ];
   static readonly noTokenFound = 'No token found';
   static readonly credentialTooOldError = 'CREDENTIAL_TOO_OLD_LOGIN_AGAIN';
+  static readonly passkeyUnsupported =
+    'Passkeys are unsupported on this browser. Please update, switch browsers, or sign in using a different method.';
 
   // APIs
   static readonly recipesPath = '/api/recipes';

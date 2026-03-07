@@ -56,22 +56,22 @@ describe('SignUpComponent', () => {
     expect(rootElement.textContent).toContain('Password');
     expect(rootElement.textContent).toContain('Confirm Password');
     expect(rootElement.textContent).toContain(
-      'Password must be at least 8 characters long'
+      'Password must be at least 8 characters long',
     );
 
     const signUpFields = rootElement.querySelector('.signup-fields');
     const [emailField, passwordField, confirmPasswordField] = Array.from(
-      signUpFields?.querySelectorAll<HTMLInputElement>('input') ?? []
+      signUpFields?.querySelectorAll<HTMLInputElement>('input') ?? [],
     );
     expect(emailField.type).toBe('email');
     expect(emailField.inputMode).toBe('email');
-    expect(emailField.autocomplete).toBe('off');
+    expect(emailField.autocomplete).toBe('email');
 
     expect(passwordField.type).toBe('password');
-    expect(passwordField.autocomplete).toBe('off');
+    expect(passwordField.autocomplete).toBe('new-password');
 
     expect(confirmPasswordField.type).toBe('password');
-    expect(confirmPasswordField.autocomplete).toBe('off');
+    expect(confirmPasswordField.autocomplete).toBe('new-password');
 
     signUpComponent.showPassword.set(true);
     fixture.detectChanges();
@@ -97,15 +97,15 @@ describe('SignUpComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.email.hasError(signUpComponent.formErrors.required)
+      form.controls.email.hasError(signUpComponent.formErrors.required),
     ).toBe(true);
     expect(
-      form.controls.password.hasError(signUpComponent.formErrors.required)
+      form.controls.password.hasError(signUpComponent.formErrors.required),
     ).toBe(true);
     expect(
       form.controls.passwordConfirm.hasError(
-        signUpComponent.formErrors.required
-      )
+        signUpComponent.formErrors.required,
+      ),
     ).toBe(false);
 
     const submitButton = rootElement
@@ -121,7 +121,7 @@ describe('SignUpComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.email.hasError(signUpComponent.formErrors.emailInvalid)
+      form.controls.email.hasError(signUpComponent.formErrors.emailInvalid),
     ).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -137,8 +137,8 @@ describe('SignUpComponent', () => {
     expect(form.valid).toBe(false);
     expect(
       form.controls.password.hasError(
-        signUpComponent.formErrors.passwordMinLength
-      )
+        signUpComponent.formErrors.passwordMinLength,
+      ),
     ).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -154,7 +154,7 @@ describe('SignUpComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(form.hasError(signUpComponent.formErrors.passwordMismatch)).toBe(
-      true
+      true,
     );
     const submitButton = rootElement
       .querySelector('.submit-row')

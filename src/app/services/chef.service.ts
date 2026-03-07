@@ -20,6 +20,8 @@ import {
   mockChef,
   mockChefEmailResponse,
   mockLoginResponse,
+  mockPasskeyCreationOptions,
+  mockPasskeyRequestOptions,
 } from '../models/profile.mock';
 import handleError from '../helpers/handleError';
 import { Token } from '../models/recipe.model';
@@ -57,7 +59,7 @@ export class ChefService {
         catchError((error) => {
           localStorage.removeItem(Constants.LocalStorage.token);
           return handleError(error);
-        })
+        }),
       );
   }
 
@@ -70,7 +72,7 @@ export class ChefService {
     return this.http
       .post<LoginResponse>(
         `${environment.serverBaseUrl}${Constants.chefsPath}`,
-        credentials
+        credentials,
       )
       .pipe(
         tap(({ uid, token, emailVerified }) => {
@@ -79,6 +81,7 @@ export class ChefService {
             email: credentials.email,
             emailVerified,
             providerData: [],
+            passkeys: [],
             ratings: {},
             recentRecipes: {},
             favoriteRecipes: [],
@@ -86,7 +89,7 @@ export class ChefService {
           });
           localStorage.setItem(Constants.LocalStorage.token, token);
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -111,7 +114,7 @@ export class ChefService {
           headers: {
             ...(token !== null && this.authHeader(token)),
           },
-        }
+        },
       )
       .pipe(
         tap(({ token }) => {
@@ -125,7 +128,7 @@ export class ChefService {
             localStorage.removeItem(Constants.LocalStorage.token);
           }
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -149,7 +152,7 @@ export class ChefService {
           localStorage.removeItem(Constants.LocalStorage.token);
           this.chef.set(undefined);
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -167,7 +170,7 @@ export class ChefService {
       .post<ChefEmailResponse>(
         `${environment.serverBaseUrl}${Constants.chefsPath}/verify`,
         null, // no body
-        { headers: this.authHeader(token) }
+        { headers: this.authHeader(token) },
       )
       .pipe(
         tap(({ token }) => {
@@ -175,7 +178,7 @@ export class ChefService {
             localStorage.setItem(Constants.LocalStorage.token, token);
           }
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -188,7 +191,7 @@ export class ChefService {
     return this.http
       .post<LoginResponse>(
         `${environment.serverBaseUrl}${Constants.chefsPath}/login`,
-        credentials
+        credentials,
       )
       .pipe(
         tap(({ uid, token, emailVerified }) => {
@@ -198,13 +201,14 @@ export class ChefService {
             email: credentials.email,
             emailVerified,
             providerData: [],
+            passkeys: [],
             ratings: {},
             recentRecipes: {},
             favoriteRecipes: [],
             token,
           });
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -228,14 +232,14 @@ export class ChefService {
         null,
         {
           headers: this.authHeader(token),
-        }
+        },
       )
       .pipe(
         tap(() => {
           localStorage.removeItem(Constants.LocalStorage.token);
           this.chef.set(undefined);
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -251,13 +255,13 @@ export class ChefService {
           params: {
             redirectUrl: Constants.redirectUrl,
           },
-        }
+        },
       )
       .pipe(catchError(handleError));
   }
 
   loginWithOAuth(
-    oAuthRequest: Omit<OAuthRequest, 'redirectUrl'>
+    oAuthRequest: Omit<OAuthRequest, 'redirectUrl'>,
   ): Observable<Chef> {
     if (this.isMocking) {
       return of(mockChef);
@@ -276,7 +280,7 @@ export class ChefService {
           headers: {
             ...(token !== null && this.authHeader(token)),
           },
-        }
+        },
       )
       .pipe(
         switchMap(({ uid, token, emailVerified }) => {
@@ -289,6 +293,7 @@ export class ChefService {
               email: '',
               emailVerified,
               providerData: [],
+              passkeys: [],
               ratings: {},
               recentRecipes: {},
               favoriteRecipes: [],
@@ -299,7 +304,7 @@ export class ChefService {
           // Fetch the rest of the chef's profile
           return this.getChef();
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -320,10 +325,8 @@ export class ChefService {
           params: {
             providerId,
           },
-          headers: {
-            ...(token !== null && this.authHeader(token)),
-          },
-        }
+          headers: this.authHeader(token),
+        },
       )
       .pipe(
         switchMap(({ token }) => {
@@ -334,7 +337,118 @@ export class ChefService {
           // Get the chef's updated provider data
           return this.getChef();
         }),
-        catchError(handleError)
+        catchError(handleError),
+      );
+  }
+
+  getNewPasskeyChallenge(): Observable<PublicKeyCredentialCreationOptionsJSON> {
+    if (this.isMocking) {
+      return of(mockPasskeyCreationOptions);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      return this.noTokenFound();
+    }
+
+    return this.http
+      .get<PublicKeyCredentialCreationOptionsJSON>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/passkey/create`,
+        {
+          headers: this.authHeader(token),
+        },
+      )
+      .pipe(catchError(handleError));
+  }
+
+  getExistingPasskeyChallenge(
+    email: string,
+  ): Observable<PublicKeyCredentialRequestOptionsJSON> {
+    if (this.isMocking) {
+      return of(mockPasskeyRequestOptions);
+    }
+
+    return this.http
+      .get<PublicKeyCredentialRequestOptionsJSON>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/passkey/auth`,
+        {
+          params: {
+            email,
+          },
+        },
+      )
+      .pipe(catchError(handleError));
+  }
+
+  validatePasskey(
+    passkeyResponse: Credential,
+    email?: string,
+  ): Observable<Chef> {
+    if (this.isMocking) {
+      return of(mockChef);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null && email === undefined) {
+      return this.noTokenFound();
+    }
+
+    return this.http
+      .post<Token>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/passkey/verify`,
+        passkeyResponse,
+        {
+          params: {
+            ...(email !== undefined && { email }),
+          },
+          headers: {
+            ...(token !== null && this.authHeader(token)),
+          },
+        },
+      )
+      .pipe(
+        switchMap(({ token }) => {
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+
+          // Get the chef's updated passkeys
+          return this.getChef();
+        }),
+        catchError(handleError),
+      );
+  }
+
+  deletePasskey(id: string): Observable<Chef> {
+    if (this.isMocking) {
+      return of(mockChef);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      return this.noTokenFound();
+    }
+
+    return this.http
+      .delete<Token>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/passkey`,
+        {
+          params: {
+            id,
+          },
+          headers: this.authHeader(token),
+        },
+      )
+      .pipe(
+        switchMap(({ token }) => {
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+
+          // Get the chef's updated passkeys
+          return this.getChef();
+        }),
+        catchError(handleError),
       );
   }
 

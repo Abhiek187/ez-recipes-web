@@ -40,7 +40,7 @@ describe('ProfileComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(null);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     router = TestBed.inject(Router);
@@ -67,7 +67,7 @@ describe('ProfileComponent', () => {
     expect(profileComponent.authState()).toBe(AuthState.Unauthenticated);
 
     expect(rootElement.textContent).toContain(
-      'Signing up for an account is free'
+      'Signing up for an account is free',
     );
     const loginButton = fixture.debugElement.query(By.directive(RouterLink));
     loginButton.nativeElement.click();
@@ -82,13 +82,13 @@ describe('ProfileComponent', () => {
 
     const profileStats = rootElement.querySelector('.profile-stats');
     expect(profileStats?.textContent).toContain(
-      `${profileComponent.totalRecipesFavorited()} favorite`
+      `${profileComponent.totalRecipesFavorited()} favorite`,
     );
     expect(profileStats?.textContent).toContain(
-      `${profileComponent.totalRecipesViewed()} recipes viewed`
+      `${profileComponent.totalRecipesViewed()} recipes viewed`,
     );
     expect(profileStats?.textContent).toContain(
-      `${profileComponent.totalRecipesRated()} ratings`
+      `${profileComponent.totalRecipesRated()} ratings`,
     );
 
     const profileActions = rootElement.querySelector('.profile-actions');
@@ -113,7 +113,7 @@ describe('ProfileComponent', () => {
         state: {
           email: mockChef.email,
         },
-      }
+      },
     );
     deleteAccountButton.click();
     expect(navigateSpy).toHaveBeenCalledWith(
@@ -122,21 +122,21 @@ describe('ProfileComponent', () => {
         state: {
           email: mockChef.email,
         },
-      }
+      },
     );
 
     expect(rootElement.textContent).toContain('Linked Accounts');
     const linkedAccountsSection = rootElement.querySelector(
-      '.profile-linked-accounts'
+      '.profile-linked-accounts',
     );
     let accountI = 0;
 
     for (const [, emails] of profileComponent.linkedAccountEntries()) {
       const linkedAccountContainer = linkedAccountsSection?.querySelectorAll(
-        '.profile-linked-account-container'
+        '.profile-linked-account-container',
       )?.[accountI];
       const unlinkButton = linkedAccountContainer?.querySelector(
-        '.profile-linked-account-buttons'
+        '.profile-linked-account-buttons',
       )?.children?.[1] as HTMLButtonElement | null | undefined;
       expect(unlinkButton).toBeTruthy();
       expect(unlinkButton?.disabled).toBe(emails.length === 0);
@@ -145,6 +145,20 @@ describe('ProfileComponent', () => {
         expect(linkedAccountContainer?.textContent).toContain(email);
       }
       accountI++;
+    }
+
+    expect(rootElement.textContent).toContain('Passkeys');
+    const passkeysSection = rootElement.querySelector('.profile-passkeys');
+
+    for (const [passkeyI, passkey] of profileComponent.passkeys().entries()) {
+      const passkeyContainer = passkeysSection?.querySelectorAll(
+        '.profile-passkey-container',
+      )?.[passkeyI];
+      expect(passkeyContainer?.textContent).toContain(passkey.name);
+      const deletePasskeyButton =
+        passkeyContainer?.querySelector<HTMLButtonElement>('button');
+      expect(deletePasskeyButton?.ariaLabel).toBe('Delete passkey');
+      expect(passkeyContainer?.textContent).toContain('Last used');
     }
 
     logoutButton.click();

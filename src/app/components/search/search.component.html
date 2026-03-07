@@ -92,12 +92,12 @@
       <mat-select [formControlName]="filterFormNames.rating" panelWidth="">
         <mat-option [value]="null">(none)</mat-option>
         @for (rating of RATINGS; track rating) {
-        <mat-option [value]="rating">
-          @for (star of RATINGS.slice(0, rating); track star) {
-          <mat-icon fontIcon="star" class="icon-accent" />
-          }
-          {{ rating }}
-        </mat-option>
+          <mat-option [value]="rating">
+            @for (star of RATINGS.slice(0, rating); track star) {
+              <mat-icon fontIcon="star" class="icon-accent" />
+            }
+            {{ rating }}
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -105,9 +105,9 @@
       <mat-label>Spice Level</mat-label>
       <mat-select [formControlName]="filterFormNames.spiceLevel" multiple>
         @for (spiceLevel of spiceLevels; track spiceLevel) {
-        <mat-option [value]="spiceLevel">
-          {{ spiceLevel }}
-        </mat-option>
+          <mat-option [value]="spiceLevel">
+            {{ spiceLevel }}
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -115,9 +115,9 @@
       <mat-label>Meal Type</mat-label>
       <mat-select [formControlName]="filterFormNames.type" multiple>
         @for (mealType of mealTypes; track mealType) {
-        <mat-option [value]="mealType">
-          {{ mealType }}
-        </mat-option>
+          <mat-option [value]="mealType">
+            {{ mealType }}
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -125,9 +125,9 @@
       <mat-label>Cuisine</mat-label>
       <mat-select [formControlName]="filterFormNames.culture" multiple>
         @for (cuisine of cuisines; track cuisine) {
-        <mat-option [value]="cuisine">
-          {{ cuisine }}
-        </mat-option>
+          <mat-option [value]="cuisine">
+            {{ cuisine }}
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -145,7 +145,7 @@
         Apply
       </button>
       @if (isLoading()) {
-      <mat-spinner diameter="40" class="progress-spinner" />
+        <mat-spinner diameter="40" class="progress-spinner" />
       }
     </span>
     <span class="sort-container">
@@ -154,9 +154,9 @@
         <mat-select [formControlName]="filterFormNames.sort">
           <mat-option [value]="null">(none)</mat-option>
           @for (sortField of SORT_FIELDS; track sortField) {
-          <mat-option [value]="sortField">
-            {{ sortField | label }}
-          </mat-option>
+            <mat-option [value]="sortField">
+              {{ sortField | label }}
+            </mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -181,28 +181,29 @@
     </span>
   </span>
   @if (isLoading()) {
-  <p class="loading-message">{{ loadingMessage() }}</p>
-  } @if (noRecipesFound()) {
-  <p class="no-results-error">
-    <mat-icon fontIcon="error" />{{ Errors.noResults }}
-  </p>
+    <p class="loading-message">{{ loadingMessage() }}</p>
+  }
+  @if (noRecipesFound()) {
+    <p class="no-results-error">
+      <mat-icon fontIcon="error" />{{ Errors.noResults }}
+    </p>
   }
 </form>
 
 <!-- Results -->
 @if (recipes().length > 0) {
-<section class="results">
-  <mat-divider class="results-divider" />
-  <h1 class="results-title">Results</h1>
-  <ul class="results-list">
-    @for (recipe of recipes(); track recipe.id) {
-    <li>
-      <app-recipe-card [recipe]="recipe" />
-    </li>
+  <section class="results">
+    <mat-divider class="results-divider" />
+    <h1 class="results-title">Results</h1>
+    <ul class="results-list">
+      @for (recipe of recipes(); track recipe.id) {
+        <li>
+          <app-recipe-card [recipe]="recipe" />
+        </li>
+      }
+    </ul>
+    @if (isLoading()) {
+      <mat-spinner diameter="40" class="progress-spinner" />
     }
-  </ul>
-  @if (isLoading()) {
-  <mat-spinner diameter="40" class="progress-spinner" />
-  }
-</section>
+  </section>
 }

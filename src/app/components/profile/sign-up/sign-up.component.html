@@ -21,13 +21,13 @@
         type="email"
         inputmode="email"
         autocapitalize="none"
-        autocomplete="off"
+        autocomplete="email"
         spellcheck="false"
       />
       @if (formGroup.controls.email.hasError(formErrors.required)) {
-      <mat-error>{{ errors.required(formControls.email) }}</mat-error>
+        <mat-error>{{ errors.required(formControls.email) }}</mat-error>
       } @else if (formGroup.controls.email.hasError(formErrors.emailInvalid)) {
-      <mat-error>{{ errors.email }}</mat-error>
+        <mat-error>{{ errors.email }}</mat-error>
       }
     </mat-form-field>
     <mat-form-field>
@@ -37,7 +37,7 @@
         [formControlName]="formControls.password"
         [type]="showPassword() ? 'text' : 'password'"
         autocapitalize="none"
-        autocomplete="off"
+        autocomplete="new-password"
         spellcheck="false"
       />
       <button
@@ -51,10 +51,11 @@
         />
       </button>
       @if (formGroup.controls.password.hasError(formErrors.required)) {
-      <mat-error>{{ errors.required(formControls.password) }}</mat-error>
-      } @else if
-      (formGroup.controls.password.hasError(formErrors.passwordMinLength)) {
-      <mat-error>{{ errors.minlength }}</mat-error>
+        <mat-error>{{ errors.required(formControls.password) }}</mat-error>
+      } @else if (
+        formGroup.controls.password.hasError(formErrors.passwordMinLength)
+      ) {
+        <mat-error>{{ errors.minlength }}</mat-error>
       }
     </mat-form-field>
     <mat-form-field>
@@ -64,7 +65,7 @@
         [formControlName]="formControls.passwordConfirm"
         [type]="showPasswordConfirm() ? 'text' : 'password'"
         autocapitalize="none"
-        autocomplete="off"
+        autocomplete="new-password"
         spellcheck="false"
       />
       <button
@@ -80,9 +81,9 @@
         />
       </button>
       @if (formGroup.hasError(formErrors.passwordMismatch)) {
-      <mat-error>{{ errors.passwordMismatch }}</mat-error>
+        <mat-error>{{ errors.passwordMismatch }}</mat-error>
       } @else {
-      <mat-hint>Password must be at least 8 characters long</mat-hint>
+        <mat-hint>Password must be at least 8 characters long</mat-hint>
       }
     </mat-form-field>
   </div>
@@ -96,7 +97,7 @@
       Sign Up
     </button>
     @if (isLoading()) {
-    <mat-spinner diameter="40" class="progress-spinner" />
+      <mat-spinner diameter="40" class="progress-spinner" />
     }
   </span>
 </form>

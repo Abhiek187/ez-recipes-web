@@ -43,7 +43,7 @@ describe('UpdateEmailComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     router = TestBed.inject(Router);
@@ -62,7 +62,7 @@ describe('UpdateEmailComponent', () => {
     const emailField = rootElement.querySelector<HTMLInputElement>('input');
     expect(emailField?.type).toBe('email');
     expect(emailField?.inputMode).toBe('email');
-    expect(emailField?.autocomplete).toBe('off');
+    expect(emailField?.autocomplete).toBe('email');
   });
 
   it("should show an error if the email isn't provided", () => {
@@ -72,7 +72,7 @@ describe('UpdateEmailComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.email.hasError(updateEmailComponent.formErrors.required)
+      form.controls.email.hasError(updateEmailComponent.formErrors.required),
     ).toBe(true);
 
     const submitButton = rootElement
@@ -88,7 +88,9 @@ describe('UpdateEmailComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.email.hasError(updateEmailComponent.formErrors.emailInvalid)
+      form.controls.email.hasError(
+        updateEmailComponent.formErrors.emailInvalid,
+      ),
     ).toBe(true);
 
     const submitButton = rootElement
@@ -118,7 +120,7 @@ describe('UpdateEmailComponent', () => {
       email: mockEmail,
     });
     expect(rootElement.textContent).toContain(
-      `We sent an email to ${mockEmail}`
+      `We sent an email to ${mockEmail}`,
     );
   });
 
@@ -135,7 +137,7 @@ describe('UpdateEmailComponent', () => {
     expect(submitButton?.disabled).toBe(false);
 
     mockChefService.updateChef.mockReturnValue(
-      throwError(() => new Error(Constants.credentialTooOldError))
+      throwError(() => new Error(Constants.credentialTooOldError)),
     );
     const navigateSpy = vi.spyOn(router, 'navigate');
     submitButton?.click();
