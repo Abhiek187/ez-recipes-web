@@ -16,6 +16,8 @@ import {
   mockChef,
   mockChefEmailResponse,
   mockLoginResponse,
+  mockPasskeyCreationOptions,
+  mockPasskeyRequestOptions,
 } from '../models/profile.mock';
 import Constants from '../constants/constants';
 import { environment } from 'src/environments/environment';
@@ -494,6 +496,190 @@ describe('ChefService', () => {
     const req = httpTestingController.expectOne({
       method: 'DELETE',
       url: `${baseUrl}/oauth?providerId=${provider}`,
+    });
+    req.error(mockError);
+
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
+  });
+
+  it('should get a new passkey challenge', async () => {
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.getNewPasskeyChallenge());
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/passkey/create`,
+    });
+    expect(req.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    req.flush(mockPasskeyCreationOptions);
+
+    await expect(chefPromise).resolves.toBe(mockPasskeyCreationOptions);
+  });
+
+  it('should return an error if the create passkey challenge API fails', async () => {
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.getNewPasskeyChallenge());
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/passkey/create`,
+    });
+    req.error(mockError);
+
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+  });
+
+  it('should get an existing passkey challenge', async () => {
+    const email = 'test@example.com';
+    const chefPromise = firstValueFrom(
+      chefService.getExistingPasskeyChallenge(email),
+    );
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/passkey/auth?email=${email}`,
+    });
+    req.flush(mockPasskeyRequestOptions);
+
+    await expect(chefPromise).resolves.toBe(mockPasskeyRequestOptions);
+  });
+
+  it('should return an error if the existing passkey challenge API fails', async () => {
+    const email = 'test@example.com';
+    const chefPromise = firstValueFrom(
+      chefService.getExistingPasskeyChallenge(email),
+    );
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/passkey/auth?email=${email}`,
+    });
+    req.error(mockError);
+
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+  });
+
+  it('should validate a new passkey', async () => {
+    const credential: Credential = {
+      id: 'abc123',
+      type: 'public-key',
+    };
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.validatePasskey(credential));
+
+    const validateReq = httpTestingController.expectOne({
+      method: 'POST',
+      url: `${baseUrl}/passkey/verify`,
+    });
+    expect(validateReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    expect(validateReq.request.body).toStrictEqual(credential);
+    validateReq.flush(mockToken);
+
+    const chefReq = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
+    expect(chefReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    chefReq.flush(mockChef);
+
+    await expect(chefPromise).resolves.toBe(mockChef);
+    expect(chefService.chef()).toBe(mockChef);
+  });
+
+  it('should validate an existing passkey', async () => {
+    const credential: Credential = {
+      id: 'abc123',
+      type: 'public-key',
+    };
+    const email = 'test@example.com';
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(
+      chefService.validatePasskey(credential, email),
+    );
+
+    const validateReq = httpTestingController.expectOne({
+      method: 'POST',
+      url: `${baseUrl}/passkey/verify?email=${email}`,
+    });
+    expect(validateReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    expect(validateReq.request.body).toStrictEqual(credential);
+    validateReq.flush(mockToken);
+
+    const chefReq = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
+    expect(chefReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    chefReq.flush(mockChef);
+
+    await expect(chefPromise).resolves.toBe(mockChef);
+    expect(chefService.chef()).toBe(mockChef);
+  });
+
+  it('should return an error if the validate passkey API fails', async () => {
+    const credential: Credential = {
+      id: 'abc123',
+      type: 'public-key',
+    };
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.validatePasskey(credential));
+
+    const req = httpTestingController.expectOne({
+      method: 'POST',
+      url: `${baseUrl}/passkey/verify`,
+    });
+    req.error(mockError);
+
+    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
+  });
+
+  it('should delete a passkey', async () => {
+    const id = 'abc123';
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.deletePasskey(id));
+
+    const deleteReq = httpTestingController.expectOne({
+      method: 'DELETE',
+      url: `${baseUrl}/passkey?id=${id}`,
+    });
+    expect(deleteReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    deleteReq.flush(mockToken);
+
+    const chefReq = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
+    expect(chefReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    chefReq.flush(mockChef);
+
+    await expect(chefPromise).resolves.toBe(mockChef);
+    expect(chefService.chef()).toBe(mockChef);
+  });
+
+  it('should return an error if the delete passkey API fails', async () => {
+    const id = 'abc123';
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.deletePasskey(id));
+
+    const req = httpTestingController.expectOne({
+      method: 'DELETE',
+      url: `${baseUrl}/passkey?id=${id}`,
     });
     req.error(mockError);
 

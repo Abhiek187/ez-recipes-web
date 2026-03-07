@@ -1,7 +1,6 @@
 import {
   Component,
   computed,
-  DestroyRef,
   inject,
   input,
   output,
@@ -25,7 +24,6 @@ import { ChefService } from 'src/app/services/chef.service';
 })
 export class PasskeyButtonComponent {
   private chefService = inject(ChefService);
-  private destroyRef = inject(DestroyRef);
   private snackBar = inject(MatSnackBar);
 
   readonly create = input(false);
@@ -65,14 +63,16 @@ export class PasskeyButtonComponent {
       const passkeyOptions =
         PublicKeyCredential.parseRequestOptionsFromJSON(options);
 
-      const credential = await navigator.credentials.get({
+      const passkeyCredential = await navigator.credentials.get({
         publicKey: passkeyOptions,
       });
-      if (credential === null) throw new Error('Unable to get a passkey.');
+      if (passkeyCredential === null) {
+        throw new Error('Unable to get a passkey.');
+      }
 
       // Verify the response
       const chef = await firstValueFrom(
-        this.chefService.validatePasskey(credential, username),
+        this.chefService.validatePasskey(passkeyCredential, username),
       );
       this.success.emit(chef);
     } catch (err) {
@@ -109,8 +109,9 @@ export class PasskeyButtonComponent {
       passkeyCredential = await navigator.credentials.create({
         publicKey: passkeyOptions,
       });
-      if (passkeyCredential === null)
+      if (passkeyCredential === null) {
         throw new Error('Unable to create a passkey');
+      }
 
       // Verify the response
       const chef = await firstValueFrom(

@@ -83,6 +83,7 @@ describe('LoginComponent', () => {
     expect(rootElement.querySelectorAll('.oauth-button').length).toBe(
       mockAuthUrls.length,
     );
+    expect(rootElement.querySelector('.passkey-button')).toBeDefined();
   });
 
   it("should show an error if the username or password isn't provided", async () => {
