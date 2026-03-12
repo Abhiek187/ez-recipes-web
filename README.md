@@ -47,7 +47,7 @@ The site can be visited at https://ez-recipes-web.onrender.com/.
 ```mermaid
 flowchart LR
 
-A(Checkout repository) -->|20.x, 22.x| B(Install Node.js)
+A(Checkout repository) -->|22.x, 24.x| B(Install Node.js)
 B --> C(Install dependencies:<br>npm ci)
 C --> D(Lint app:<br>npm run lint)
 D --> E(Build app:<br>npm run build --if-present)
