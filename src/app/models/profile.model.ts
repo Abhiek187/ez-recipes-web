@@ -89,7 +89,6 @@ export interface OAuthResponse {
 }
 
 export interface Passkey {
-  webAuthnUserID?: string;
   id: string;
   publicKey: string;
   counter: number;

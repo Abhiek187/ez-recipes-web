@@ -19,6 +19,7 @@ import { finalize } from 'rxjs';
 
 import {
   AuthState,
+  Chef,
   Passkey,
   ProfileAction,
   Provider,
@@ -30,6 +31,7 @@ import { OauthButtonComponent } from '../utils/oauth-button/oauth-button.compone
 import { DialogComponent, DialogData } from '../utils/dialog/dialog.component';
 import Theme from 'src/app/models/theme.model';
 import { PasskeyButtonComponent } from '../utils/passkey-button/passkey-button.component';
+import { base64URLEncode } from 'src/app/helpers/string';
 
 @Component({
   selector: 'app-profile',
@@ -112,10 +114,13 @@ export class ProfileComponent implements OnInit {
       this.authState.set(AuthState.Authenticated);
     } else {
       this.chefService.getChef().subscribe({
-        next: ({ emailVerified }) => {
+        next: (chef) => {
           this.authState.set(
-            emailVerified ? AuthState.Authenticated : AuthState.Unauthenticated,
+            chef.emailVerified
+              ? AuthState.Authenticated
+              : AuthState.Unauthenticated,
           );
+          this.syncPasskeys(chef);
         },
         error: (error) => {
           this.authState.set(AuthState.Unauthenticated);
@@ -159,6 +164,45 @@ export class ProfileComponent implements OnInit {
           this.authUrls.set({});
         },
       });
+  }
+
+  async syncPasskeys(chef: Chef) {
+    // Sync passkeys and the username with all authenticators
+    try {
+      if (Object.hasOwn(PublicKeyCredential, 'signalAllAcceptedCredentials')) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (PublicKeyCredential as any).signalAllAcceptedCredentials({
+          rpId: location.hostname,
+          userId: base64URLEncode(chef.uid),
+          allAcceptedCredentialIds: chef.passkeys.map(
+            (passkey) => passkey.id, // the passkey IDs are already base64 URL-encoded
+          ),
+        });
+        console.log(
+          `Signaled all authenticators to sync ${chef.passkeys.length} ${
+            chef.passkeys.length === 1 ? 'passkey' : 'passkeys'
+          } for user ${chef.uid} and RP ID ${location.hostname}: [${chef.passkeys
+            .map((passkey) => passkey.id)
+            .join(', ')}]`,
+        );
+      }
+      if (Object.hasOwn(PublicKeyCredential, 'signalCurrentUserDetails')) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (PublicKeyCredential as any).signalCurrentUserDetails({
+          rpId: location.hostname,
+          userId: base64URLEncode(chef.uid),
+          name: chef.email,
+          displayName: '',
+        });
+        console.log(
+          `Signaled all authenticators to set the username for user ID ${chef.uid} and RP ID ${
+            location.hostname
+          } to ${chef.email}`,
+        );
+      }
+    } catch (error: unknown) {
+      console.warn('Passkey signal error:', error);
+    }
   }
 
   logout() {
@@ -263,7 +307,7 @@ export class ProfileComponent implements OnInit {
         )
         .subscribe({
           next: async () => {
-            // Attempt to delete the passkey saved in the authenticator
+            // Signal all authenticators to delete the passkey
             if (Object.hasOwn(PublicKeyCredential, 'signalUnknownCredential')) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               await (PublicKeyCredential as any).signalUnknownCredential({

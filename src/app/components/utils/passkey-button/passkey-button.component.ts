@@ -122,7 +122,7 @@ export class PasskeyButtonComponent {
       const error = err as Error;
       console.error('Error creating a new passkey:', error);
 
-      // Attempt to delete the passkey saved in the authenticator
+      // Signal all authenticators to delete the passkey
       if (
         passkeyCredential !== null &&
         options !== null &&

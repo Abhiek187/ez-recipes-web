@@ -1,4 +1,5 @@
-import { isNumeric } from './string';
+import { mockChef } from '../models/profile.mock';
+import { base64URLEncode, isNumeric } from './string';
 
 describe('isNumeric', () => {
   it('passes all positive cases', () => {
@@ -42,6 +43,20 @@ describe('isNumeric', () => {
       // When passed to isNumeric
       // Then they should all return false
       expect(isNumeric(num as string | number)).toBe(false);
+    });
+  });
+});
+
+describe('base64URLEncode', () => {
+  it('URL encodes strings correctly', () => {
+    // Given a set of strings
+    ['', 'Hello, World!', mockChef.uid].forEach((str) => {
+      // When base64 URL-encoded
+      const base64UrlStr = base64URLEncode(str);
+      // Then it should contain valid characters
+      expect(base64UrlStr.includes('+')).toBeFalsy();
+      expect(base64UrlStr.includes('/')).toBeFalsy();
+      expect(base64UrlStr.includes('=')).toBeFalsy();
     });
   });
 });
