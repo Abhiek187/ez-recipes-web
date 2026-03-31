@@ -18,6 +18,10 @@ By using one of our apps, your network activity will be logged by the EZ Recipes
 
 By signing up for an account, you agree to have your email, a unique ID, and recipe preferences stored in Firebase and MongoDB. If your email address isn't verified within a week of account creation, the account will be deleted from our systems as part of a daily cron job. Your password is never stored with us and is only used to validate your credentials against Firebase. An ID token is issued to each client and stored on the device for temporary access. Refresh tokens are managed on the server end and are encrypted in MongoDB. In other words, no server admin can log in as someone else without knowing their credentials.
 
+Logging in with OAuth providers is subject to the provider's privacy policy. From our side, we only require the email address to help with linking or creating Firebase accounts. No provider data is stored in MongoDB.
+
+Passkeys are a secure alternative to passwords, but they currently do not replace passwords since they are not natively supported by Firebase. The public key is stored in MongoDB, while the private key is kept on your local device or authenticator. Hybrid passkeys (those synced online instead of being device-bound) are subject to the authenticator's privacy policy. The rest of the passkey data stored in MongoDB is used to help distinguish multiple passkeys tied to the same account, using approximate attestation data shared by the authenticator. But attestation data is not required by our server and is subject to how different providers are willing to share their data.
+
 ## Deleting your Account
 
 The best way to delete your account is within the app itself or by visiting https://ez-recipes-web.onrender.com/profile/delete-account. Click the "Delete Account" button on your profile and enter your username to confirm deletion. This will immediately delete all data in Firebase and MongoDB associated with your unique ID.
@@ -30,7 +34,7 @@ Users who wish to delete their data after uninstalling the app and can't sign in
 
 ## Cloning the App
 
-Any fork or clone of these repos is _highly_ encouraged to host their own servers and manage their own API keys and databases. This is so data isn't mixed up between clients we can't validate.
+Any fork or clone of these repos is _highly_ encouraged to host their own servers and manage their own API keys and databases. This is so that the data isn't mixed up between clients we can't validate.
 
 ---
 
