@@ -19,6 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { jsPDF } from 'jspdf';
 import { finalize } from 'rxjs';
 
 import Recipe, { RecipeUpdate } from '../../models/recipe.model';
@@ -118,7 +119,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
       terms?.reduce<Record<string, string>>((dict, term) => {
         dict[term.word] = term.definition;
         return dict;
-      }, {})
+      }, {}),
     );
   }
 
@@ -135,7 +136,8 @@ export class RecipeComponent implements OnInit, OnDestroy {
     const prefix = 'EZ Recipes | ';
     this.titleService.setTitle(
       prefix +
-        (recipe?.name ?? (this.isLoading() ? 'Loading...' : 'Recipe Not Found'))
+        (recipe?.name ??
+          (this.isLoading() ? 'Loading...' : 'Recipe Not Found')),
     );
 
     if (recipe !== null) {
@@ -163,12 +165,12 @@ export class RecipeComponent implements OnInit, OnDestroy {
                 ...chef?.recentRecipes,
                 [recipe.id]: new Date().toISOString(),
               },
-            }
+            },
         );
       },
       error: (error) => {
         console.error(
-          `Failed to update the recipe view count: ${error.message}`
+          `Failed to update the recipe view count: ${error.message}`,
         );
       },
     });
@@ -184,7 +186,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         error: (error: Error) => {
@@ -202,7 +204,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
     if (this.chef() === undefined || recipeId === undefined) {
       this.snackBar.open(
         'You must be signed in to rate this recipe',
-        'Dismiss'
+        'Dismiss',
       );
       return;
     }
@@ -220,7 +222,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
                   ...chef?.ratings,
                   [recipeId]: rating,
                 },
-              }
+              },
           );
         },
         error: (error) => {
@@ -240,7 +242,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: (recipe: Recipe) => {
@@ -252,5 +254,110 @@ export class RecipeComponent implements OnInit, OnDestroy {
           this.snackBar.open(error.message, 'Dismiss');
         },
       });
+  }
+
+  generateRecipePDF() {
+    const recipe = this.recipe();
+    if (recipe === null) return;
+
+    const doc = new jsPDF();
+
+    doc.text(recipe.name, 10, 10, { align: 'center' });
+    doc.addImage(recipe.image, 'JPEG', 10, 20, 312, 231);
+    doc.text(`Image © ${recipe.credit}`, 10, 30);
+    doc.text(recipe.spiceLevel, 10, 40);
+    doc.text('Vegetarian', 10, 50);
+    doc.text('Vegan', 10, 60);
+    doc.text('Gluten-Free', 10, 70);
+    doc.text('Healthy', 10, 80);
+    doc.text('Cheap', 10, 90);
+    doc.text('Sustainable', 10, 100);
+    doc.text(`Time: ${recipe.time} minutes`, 10, 110);
+    doc.text(`Great for: ${recipe.types.join(', ')}`, 10, 120);
+    doc.text(`Cuisines: ${recipe.culture.join(', ')}`, 10, 130);
+
+    doc.text('Nutritional Facts', 10, 140);
+    doc.text(`Health Score: ${recipe.healthScore}%`, 10, 150);
+    doc.text(`${recipe.servings} servings`, 10, 160);
+    let docHeight = 170;
+    for (const nutrient of recipe.nutrients) {
+      doc.text(
+        `${nutrient.name}: ${Math.round(nutrient.amount)} ${nutrient.unit}`,
+        10,
+        docHeight,
+      );
+      docHeight += 10;
+    }
+    doc.text(`Summary: ${recipe.summary}`, 10, 260);
+    doc.addPage();
+    doc.text('Ingredients', 10, 10);
+    docHeight = 20;
+    for (const ingredient of recipe.ingredients) {
+      doc.text(
+        `${ingredient.amount} ${ingredient.unit} ${ingredient.name}`,
+        10,
+        docHeight,
+      );
+      docHeight += 10;
+    }
+
+    doc.addPage();
+    doc.text('Steps', 10, 10);
+    docHeight = 20;
+    for (const instruction of recipe.instructions) {
+      if (instruction.name.length > 0) {
+        doc.text(instruction.name, 10, docHeight);
+        docHeight += 10;
+      }
+
+      for (const step of instruction.steps) {
+        doc.text(`${step.number}. ${step.step}`, 10, docHeight);
+        docHeight += 10;
+
+        if (step.ingredients.length > 0) {
+          doc.text('Ingredients', 10, docHeight);
+          docHeight += 10;
+
+          for (const ingredient of step.ingredients) {
+            doc.addImage(
+              `https://img.spoonacular.com/ingredients_100x100/${ingredient.image}`,
+              'JPEG',
+              10,
+              docHeight,
+              100,
+              100,
+            );
+            docHeight += 10;
+            doc.text(ingredient.name, 10, docHeight);
+            docHeight += 10;
+          }
+        }
+
+        if (step.equipment.length > 0) {
+          doc.text('Equipment', 10, docHeight);
+          docHeight += 10;
+
+          for (const equipment of step.equipment) {
+            doc.addImage(
+              `https://img.spoonacular.com/equipment_100x100/${equipment.image}`,
+              'JPEG',
+              10,
+              docHeight,
+              100,
+              100,
+            );
+            docHeight += 10;
+            doc.text(equipment.name, 10, docHeight);
+            docHeight += 10;
+          }
+        }
+      }
+    }
+    doc.text('Powered by spoonacular', 10, 280);
+
+    // Open the PDF in a new tab to preview instead of downloading to disk
+    doc.output('dataurlnewwindow', {
+      filename: `${recipe.name}.pdf`,
+    });
   }
 }
