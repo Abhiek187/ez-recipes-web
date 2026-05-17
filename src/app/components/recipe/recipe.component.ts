@@ -27,7 +27,6 @@ import { TermsService } from 'src/app/services/terms.service';
 import { ShorthandPipe } from '../../pipes/shorthand.pipe';
 import { RecipeRatingComponent } from '../utils/recipe-rating/recipe-rating.component';
 import { ChefService } from 'src/app/services/chef.service';
-import PDFCreate from 'src/app/helpers/pdf-create';
 
 @Component({
   selector: 'app-recipe',
@@ -256,84 +255,23 @@ export class RecipeComponent implements OnInit, OnDestroy {
       });
   }
 
-  generateRecipePDF() {
-    const recipe = this.recipe();
-    if (recipe === null) return;
+  async generateRecipePDF() {
+    const recipeId = this.route.snapshot.paramMap.get('id');
+    if (recipeId === null) return;
 
-    const pdf = new PDFCreate();
-
-    pdf.text(recipe.name);
-    pdf.addImage(recipe.image, 312, 231);
-    pdf.text(`Image © ${recipe.credit}`);
-    if (['mild', 'spicy'].includes(recipe.spiceLevel)) {
-      pdf.text(recipe.spiceLevel);
-    }
-    if (recipe.isVegetarian) pdf.text('Vegetarian');
-    if (recipe.isVegan) pdf.text('Vegan');
-    if (recipe.isGlutenFree) pdf.text('Gluten-Free');
-    if (recipe.isHealthy) pdf.text('Healthy');
-    if (recipe.isCheap) pdf.text('Cheap');
-    if (recipe.isSustainable) pdf.text('Sustainable');
-    pdf.text(`Time: ${recipe.time} minutes`);
-    pdf.text(`Great for: ${recipe.types.join(', ')}`);
-    pdf.text(`Cuisines: ${recipe.culture.join(', ')}`);
-
-    pdf.text('Nutritional Facts');
-    pdf.text(`Health Score: ${recipe.healthScore}%`);
-    pdf.text(`${recipe.servings} servings`);
-    for (const nutrient of recipe.nutrients) {
-      pdf.text(
-        `${nutrient.name}: ${Math.round(nutrient.amount)} ${nutrient.unit}`,
-      );
-    }
-    // Strip HTML tags from the summary
-    pdf.text(`Summary: ${recipe.summary.replace(/<\/?[^>]+(>|$)/g, '')}`);
-    pdf.text('Ingredients');
-    for (const ingredient of recipe.ingredients) {
-      pdf.text(`${ingredient.amount} ${ingredient.unit} ${ingredient.name}`);
-    }
-
-    pdf.text('Steps');
-    for (const instruction of recipe.instructions) {
-      if (instruction.name.length > 0) {
-        pdf.text(instruction.name);
-      }
-
-      for (const step of instruction.steps) {
-        pdf.text(`${step.number}. ${step.step}`);
-
-        if (step.ingredients.length > 0) {
-          pdf.text('Ingredients');
-
-          for (const ingredient of step.ingredients) {
-            pdf.addImage(
-              `https://img.spoonacular.com/ingredients_100x100/${ingredient.image}`,
-              100,
-              100,
-            );
-            pdf.text(ingredient.name);
-          }
-        }
-
-        if (step.equipment.length > 0) {
-          pdf.text('Equipment');
-
-          for (const equipment of step.equipment) {
-            pdf.addImage(
-              `https://img.spoonacular.com/equipment_100x100/${equipment.image}`,
-              100,
-              100,
-            );
-            pdf.text(equipment.name);
-          }
-        }
-      }
-    }
-    pdf.text('Powered by spoonacular');
-
-    // Open the PDF in a new tab to preview instead of downloading to disk
-    pdf.doc.output('dataurlnewwindow', {
-      filename: `${recipe.name}.pdf`,
-    });
+    this.recipeService
+      .generateRecipePDF(recipeId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          // Open the PDF in a new tab to preview instead of downloading to disk
+          const pdf = new Blob([data], { type: 'application/pdf' });
+          const pdfURL = URL.createObjectURL(pdf);
+          window.open(pdfURL, '_blank');
+        },
+        error: (error: Error) => {
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
   }
 }
