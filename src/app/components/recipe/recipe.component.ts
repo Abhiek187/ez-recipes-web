@@ -19,7 +19,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
-import { jsPDF } from 'jspdf';
 import { finalize } from 'rxjs';
 
 import Recipe, { RecipeUpdate } from '../../models/recipe.model';
@@ -28,6 +27,7 @@ import { TermsService } from 'src/app/services/terms.service';
 import { ShorthandPipe } from '../../pipes/shorthand.pipe';
 import { RecipeRatingComponent } from '../utils/recipe-rating/recipe-rating.component';
 import { ChefService } from 'src/app/services/chef.service';
+import PDFCreate from 'src/app/helpers/pdf-create';
 
 @Component({
   selector: 'app-recipe',
@@ -260,103 +260,79 @@ export class RecipeComponent implements OnInit, OnDestroy {
     const recipe = this.recipe();
     if (recipe === null) return;
 
-    const doc = new jsPDF();
+    const pdf = new PDFCreate();
 
-    doc.text(recipe.name, 10, 10, { align: 'center' });
-    doc.addImage(recipe.image, 'JPEG', 10, 20, 312, 231);
-    doc.text(`Image © ${recipe.credit}`, 10, 30);
-    doc.text(recipe.spiceLevel, 10, 40);
-    doc.text('Vegetarian', 10, 50);
-    doc.text('Vegan', 10, 60);
-    doc.text('Gluten-Free', 10, 70);
-    doc.text('Healthy', 10, 80);
-    doc.text('Cheap', 10, 90);
-    doc.text('Sustainable', 10, 100);
-    doc.text(`Time: ${recipe.time} minutes`, 10, 110);
-    doc.text(`Great for: ${recipe.types.join(', ')}`, 10, 120);
-    doc.text(`Cuisines: ${recipe.culture.join(', ')}`, 10, 130);
+    pdf.text(recipe.name);
+    pdf.addImage(recipe.image, 312, 231);
+    pdf.text(`Image © ${recipe.credit}`);
+    if (['mild', 'spicy'].includes(recipe.spiceLevel)) {
+      pdf.text(recipe.spiceLevel);
+    }
+    if (recipe.isVegetarian) pdf.text('Vegetarian');
+    if (recipe.isVegan) pdf.text('Vegan');
+    if (recipe.isGlutenFree) pdf.text('Gluten-Free');
+    if (recipe.isHealthy) pdf.text('Healthy');
+    if (recipe.isCheap) pdf.text('Cheap');
+    if (recipe.isSustainable) pdf.text('Sustainable');
+    pdf.text(`Time: ${recipe.time} minutes`);
+    pdf.text(`Great for: ${recipe.types.join(', ')}`);
+    pdf.text(`Cuisines: ${recipe.culture.join(', ')}`);
 
-    doc.text('Nutritional Facts', 10, 140);
-    doc.text(`Health Score: ${recipe.healthScore}%`, 10, 150);
-    doc.text(`${recipe.servings} servings`, 10, 160);
-    let docHeight = 170;
+    pdf.text('Nutritional Facts');
+    pdf.text(`Health Score: ${recipe.healthScore}%`);
+    pdf.text(`${recipe.servings} servings`);
     for (const nutrient of recipe.nutrients) {
-      doc.text(
+      pdf.text(
         `${nutrient.name}: ${Math.round(nutrient.amount)} ${nutrient.unit}`,
-        10,
-        docHeight,
       );
-      docHeight += 10;
     }
-    doc.text(`Summary: ${recipe.summary}`, 10, 260);
-    doc.addPage();
-    doc.text('Ingredients', 10, 10);
-    docHeight = 20;
+    // Strip HTML tags from the summary
+    pdf.text(`Summary: ${recipe.summary.replace(/<\/?[^>]+(>|$)/g, '')}`);
+    pdf.text('Ingredients');
     for (const ingredient of recipe.ingredients) {
-      doc.text(
-        `${ingredient.amount} ${ingredient.unit} ${ingredient.name}`,
-        10,
-        docHeight,
-      );
-      docHeight += 10;
+      pdf.text(`${ingredient.amount} ${ingredient.unit} ${ingredient.name}`);
     }
 
-    doc.addPage();
-    doc.text('Steps', 10, 10);
-    docHeight = 20;
+    pdf.text('Steps');
     for (const instruction of recipe.instructions) {
       if (instruction.name.length > 0) {
-        doc.text(instruction.name, 10, docHeight);
-        docHeight += 10;
+        pdf.text(instruction.name);
       }
 
       for (const step of instruction.steps) {
-        doc.text(`${step.number}. ${step.step}`, 10, docHeight);
-        docHeight += 10;
+        pdf.text(`${step.number}. ${step.step}`);
 
         if (step.ingredients.length > 0) {
-          doc.text('Ingredients', 10, docHeight);
-          docHeight += 10;
+          pdf.text('Ingredients');
 
           for (const ingredient of step.ingredients) {
-            doc.addImage(
+            pdf.addImage(
               `https://img.spoonacular.com/ingredients_100x100/${ingredient.image}`,
-              'JPEG',
-              10,
-              docHeight,
               100,
               100,
             );
-            docHeight += 10;
-            doc.text(ingredient.name, 10, docHeight);
-            docHeight += 10;
+            pdf.text(ingredient.name);
           }
         }
 
         if (step.equipment.length > 0) {
-          doc.text('Equipment', 10, docHeight);
-          docHeight += 10;
+          pdf.text('Equipment');
 
           for (const equipment of step.equipment) {
-            doc.addImage(
+            pdf.addImage(
               `https://img.spoonacular.com/equipment_100x100/${equipment.image}`,
-              'JPEG',
-              10,
-              docHeight,
               100,
               100,
             );
-            docHeight += 10;
-            doc.text(equipment.name, 10, docHeight);
-            docHeight += 10;
+            pdf.text(equipment.name);
           }
         }
       }
     }
-    doc.text('Powered by spoonacular', 10, 280);
+    pdf.text('Powered by spoonacular');
 
     // Open the PDF in a new tab to preview instead of downloading to disk
-    doc.output('dataurlnewwindow', {
+    pdf.doc.output('dataurlnewwindow', {
       filename: `${recipe.name}.pdf`,
     });
   }
