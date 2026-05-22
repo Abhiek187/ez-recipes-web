@@ -5,7 +5,12 @@ import { catchError, Observable, of, tap } from 'rxjs';
 
 import Recipe, { RecipeUpdate, Token } from '../models/recipe.model';
 import { environment } from 'src/environments/environment';
-import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
+import {
+  mockPDF,
+  mockRecipe,
+  mockRecipes,
+  mockToken,
+} from '../models/recipe.mock';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
@@ -110,7 +115,7 @@ export class RecipeService {
 
   generateRecipePDF(id: string): Observable<Blob> {
     if (this.isMocking) {
-      return of(new Blob());
+      return of(new Blob([mockPDF], { type: 'application/pdf' }));
     }
 
     return this.http
