@@ -267,7 +267,17 @@ export class RecipeComponent implements OnInit, OnDestroy {
           // Open the PDF in a new tab to preview instead of downloading to disk
           const pdf = new Blob([data], { type: 'application/pdf' });
           const pdfURL = URL.createObjectURL(pdf);
-          window.open(pdfURL, '_blank');
+          const newWindow = window.open(pdfURL, '_blank');
+
+          // If pop-ups are blocked, download instead
+          if (newWindow === null || newWindow.closed) {
+            const link = document.createElement('a');
+            link.href = pdfURL;
+            link.download = `${this.recipe()?.name ?? 'recipe'}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
         },
         error: (error: Error) => {
           this.snackBar.open(error.message, 'Dismiss');
