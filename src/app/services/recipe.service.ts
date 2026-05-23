@@ -1,11 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, effect, inject, signal } from '@angular/core';
 import { liveQuery } from 'dexie';
-import { catchError, Observable, tap } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 
 import Recipe, { RecipeUpdate, Token } from '../models/recipe.model';
 import { environment } from 'src/environments/environment';
-import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
+import {
+  mockPDF,
+  mockRecipe,
+  mockRecipes,
+  mockToken,
+} from '../models/recipe.mock';
 import Constants from '../constants/constants';
 import RecipeFilter from '../models/recipe-filter.model';
 import recipeFilterParams from './recipe-filter-params';
@@ -56,13 +61,13 @@ export class RecipeService {
 
     return this.http
       .get<Recipe>(
-        `${environment.serverBaseUrl}${Constants.recipesPath}/random`
+        `${environment.serverBaseUrl}${Constants.recipesPath}/random`,
       )
       .pipe(
         tap((recipe) => {
           this.recipe.set(recipe);
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -77,7 +82,7 @@ export class RecipeService {
         tap((recipe) => {
           this.recipe.set(recipe);
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
   }
 
@@ -96,7 +101,7 @@ export class RecipeService {
           headers: {
             ...(token !== null && this.authHeader(token)),
           },
-        }
+        },
       )
       .pipe(
         tap(({ token }) => {
@@ -104,8 +109,20 @@ export class RecipeService {
             localStorage.setItem(Constants.LocalStorage.token, token);
           }
         }),
-        catchError(handleError)
+        catchError(handleError),
       );
+  }
+
+  generateRecipePDF(id: string): Observable<Blob> {
+    if (this.isMocking) {
+      return of(new Blob([mockPDF], { type: 'application/pdf' }));
+    }
+
+    return this.http
+      .get(`${environment.serverBaseUrl}${Constants.recipesPath}/${id}/pdf`, {
+        responseType: 'blob',
+      })
+      .pipe(catchError(handleError));
   }
 
   // Load a sample recipe to avoid hitting the API while testing the UI
@@ -122,7 +139,7 @@ export class RecipeService {
 
           subscriber.complete();
         },
-        this.mockLoading ? 10_000 : 0
+        this.mockLoading ? 10_000 : 0,
       );
     });
   }
@@ -139,7 +156,7 @@ export class RecipeService {
 
           subscriber.complete();
         },
-        this.mockLoading ? 10_000 : 0
+        this.mockLoading ? 10_000 : 0,
       );
     });
   }
@@ -156,7 +173,7 @@ export class RecipeService {
 
           subscriber.complete();
         },
-        this.mockLoading ? 10_000 : 0
+        this.mockLoading ? 10_000 : 0,
       );
     });
   }
@@ -175,7 +192,7 @@ export class RecipeService {
       this.recentRecipesDB.recipes
         .orderBy(Constants.recentRecipesDB.config.at(-1)!.indexes.timestamp)
         .reverse()
-        .toArray()
+        .toArray(),
     );
   }
 
@@ -189,7 +206,7 @@ export class RecipeService {
           recipe.id,
           {
             timestamp: Date.now(),
-          }
+          },
         );
         // 0 = key doesn't exist, 1 = key exists
         if (recipesUpdated === 1) return Promise.resolve();
@@ -209,7 +226,7 @@ export class RecipeService {
           timestamp: Date.now(),
           isFavorite: false,
         });
-      }
+      },
     );
   }
 

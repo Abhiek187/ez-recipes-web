@@ -5,7 +5,7 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { mockRecipe } from '../../models/recipe.mock';
 import { RecipeComponent } from './recipe.component';
@@ -30,7 +30,7 @@ describe('RecipeComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockTermStoreStr());
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     fixture = TestBed.createComponent(RecipeComponent);
@@ -66,6 +66,10 @@ describe('RecipeComponent', () => {
     expect(recipeLink?.href).toBe(recipeComponent.recipe()?.url);
     expect(recipeLink?.ariaLabel).toBe('Open recipe source');
     expectLinkToOpenInNewTab(recipeLink!);
+    const pdfButton =
+      rootElement.querySelector<HTMLButtonElement>('.pdf-button');
+    expect(pdfButton).not.toBeNull();
+    expect(pdfButton?.ariaLabel).toBe('Generate PDF');
   });
 
   it('should display all recipe information in the aside', () => {
@@ -78,7 +82,7 @@ describe('RecipeComponent', () => {
     const recipeCaption =
       rootElement.querySelector<HTMLElement>('.recipe-caption');
     expect(recipeCaption?.textContent).toContain(
-      recipeComponent.recipe()?.credit
+      recipeComponent.recipe()?.credit,
     );
     const recipeCaptionLink =
       recipeCaption?.firstElementChild as HTMLAnchorElement;
@@ -90,11 +94,11 @@ describe('RecipeComponent', () => {
       rootElement.querySelector<HTMLElement>('.recipe-pill-list');
     if (['mild', 'spicy'].includes(recipeComponent.recipe()!.spiceLevel)) {
       expect(recipePills?.textContent).toContain(
-        capitalize(recipeComponent.recipe()!.spiceLevel)
+        capitalize(recipeComponent.recipe()!.spiceLevel),
       );
     } else {
       expect(recipePills?.textContent).not.toContain(
-        capitalize(recipeComponent.recipe()!.spiceLevel)
+        capitalize(recipeComponent.recipe()!.spiceLevel),
       );
     }
     if (recipeComponent.recipe()?.isVegetarian) {
@@ -132,7 +136,7 @@ describe('RecipeComponent', () => {
     const recipeTime =
       rootElement.querySelector<HTMLHeadingElement>('.recipe-time');
     expect(recipeTime?.textContent).toContain(
-      `${recipeComponent.recipe()?.time} minutes`
+      `${recipeComponent.recipe()?.time} minutes`,
     );
     // The recipe views should be in shorthand
     const recipeViews =
@@ -140,7 +144,7 @@ describe('RecipeComponent', () => {
     const shorthandPipe = new ShorthandPipe();
     expect(recipeComponent.recipe()?.views).not.toBeUndefined();
     expect(recipeViews?.textContent).toContain(
-      shorthandPipe.transform(recipeComponent.recipe()!.views!)
+      shorthandPipe.transform(recipeComponent.recipe()!.views!),
     );
 
     // The recipe types & culture should be listed if applicable
@@ -157,10 +161,10 @@ describe('RecipeComponent', () => {
 
     // The "Show Me Another Recipe!" button should be present
     const showRecipeContainer = rootElement.querySelector<HTMLDivElement>(
-      '.show-recipe-container'
+      '.show-recipe-container',
     );
     expect(showRecipeContainer?.textContent).toContain(
-      'Show Me Another Recipe!'
+      'Show Me Another Recipe!',
     );
 
     // Check the nutrition label
@@ -168,11 +172,11 @@ describe('RecipeComponent', () => {
       rootElement.querySelector<HTMLElement>('.nutrition-card');
     expect(nutritionCard?.textContent).toContain('Nutrition Facts');
     expect(nutritionCard?.textContent).toContain(
-      recipeComponent.recipe()?.healthScore
+      recipeComponent.recipe()?.healthScore,
     );
     // Servings should be plural if > 1
     expect(nutritionCard?.textContent).toContain(
-      `${recipeComponent.recipe()?.servings} servings`
+      `${recipeComponent.recipe()?.servings} servings`,
     );
 
     // Each nutrient should be displayed
@@ -190,11 +194,11 @@ describe('RecipeComponent', () => {
   it('should display all recipe information in the recipe section', () => {
     // Check that the recipe section shows all relevant information
     const recipeSummaryCard = rootElement.querySelector<HTMLElement>(
-      '.recipe-summary-card'
+      '.recipe-summary-card',
     );
     expect(recipeSummaryCard?.textContent).toContain('Summary');
     expect(recipeSummaryCard?.innerHTML).toContain(
-      recipeComponent.recipe()?.summary
+      recipeComponent.recipe()?.summary,
     );
 
     const lightBulbIcon =
@@ -203,7 +207,7 @@ describe('RecipeComponent', () => {
 
     // All ingredients should appear
     const ingredientsCard = rootElement.querySelector<HTMLElement>(
-      '.recipe-ingredients-card'
+      '.recipe-ingredients-card',
     );
     expect(ingredientsCard?.textContent).toContain('Ingredients');
 
@@ -234,7 +238,7 @@ describe('RecipeComponent', () => {
       // Each instruction should have a name (even if it's blank)
       const instructionHeader =
         instructionsContainer.querySelector<HTMLHeadingElement>(
-          '.instruction-header'
+          '.instruction-header',
         );
       expect(instructionHeader?.textContent).toMatch(instruction.name);
 
@@ -256,12 +260,12 @@ describe('RecipeComponent', () => {
           ingredient,
         ] of step.ingredients.entries()) {
           const ingredientListItem = stepCard?.querySelectorAll<HTMLLIElement>(
-            '.step-ingredients-list-item'
+            '.step-ingredients-list-item',
           )[ingredientIndex];
           const ingredientImage =
             ingredientListItem?.firstElementChild as HTMLImageElement;
           expect(ingredientImage.src).toBe(
-            `https://img.spoonacular.com/ingredients_100x100/${ingredient.image}`
+            `https://img.spoonacular.com/ingredients_100x100/${ingredient.image}`,
           );
           expect(ingredientImage.alt).toBe('');
           expect(ingredientListItem?.textContent).toContain(ingredient.name);
@@ -270,12 +274,12 @@ describe('RecipeComponent', () => {
         // The equipment container should constain the step's equipment and their images
         for (const [equipmentIndex, equipment] of step.equipment.entries()) {
           const equipmentListItem = stepCard?.querySelectorAll<HTMLLIElement>(
-            '.step-equipment-list-item'
+            '.step-equipment-list-item',
           )[equipmentIndex];
           const equipmentImage =
             equipmentListItem?.firstElementChild as HTMLImageElement;
           expect(equipmentImage.src).toBe(
-            `https://img.spoonacular.com/equipment_100x100/${equipment.image}`
+            `https://img.spoonacular.com/equipment_100x100/${equipment.image}`,
           );
           expect(equipmentImage.alt).toBe('');
           expect(equipmentListItem?.textContent).toContain(equipment.name);
@@ -302,7 +306,7 @@ describe('RecipeComponent', () => {
     // The show recipe button should be disabled
     expect(
       rootElement.querySelector<HTMLButtonElement>('.show-recipe-button')
-        ?.disabled
+        ?.disabled,
     ).toBe(true);
   });
 
@@ -312,7 +316,7 @@ describe('RecipeComponent', () => {
     vi.spyOn(recipeComponent, 'getRandomRecipe');
 
     const showRecipeButton = rootElement.querySelector<HTMLButtonElement>(
-      '.show-recipe-button'
+      '.show-recipe-button',
     );
     expect(showRecipeButton).not.toBeNull();
     showRecipeButton?.click();

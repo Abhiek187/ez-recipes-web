@@ -8,10 +8,15 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable } from 'rxjs';
-import { expect, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { environment } from 'src/environments/environment';
-import { mockRecipe, mockRecipes, mockToken } from '../models/recipe.mock';
+import {
+  mockPDF,
+  mockRecipe,
+  mockRecipes,
+  mockToken,
+} from '../models/recipe.mock';
 import { RecentRecipe, RecipeUpdate } from '../models/recipe.model';
 import { RecipeService } from './recipe.service';
 import Constants from '../constants/constants';
@@ -39,7 +44,7 @@ describe('RecipeService', () => {
       ...recipe,
       timestamp: index,
       isFavorite: false,
-    })
+    }),
   );
 
   const mockLocalStorage = (token: string | null = mockChef.token) => {
@@ -47,7 +52,7 @@ describe('RecipeService', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(token);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
   };
 
@@ -176,14 +181,14 @@ describe('RecipeService', () => {
       culture: ['American', 'British'],
     };
     const recipePromise = firstValueFrom(
-      recipeService.getRecipesWithFilter(testFilter)
+      recipeService.getRecipesWithFilter(testFilter),
     );
 
     const req = httpTestingController.expectOne({
       method: 'GET',
       // The query params should be serialized properly
       url: `${baseUrl}?query=${encodeURIComponent(
-        testFilter.query!
+        testFilter.query!,
       )}&min-cals=${testFilter.minCals}&max-cals=${
         testFilter.maxCals
       }&vegetarian=&vegan=&gluten-free=&rating=${
@@ -197,7 +202,7 @@ describe('RecipeService', () => {
         .join('&')}`,
     });
     expect(req.request.params.toString()).toBe(
-      recipeFilterParams(testFilter).toString()
+      recipeFilterParams(testFilter).toString(),
     );
     req.flush(mockRecipes);
 
@@ -208,7 +213,7 @@ describe('RecipeService', () => {
     // Check that getRandomRecipe returns an error if the request failed
     const testFilter: RecipeFilter = {};
     const recipePromise = firstValueFrom(
-      recipeService.getRecipesWithFilter(testFilter)
+      recipeService.getRecipesWithFilter(testFilter),
     );
 
     const req = httpTestingController.expectOne({
@@ -230,7 +235,7 @@ describe('RecipeService', () => {
     };
     mockLocalStorage();
     const recipePromise = firstValueFrom(
-      recipeService.updateRecipe(id, fields)
+      recipeService.updateRecipe(id, fields),
     );
 
     const req = httpTestingController.expectOne({
@@ -238,7 +243,7 @@ describe('RecipeService', () => {
       url: `${baseUrl}/${id}`,
     });
     expect(req.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     expect(req.request.body).toBe(fields);
     req.flush(mockToken);
@@ -254,7 +259,7 @@ describe('RecipeService', () => {
     };
     mockLocalStorage(null);
     const recipePromise = firstValueFrom(
-      recipeService.updateRecipe(id, fields)
+      recipeService.updateRecipe(id, fields),
     );
 
     const req = httpTestingController.expectOne({
@@ -276,7 +281,7 @@ describe('RecipeService', () => {
     };
     mockLocalStorage();
     const recipePromise = firstValueFrom(
-      recipeService.updateRecipe(id, fields)
+      recipeService.updateRecipe(id, fields),
     );
 
     const req = httpTestingController.expectOne({
@@ -284,9 +289,36 @@ describe('RecipeService', () => {
       url: `${baseUrl}/${id}`,
     });
     expect(req.request.headers.get('Authorization')).toBe(
-      `Bearer ${mockChef.token}`
+      `Bearer ${mockChef.token}`,
     );
     expect(req.request.body).toBe(fields);
+    req.error(mockError);
+
+    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
+  });
+
+  it('should generate a PDF', async () => {
+    const id = '0';
+    const recipePromise = firstValueFrom(recipeService.generateRecipePDF(id));
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/${id}/pdf`,
+    });
+    const mockPDFBlob = new Blob([mockPDF], { type: 'application/pdf' });
+    req.flush(mockPDFBlob);
+
+    await expect(recipePromise).resolves.toBe(mockPDFBlob);
+  });
+
+  it('should return an error if the PDF API fails', async () => {
+    const id = '0';
+    const recipePromise = firstValueFrom(recipeService.generateRecipePDF(id));
+
+    const req = httpTestingController.expectOne({
+      method: 'GET',
+      url: `${baseUrl}/${id}/pdf`,
+    });
     req.error(mockError);
 
     await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
@@ -315,7 +347,7 @@ describe('RecipeService', () => {
 
   it("should return an empty array if there are't any recent recipes", async () => {
     const recipes = await firstValueFrom(
-      recipeService.getRecentRecipes() as unknown as Observable<RecentRecipe[]>
+      recipeService.getRecentRecipes() as unknown as Observable<RecentRecipe[]>,
     );
     expect(recipes).toEqual([]);
   });
@@ -324,7 +356,7 @@ describe('RecipeService', () => {
     await recentRecipesDB.recipes.bulkAdd(mockRecipesWithTimestamp);
 
     const recipes = await firstValueFrom(
-      recipeService.getRecentRecipes() as unknown as Observable<RecentRecipe[]>
+      recipeService.getRecentRecipes() as unknown as Observable<RecentRecipe[]>,
     );
     expect(recipes).toEqual(mockRecipesWithTimestamp.toReversed());
   });
@@ -350,7 +382,7 @@ describe('RecipeService', () => {
       [...Array(Constants.recentRecipesDB.max).keys()].map((index) => ({
         ...mockRecipesWithTimestamp[0],
         id: index,
-      }))
+      })),
     );
     await recipeService.saveRecentRecipe(mockRecipesWithTimestamp[1]);
 

@@ -118,7 +118,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
       terms?.reduce<Record<string, string>>((dict, term) => {
         dict[term.word] = term.definition;
         return dict;
-      }, {})
+      }, {}),
     );
   }
 
@@ -135,7 +135,8 @@ export class RecipeComponent implements OnInit, OnDestroy {
     const prefix = 'EZ Recipes | ';
     this.titleService.setTitle(
       prefix +
-        (recipe?.name ?? (this.isLoading() ? 'Loading...' : 'Recipe Not Found'))
+        (recipe?.name ??
+          (this.isLoading() ? 'Loading...' : 'Recipe Not Found')),
     );
 
     if (recipe !== null) {
@@ -163,12 +164,12 @@ export class RecipeComponent implements OnInit, OnDestroy {
                 ...chef?.recentRecipes,
                 [recipe.id]: new Date().toISOString(),
               },
-            }
+            },
         );
       },
       error: (error) => {
         console.error(
-          `Failed to update the recipe view count: ${error.message}`
+          `Failed to update the recipe view count: ${error.message}`,
         );
       },
     });
@@ -184,7 +185,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         error: (error: Error) => {
@@ -202,7 +203,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
     if (this.chef() === undefined || recipeId === undefined) {
       this.snackBar.open(
         'You must be signed in to rate this recipe',
-        'Dismiss'
+        'Dismiss',
       );
       return;
     }
@@ -220,7 +221,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
                   ...chef?.ratings,
                   [recipeId]: rating,
                 },
-              }
+              },
           );
         },
         error: (error) => {
@@ -240,7 +241,7 @@ export class RecipeComponent implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: (recipe: Recipe) => {
@@ -249,6 +250,26 @@ export class RecipeComponent implements OnInit, OnDestroy {
         },
         error: (error: Error) => {
           // Show a snackbar explaining that an error occurred
+          this.snackBar.open(error.message, 'Dismiss');
+        },
+      });
+  }
+
+  async generateRecipePDF() {
+    const recipeId = this.route.snapshot.paramMap.get('id');
+    if (recipeId === null) return;
+
+    this.recipeService
+      .generateRecipePDF(recipeId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          // Open the PDF in a new tab to preview instead of downloading to disk
+          const pdf = new Blob([data], { type: 'application/pdf' });
+          const pdfURL = URL.createObjectURL(pdf);
+          window.open(pdfURL, '_blank');
+        },
+        error: (error: Error) => {
           this.snackBar.open(error.message, 'Dismiss');
         },
       });
