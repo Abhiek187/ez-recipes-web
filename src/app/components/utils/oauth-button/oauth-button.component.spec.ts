@@ -79,7 +79,7 @@ describe('OauthButtonComponent', () => {
       new MessageEvent('message', {
         origin: 'https://www.example.com',
         data: undefined,
-      })
+      }),
     );
     fixture.detectChanges();
     await fixture.whenStable();
@@ -96,7 +96,7 @@ describe('OauthButtonComponent', () => {
           code: authUrl.searchParams.get('code'),
           state: '9876',
         },
-      })
+      }),
     );
     fixture.detectChanges();
     await fixture.whenStable();
@@ -112,7 +112,7 @@ describe('OauthButtonComponent', () => {
         data: {
           state: authUrl.searchParams.get('state'),
         },
-      })
+      }),
     );
     fixture.detectChanges();
     await fixture.whenStable();
@@ -130,13 +130,14 @@ describe('OauthButtonComponent', () => {
           code: authUrl.searchParams.get('code'),
           state: authUrl.searchParams.get('state'),
         },
-      })
+      }),
     );
     fixture.detectChanges();
     await fixture.whenStable();
 
     expect(mockLoginWithOAuth).toHaveBeenCalledWith({
       code: authUrl.searchParams.get('code'),
+      state: authUrl.searchParams.get('state'),
       providerId: component.provider(),
     });
     expect(successEmitSpy).toHaveBeenCalledWith(mockChef);

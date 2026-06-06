@@ -79,6 +79,7 @@ export interface AuthUrl {
 
 export interface OAuthRequest {
   code: string;
+  state: string;
   providerId: Provider;
   redirectUrl: string;
 }

@@ -43,7 +43,7 @@ export class OauthButtonComponent implements OnInit {
   isLoading = signal(false);
 
   readonly providerStyle = computed(
-    () => Constants.providerStyles[this.provider()]
+    () => Constants.providerStyles[this.provider()],
   );
   readonly providerIcon = computed(() => this.providerStyle().label);
   /* Keep track of which provider we're signing into
@@ -60,8 +60,8 @@ export class OauthButtonComponent implements OnInit {
     this.iconRegistry.addSvgIcon(
       this.providerIcon(),
       this.sanitizer.bypassSecurityTrustResourceUrl(
-        `assets/${this.providerStyle().icon}`
-      )
+        `assets/${this.providerStyle().icon}`,
+      ),
     );
   }
 
@@ -74,7 +74,7 @@ export class OauthButtonComponent implements OnInit {
     if (newWindow === null || newWindow.closed) {
       this.snackBar.open(
         'Pop-ups are required to sign in a new tab. Please enable them to continue.',
-        'Dismiss'
+        'Dismiss',
       );
     }
   }
@@ -97,6 +97,7 @@ export class OauthButtonComponent implements OnInit {
     const oAuthRequest: Parameters<typeof this.chefService.loginWithOAuth>[0] =
       {
         code: authCode,
+        state: authState,
         providerId: this.provider(),
       };
     this.chefService
@@ -105,7 +106,7 @@ export class OauthButtonComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: (chef) => {
