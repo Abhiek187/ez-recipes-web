@@ -378,6 +378,7 @@ describe('ChefService', () => {
   it('should login with an OAuth provider without a token', async () => {
     const oAuthRequest: Parameters<typeof chefService.loginWithOAuth>[0] = {
       code: 'code',
+      state: 'state',
       providerId: Provider.Google,
     };
     mockLocalStorage(null);
@@ -404,6 +405,7 @@ describe('ChefService', () => {
   it('should link an OAuth provider with a token', async () => {
     const oAuthRequest: Parameters<typeof chefService.loginWithOAuth>[0] = {
       code: 'code',
+      state: 'state',
       providerId: Provider.Google,
     };
     mockLocalStorage();
@@ -441,6 +443,7 @@ describe('ChefService', () => {
   it('should return an error if the OAuth login API fails', async () => {
     const oAuthRequest: Parameters<typeof chefService.loginWithOAuth>[0] = {
       code: 'code',
+      state: 'state',
       providerId: Provider.Google,
     };
     mockLocalStorage();
