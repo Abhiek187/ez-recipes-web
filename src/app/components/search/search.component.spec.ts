@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -21,7 +20,7 @@ describe('SearchComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SearchComponent, RouterModule.forRoot([])],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();
@@ -135,7 +134,7 @@ describe('SearchComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.min)
+      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.min),
     ).toBe(true);
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
@@ -147,7 +146,7 @@ describe('SearchComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.min)
+      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.min),
     ).toBe(true);
     expect(submitButton?.disabled).toBe(true);
 
@@ -165,7 +164,7 @@ describe('SearchComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.max)
+      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.max),
     ).toBe(true);
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
@@ -177,7 +176,7 @@ describe('SearchComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(
-      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.max)
+      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.max),
     ).toBe(true);
     expect(submitButton?.disabled).toBe(true);
 
@@ -196,7 +195,7 @@ describe('SearchComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(form.hasError(searchComponent.filterFormErrorNames.range)).toBe(
-      true
+      true,
     );
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
@@ -217,13 +216,13 @@ describe('SearchComponent', () => {
 
     expect(form.valid).toBe(false);
     expect(form.hasError(searchComponent.filterFormErrorNames.range)).toBe(
-      true
+      true,
     );
     expect(
-      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.max)
+      form.controls.minCals.hasError(searchComponent.filterFormErrorNames.max),
     ).toBe(true);
     expect(
-      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.min)
+      form.controls.maxCals.hasError(searchComponent.filterFormErrorNames.min),
     ).toBe(true);
     const submitButton =
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
@@ -267,7 +266,7 @@ describe('SearchComponent', () => {
     expect(rootElement.querySelector('.loading-message')).not.toBeNull();
     // The submit button should be disabled
     expect(
-      rootElement.querySelector<HTMLButtonElement>('.submit-button')?.disabled
+      rootElement.querySelector<HTMLButtonElement>('.submit-button')?.disabled,
     ).toBe(true);
   });
 
@@ -280,7 +279,7 @@ describe('SearchComponent', () => {
       rootElement.querySelector<HTMLParagraphElement>('.no-results-error');
     expect(noResultsError).not.toBeNull();
     expect(noResultsError?.textContent).toContain(
-      searchComponent.Errors.noResults
+      searchComponent.Errors.noResults,
     );
     expect(rootElement.querySelector('.results-title')).toBeNull();
   });
@@ -321,7 +320,7 @@ describe('SearchComponent', () => {
     expect(searchComponent.loadingMessage()).toBe('');
     vi.advanceTimersByTime(3000);
     expect(Constants.loadingMessages).toContain(
-      searchComponent.loadingMessage()
+      searchComponent.loadingMessage(),
     );
   });
 
@@ -352,7 +351,7 @@ describe('SearchComponent', () => {
     expect(submitButton?.disabled).toBe(false);
 
     const sortDirectionButton = rootElement.querySelector<HTMLButtonElement>(
-      '.sort-direction-button'
+      '.sort-direction-button',
     );
     expect(sortDirectionButton).not.toBeNull();
     sortDirectionButton?.click();

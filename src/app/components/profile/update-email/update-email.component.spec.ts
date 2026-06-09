@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -31,7 +30,7 @@ describe('UpdateEmailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [UpdateEmailComponent],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         {
           provide: ChefService,

@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -22,7 +21,7 @@ describe('RecipeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RouterModule.forRoot([]), RecipeComponent],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();

@@ -6,7 +6,6 @@ import {
   inject,
   OnInit,
   signal,
-  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -47,7 +46,6 @@ import { base64URLEncode } from 'src/app/helpers/string';
     RouterModule,
   ],
   templateUrl: './profile.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './profile.component.scss',
 })
 export class ProfileComponent implements OnInit {

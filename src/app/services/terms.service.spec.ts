@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import {
   HttpTestingController,
@@ -36,7 +35,7 @@ describe('TermsService', () => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     });
@@ -91,7 +90,7 @@ describe('TermsService', () => {
 
   it('should return null if the terms have expired', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(
-      mockTermStoreStr(Date.now() - 1)
+      mockTermStoreStr(Date.now() - 1),
     );
     expect(termsService.getCachedTerms()).toBeNull();
   });
@@ -106,7 +105,7 @@ describe('TermsService', () => {
     termsService.saveTerms(mockTerms);
     expect(localStorageProto.setItem).toHaveBeenCalledWith(
       Constants.LocalStorage.terms,
-      mockTermStoreStr()
+      mockTermStoreStr(),
     );
   });
 });

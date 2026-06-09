@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
@@ -9,7 +9,6 @@ import { OAuthResponse } from 'src/app/models/profile.model';
   selector: 'app-oauth-callback',
   imports: [MatProgressSpinnerModule],
   templateUrl: './oauth-callback.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './oauth-callback.component.scss',
 })
 export class OauthCallbackComponent {
@@ -35,7 +34,7 @@ export class OauthCallbackComponent {
     } else {
       this.snackBar.open(
         'Invalid OAuth callback. Please try signing in again.',
-        'Dismiss'
+        'Dismiss',
       );
     }
   }

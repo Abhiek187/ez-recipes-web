@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -52,7 +51,7 @@ describe('OauthCallbackComponent', () => {
     await TestBed.configureTestingModule({
       imports: [OauthCallbackComponent, RouterModule.forRoot([])],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         {
           provide: MatSnackBar,
@@ -87,7 +86,7 @@ describe('OauthCallbackComponent', () => {
     expect(rootElement.querySelector('.progress-spinner')).toBeTruthy();
     expect(mockPostMessage).toHaveBeenCalledWith(
       queryParams,
-      window.location.origin
+      window.location.origin,
     );
     expect(mockWindowClose).toHaveBeenCalled();
   });

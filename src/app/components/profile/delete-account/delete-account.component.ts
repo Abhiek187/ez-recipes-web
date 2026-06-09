@@ -5,7 +5,6 @@ import {
   OnInit,
   Signal,
   signal,
-  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -58,7 +57,6 @@ const usernamesMatchValidator =
     ReactiveFormsModule,
   ],
   templateUrl: './delete-account.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './delete-account.component.scss',
 })
 export class DeleteAccountComponent implements OnInit {
@@ -95,7 +93,7 @@ export class DeleteAccountComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: () => {

@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -29,7 +28,7 @@ describe('HomeComponent', () => {
 
   const mockRecentRecipes = (value: RecentRecipe[]) => {
     vi.spyOn(RecipeService.prototype, 'getRecentRecipes').mockReturnValue(
-      of(value) as unknown as DObservable
+      of(value) as unknown as DObservable,
     );
     fixture.detectChanges();
   };
@@ -41,7 +40,7 @@ describe('HomeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RouterModule.forRoot([])],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();
@@ -69,14 +68,14 @@ describe('HomeComponent', () => {
     // Check that the page initially shows the "Find Me a Recipe!" button
     fixture.detectChanges();
     const findRecipeButton = rootElement.querySelector<HTMLButtonElement>(
-      '.find-recipe-button'
+      '.find-recipe-button',
     );
     expect(findRecipeButton).not.toBeNull();
     expect(findRecipeButton?.textContent).toContain('Find Me a Recipe!');
 
     // The navbar should be visible
     expect(
-      fixture.debugElement.query(By.directive(NavbarComponent))
+      fixture.debugElement.query(By.directive(NavbarComponent)),
     ).toBeDefined();
 
     // The spinner should be hidden
@@ -85,7 +84,7 @@ describe('HomeComponent', () => {
 
     // All the accordions should be present
     const favoritesAccordion = rootElement.querySelector(
-      '.favorites-accordion'
+      '.favorites-accordion',
     );
     expect(favoritesAccordion).toBeDefined();
     expect(favoritesAccordion?.textContent).toContain('Favorites');
@@ -106,7 +105,7 @@ describe('HomeComponent', () => {
     vi.spyOn(homeComponent, 'getRandomRecipe');
 
     const findRecipeButton = rootElement.querySelector<HTMLButtonElement>(
-      '.find-recipe-button'
+      '.find-recipe-button',
     );
     expect(findRecipeButton).not.toBeNull();
     findRecipeButton?.click();
@@ -126,7 +125,7 @@ describe('HomeComponent', () => {
     // The find recipe button should be disabled
     expect(
       rootElement.querySelector<HTMLButtonElement>('.find-recipe-button')
-        ?.disabled
+        ?.disabled,
     ).toBe(true);
   });
 
@@ -144,14 +143,14 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
 
     const favoritesAccordion = rootElement.querySelector(
-      '.favorites-accordion'
+      '.favorites-accordion',
     );
     expect(favoritesAccordion?.textContent).toContain(
-      'Sign in to view your saved recipes'
+      'Sign in to view your saved recipes',
     );
     const ratingsAccordion = rootElement.querySelector('.ratings-accordion');
     expect(ratingsAccordion?.textContent).toContain(
-      'Sign in to view your saved recipes'
+      'Sign in to view your saved recipes',
     );
   });
 
@@ -171,7 +170,7 @@ describe('HomeComponent', () => {
         ...recipe,
         timestamp: mockTime,
         isFavorite: false,
-      }))
+      })),
     );
 
     const recentsAccordion =
@@ -195,7 +194,7 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
 
     const favoritesAccordion = rootElement.querySelector(
-      '.favorites-accordion'
+      '.favorites-accordion',
     );
     expect(favoritesAccordion?.textContent).toContain('No recipes found');
 
@@ -208,7 +207,7 @@ describe('HomeComponent', () => {
 
   it('should populate all the accordions if authenticated', () => {
     vi.spyOn(RecipeService.prototype, 'getRecipeById').mockReturnValue(
-      of(mockRecipe)
+      of(mockRecipe),
     );
     chefService.chef.set(mockChef);
     homeComponent.onExpandFavorites();
@@ -217,26 +216,26 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
 
     const favoritesAccordion = rootElement.querySelector(
-      '.favorites-accordion'
+      '.favorites-accordion',
     );
     const favoritesList =
       favoritesAccordion?.querySelector<HTMLUListElement>('.recipe-card-list');
     expect(favoritesList?.childElementCount).toBe(
-      mockChef.favoriteRecipes.length
+      mockChef.favoriteRecipes.length,
     );
 
     const recentsAccordion = rootElement.querySelector('.recents-accordion');
     const recentsList =
       recentsAccordion?.querySelector<HTMLUListElement>('.recipe-card-list');
     expect(recentsList?.childElementCount).toBe(
-      Object.keys(mockChef.recentRecipes).length
+      Object.keys(mockChef.recentRecipes).length,
     );
 
     const ratingsAccordion = rootElement.querySelector('.ratings-accordion');
     const ratingsList =
       ratingsAccordion?.querySelector<HTMLUListElement>('.recipe-card-list');
     expect(ratingsList?.childElementCount).toBe(
-      Object.keys(mockChef.ratings).length
+      Object.keys(mockChef.ratings).length,
     );
   });
 });

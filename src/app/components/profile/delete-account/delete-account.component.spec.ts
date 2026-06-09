@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -35,7 +34,7 @@ describe('DeleteAccountComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DeleteAccountComponent],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         {
           provide: ChefService,
@@ -52,7 +51,7 @@ describe('DeleteAccountComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     router.lastSuccessfulNavigation.mockReturnValue({
@@ -90,8 +89,8 @@ describe('DeleteAccountComponent', () => {
     expect(form.valid).toBe(false);
     expect(
       form.controls.username.hasError(
-        deleteAccountComponent.formErrors.required
-      )
+        deleteAccountComponent.formErrors.required,
+      ),
     ).toBe(true);
 
     const submitButton = rootElement
@@ -108,8 +107,8 @@ describe('DeleteAccountComponent', () => {
     expect(form.valid).toBe(false);
     expect(
       form.controls.username.hasError(
-        deleteAccountComponent.formErrors.usernameMismatch
-      )
+        deleteAccountComponent.formErrors.usernameMismatch,
+      ),
     ).toBe(true);
 
     const submitButton = rootElement

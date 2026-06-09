@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -30,7 +29,7 @@ describe('VerifyEmailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [VerifyEmailComponent],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         {
           provide: ChefService,
@@ -43,7 +42,7 @@ describe('VerifyEmailComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     router = TestBed.inject(Router);

@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -26,7 +25,7 @@ describe('AppComponent', () => {
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: false }),
       ],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();
@@ -40,7 +39,7 @@ describe('AppComponent', () => {
   it('should create the app', () => {
     // Check that the component can render
     vi.spyOn(TermsService.prototype, 'getCachedTerms').mockReturnValue(
-      mockTerms
+      mockTerms,
     );
     // Re-render the component after setting up mocks
     fixture.detectChanges();

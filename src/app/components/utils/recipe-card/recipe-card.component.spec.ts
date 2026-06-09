@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
@@ -43,7 +42,7 @@ describe('RecipeCardComponent', () => {
           provide: RecipeService,
           useValue: mockRecipeService,
         },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();
@@ -52,7 +51,7 @@ describe('RecipeCardComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     fixture = TestBed.createComponent(RecipeCardComponent);
@@ -66,7 +65,7 @@ describe('RecipeCardComponent', () => {
     // All elements should be visible on the recipe card
     expect(recipeCardComponent).toBeTruthy();
     expect(recipeCardComponent.calories()).toEqual(
-      mockRecipe.nutrients.find((nutrient) => nutrient.name === 'Calories')
+      mockRecipe.nutrients.find((nutrient) => nutrient.name === 'Calories'),
     );
 
     const recipeCard = rootElement.querySelector<HTMLElement>('.recipe-card');
@@ -80,12 +79,12 @@ describe('RecipeCardComponent', () => {
       recipeCard?.querySelector<HTMLElement>('.recipe-content');
     expect(recipeContent?.textContent).toContain(mockRecipe.name);
     expect(recipeContent?.textContent).toContain(
-      `Time: ${mockRecipe.time} minutes`
+      `Time: ${mockRecipe.time} minutes`,
     );
     expect(recipeContent?.textContent).toContain(
       `${Math.round(recipeCardComponent.calories()!.amount)} ${
         recipeCardComponent.calories()?.unit
-      }`
+      }`,
     );
   });
 
@@ -94,7 +93,7 @@ describe('RecipeCardComponent', () => {
     fixture.detectChanges();
 
     const favoriteButton = rootElement.querySelector<HTMLButtonElement>(
-      '.recipe-favorite-icon'
+      '.recipe-favorite-icon',
     );
     expect(favoriteButton?.disabled).toBe(true);
     expect(recipeCardComponent.isFavorite()).toBe(false);
@@ -107,7 +106,7 @@ describe('RecipeCardComponent', () => {
     expect(recipeCardComponent.isFavorite()).toBe(false);
 
     const favoriteButton = rootElement.querySelector<HTMLButtonElement>(
-      '.recipe-favorite-icon'
+      '.recipe-favorite-icon',
     );
     mockRecipeService.updateRecipe.mockReturnValue(of(mockToken));
     favoriteButton?.click();
@@ -116,7 +115,7 @@ describe('RecipeCardComponent', () => {
       isFavorite: true,
     });
     expect(recipeCardComponent.chef()?.favoriteRecipes).toContain(
-      mockRecipe.id.toString()
+      mockRecipe.id.toString(),
     );
     expect(recipeCardComponent.isFavorite()).toBe(true);
 
@@ -126,7 +125,7 @@ describe('RecipeCardComponent', () => {
       isFavorite: false,
     });
     expect(recipeCardComponent.chef()?.favoriteRecipes).not.toContain(
-      mockRecipe.id.toString()
+      mockRecipe.id.toString(),
     );
     expect(recipeCardComponent.isFavorite()).toBe(false);
   });

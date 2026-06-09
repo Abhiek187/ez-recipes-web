@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -29,7 +29,6 @@ import { profileRoutes } from 'src/app/app-routing.module';
     ReactiveFormsModule,
   ],
   templateUrl: './update-email.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './update-email.component.scss',
 })
 export class UpdateEmailComponent {
@@ -73,7 +72,7 @@ export class UpdateEmailComponent {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: () => {

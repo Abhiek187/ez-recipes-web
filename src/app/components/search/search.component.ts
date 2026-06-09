@@ -6,7 +6,6 @@ import {
   OnInit,
   inject,
   signal,
-  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -86,7 +85,7 @@ const FilterFormError = {
 
 // Check that minCals doesn't exceed maxCals
 const calorieRangeValidator: ValidatorFn = (
-  control: AbstractControl
+  control: AbstractControl,
 ): ValidationErrors | null => {
   const minCals = control.get(FilterForm.minCals);
   const maxCals = control.get(FilterForm.maxCals);
@@ -115,7 +114,6 @@ const calorieRangeValidator: ValidatorFn = (
     RecipeCardComponent,
   ],
   templateUrl: './search.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './search.component.scss',
 })
 export class SearchComponent implements OnInit, OnDestroy {
@@ -155,7 +153,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       [FilterForm.sort]: new FormControl<RecipeSortField | null>(null),
       [FilterForm.asc]: new FormControl(false),
     },
-    { validators: calorieRangeValidator }
+    { validators: calorieRangeValidator },
   );
   readonly Errors = {
     [FilterFormError.min]: 'Calories must be ≥ 0',
@@ -175,7 +173,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   readonly RATINGS = Array.from({ length: 5 }, (_, i) => i + 1);
   // Exclude unknown cases and sort for ease of reference
   readonly spiceLevels = SPICE_LEVELS.filter(
-    (spiceLevel) => spiceLevel !== 'unknown'
+    (spiceLevel) => spiceLevel !== 'unknown',
   );
   readonly mealTypes = [...MEAL_TYPES].sort();
   readonly cuisines = [...CUISINES].sort();
@@ -208,13 +206,13 @@ export class SearchComponent implements OnInit, OnDestroy {
         // 0 = undefined, 1 = string, 2+ = array
         [FilterForm.spiceLevel]: toArray(params.spiceLevel).filter(
           (spiceLevel): spiceLevel is SpiceLevel =>
-            isValidSpiceLevel(spiceLevel)
+            isValidSpiceLevel(spiceLevel),
         ),
         [FilterForm.type]: toArray(params.type).filter(
-          (spiceLevel): spiceLevel is MealType => isValidMealType(spiceLevel)
+          (spiceLevel): spiceLevel is MealType => isValidMealType(spiceLevel),
         ),
         [FilterForm.culture]: toArray(params.culture).filter(
-          (spiceLevel): spiceLevel is Cuisine => isValidCuisine(spiceLevel)
+          (spiceLevel): spiceLevel is Cuisine => isValidCuisine(spiceLevel),
         ),
         [FilterForm.sort]: isValidSortField(params.sort) ? params.sort : null,
         [FilterForm.asc]: params.asc === 'true',
@@ -257,7 +255,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     this.filterFormGroup.controls[this.filterFormNames.asc].setValue(
-      !this.filterFormGroup.value[this.filterFormNames.asc]
+      !this.filterFormGroup.value[this.filterFormNames.asc],
     );
   }
 
@@ -276,7 +274,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.isLoading.set(false);
           clearInterval(timer);
-        })
+        }),
       )
       .subscribe({
         next: (recipes: Recipe[]) => {
@@ -308,7 +306,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    */
   removeNullValues(filter: PartialNull<RecipeFilter>): RecipeFilter {
     return Object.fromEntries(
-      Object.entries(filter).filter(([, value]) => value !== null)
+      Object.entries(filter).filter(([, value]) => value !== null),
     );
   }
 

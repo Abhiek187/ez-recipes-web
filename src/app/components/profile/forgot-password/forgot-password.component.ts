@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ReactiveFormsModule,
@@ -31,7 +31,6 @@ import { ChefService } from 'src/app/services/chef.service';
     RouterModule,
   ],
   templateUrl: './forgot-password.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './forgot-password.component.scss',
 })
 export class ForgotPasswordComponent {
@@ -76,7 +75,7 @@ export class ForgotPasswordComponent {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: () => {

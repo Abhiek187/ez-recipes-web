@@ -5,12 +5,12 @@
   <!-- Recipe header -->
   <header class="recipe-header">
     <!-- Show the recipe name and a link to its source next to it -->
-    <h1 class="recipe-name">{{ $safeNavigationMigration(recipe()?.name) | titlecase }}</h1>
-    @if ($safeNavigationMigration(recipe()?.url) !== undefined) {
+    <h1 class="recipe-name">{{ recipe()?.name | titlecase }}</h1>
+    @if (recipe()?.url !== undefined) {
       <a
         mat-icon-button
         class="recipe-link"
-        [href]="$safeNavigationMigration(recipe()?.url)"
+        [href]="recipe()?.url"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Open recipe source"
@@ -34,15 +34,15 @@
       <figure class="recipe-figure">
         <img
           class="recipe-image"
-          [src]="$safeNavigationMigration(recipe()?.image)"
-          [alt]="$safeNavigationMigration(recipe()?.name)"
+          [src]="recipe()?.image"
+          [alt]="recipe()?.name"
           width="312"
           height="231"
         />
         <figcaption class="recipe-caption mat-caption">
           Image ©
           <a
-            [href]="$safeNavigationMigration(recipe()?.sourceUrl)"
+            [href]="recipe()?.sourceUrl"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -61,7 +61,7 @@
             "
             disableRipple
           >
-            {{ $safeNavigationMigration(recipe()?.spiceLevel) | titlecase }}
+            {{ recipe()?.spiceLevel | titlecase }}
           </mat-chip>
         }
         @if (recipe()?.isVegetarian) {
@@ -190,7 +190,7 @@
         />
       </mat-card-header>
       <!-- Render HTML tags -->
-      <mat-card-content [innerHtml]="$safeNavigationMigration(recipe()?.summary)" />
+      <mat-card-content [innerHtml]="recipe()?.summary" />
     </mat-card>
 
     <!-- Ingredients -->
@@ -214,7 +214,7 @@
                 ) {
                   <span
                     class="term"
-                    [matTooltip]="$safeNavigationMigration(dictionary()?.[word.toLowerCase()])"
+                    [matTooltip]="dictionary()?.[word.toLowerCase()]"
                     >{{ word | titlecase }}
                   </span>
                 } @else {
@@ -252,7 +252,7 @@
                       ) {
                         <span
                           class="term"
-                          [matTooltip]="$safeNavigationMigration(dictionary()?.[word.toLowerCase()])"
+                          [matTooltip]="dictionary()?.[word.toLowerCase()]"
                           >{{ word }}
                         </span>
                       } @else {

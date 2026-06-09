@@ -1,7 +1,6 @@
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -20,7 +19,7 @@ describe('GlossaryComponent', () => {
     await TestBed.configureTestingModule({
       imports: [GlossaryComponent],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();
@@ -28,7 +27,7 @@ describe('GlossaryComponent', () => {
     fixture = TestBed.createComponent(GlossaryComponent);
     glossaryComponent = fixture.componentInstance;
     vi.spyOn(TermsService.prototype, 'getCachedTerms').mockReturnValue(
-      mockTerms
+      mockTerms,
     );
     rootElement = fixture.nativeElement;
     fixture.detectChanges();

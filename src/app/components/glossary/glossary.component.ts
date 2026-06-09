@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 
@@ -9,7 +9,6 @@ import { TermsService } from 'src/app/services/terms.service';
   selector: 'app-glossary',
   imports: [MatDividerModule, MatListModule],
   templateUrl: './glossary.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './glossary.component.scss',
 })
 export class GlossaryComponent implements OnInit {

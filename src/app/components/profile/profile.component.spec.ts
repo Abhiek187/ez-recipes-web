@@ -2,7 +2,6 @@ import { Location } from '@angular/common';
 import {
   provideHttpClient,
   withInterceptorsFromDi,
-  withXhr
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -26,7 +25,7 @@ describe('ProfileComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ProfileComponent],
       providers: [
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         provideRouter([
           {

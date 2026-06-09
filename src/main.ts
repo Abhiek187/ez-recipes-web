@@ -1,7 +1,6 @@
 import {
   withInterceptorsFromDi,
   provideHttpClient,
-  withXhr
 } from '@angular/common/http';
 import {
   enableProdMode,
@@ -30,8 +29,8 @@ bootstrapApplication(AppComponent, {
         // Register the ServiceWorker as soon as the application is stable
         // or after 30 seconds (whichever comes first).
         registrationStrategy: 'registerWhenStable:30000',
-      })
+      }),
     ),
-    provideHttpClient(withXhr(), withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi()),
   ],
 }).catch((err) => console.error(err));

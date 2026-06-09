@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ReactiveFormsModule,
@@ -58,7 +58,6 @@ const passwordsMatchValidator: ValidatorFn = (control) => {
     ReactiveFormsModule,
   ],
   templateUrl: './update-password.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './update-password.component.scss',
 })
 export class UpdatePasswordComponent implements OnInit {
@@ -84,7 +83,7 @@ export class UpdatePasswordComponent implements OnInit {
         Validators.required,
       ]),
     },
-    { validators: passwordsMatchValidator }
+    { validators: passwordsMatchValidator },
   );
   readonly errors = {
     [formErrors.required]: 'Error: password is required',
@@ -124,13 +123,13 @@ export class UpdatePasswordComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: () => {
           this.snackBar.open(
             'Password updated successfully! Please sign in again.',
-            'Dismiss'
+            'Dismiss',
           );
           this.router.navigate([profileRoutes.login.path]);
         },

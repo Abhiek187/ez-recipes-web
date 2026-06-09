@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-skeleton-loader',
@@ -8,7 +8,6 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
     '[style.height]': 'height()',
   },
   templateUrl: './skeleton-loader.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './skeleton-loader.component.scss',
 })
 export class SkeletonLoaderComponent {

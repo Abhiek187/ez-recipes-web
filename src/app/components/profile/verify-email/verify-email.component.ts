@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +14,6 @@ import { routes } from 'src/app/app-routing.module';
   selector: 'app-verify-email',
   imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './verify-email.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './verify-email.component.scss',
 })
 export class VerifyEmailComponent implements OnInit {
