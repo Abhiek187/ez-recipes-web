@@ -1,6 +1,7 @@
 import {
   withInterceptorsFromDi,
   provideHttpClient,
+  withXhr
 } from '@angular/common/http';
 import {
   enableProdMode,
@@ -31,6 +32,6 @@ bootstrapApplication(AppComponent, {
         registrationStrategy: 'registerWhenStable:30000',
       })
     ),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
   ],
 }).catch((err) => console.error(err));

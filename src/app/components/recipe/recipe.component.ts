@@ -7,6 +7,7 @@ import {
   ViewEncapsulation,
   inject,
   signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,6 +45,7 @@ import { ChefService } from 'src/app/services/chef.service';
   ],
   templateUrl: './recipe.component.html',
   styleUrl: './recipe.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   encapsulation: ViewEncapsulation.None, // apply styles to innerHTML
 })
 export class RecipeComponent implements OnInit, OnDestroy {

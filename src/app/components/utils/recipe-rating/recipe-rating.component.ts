@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -9,6 +9,7 @@ import { ShorthandPipe } from '../../../pipes/shorthand.pipe';
   selector: 'app-recipe-rating',
   imports: [CommonModule, MatButtonModule, MatIconModule, ShorthandPipe],
   templateUrl: './recipe-rating.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './recipe-rating.component.scss',
 })
 export class RecipeRatingComponent {

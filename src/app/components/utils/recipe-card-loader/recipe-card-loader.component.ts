@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.component';
 
@@ -6,6 +6,7 @@ import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.comp
   selector: 'app-recipe-card-loader',
   imports: [SkeletonLoaderComponent],
   templateUrl: './recipe-card-loader.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './recipe-card-loader.component.scss',
 })
 export class RecipeCardLoaderComponent {}

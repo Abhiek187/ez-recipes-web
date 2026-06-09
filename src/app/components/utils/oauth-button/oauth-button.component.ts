@@ -7,6 +7,7 @@ import {
   OnInit,
   output,
   signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +28,7 @@ import { ChefService } from 'src/app/services/chef.service';
     '(window:message)': 'onMessage($event)',
   },
   templateUrl: './oauth-button.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './oauth-button.component.scss',
 })
 export class OauthButtonComponent implements OnInit {

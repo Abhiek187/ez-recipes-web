@@ -5,6 +5,7 @@ import {
   input,
   output,
   signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +21,7 @@ import { ChefService } from 'src/app/services/chef.service';
   selector: 'app-passkey-button',
   imports: [MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './passkey-button.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './passkey-button.component.scss',
 })
 export class PasskeyButtonComponent {

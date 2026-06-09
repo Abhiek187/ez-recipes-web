@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,7 @@ import { ChefService } from 'src/app/services/chef.service';
     RecipeRatingComponent,
   ],
   templateUrl: './recipe-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './recipe-card.component.scss',
 })
 export class RecipeCardComponent {

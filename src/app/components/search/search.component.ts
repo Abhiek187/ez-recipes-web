@@ -6,6 +6,7 @@ import {
   OnInit,
   inject,
   signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -114,6 +115,7 @@ const calorieRangeValidator: ValidatorFn = (
     RecipeCardComponent,
   ],
   templateUrl: './search.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './search.component.scss',
 })
 export class SearchComponent implements OnInit, OnDestroy {
