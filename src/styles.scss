@@ -1,6 +1,6 @@
 // You can add global styles to this file, and also import other style files
 @use "@angular/material" as mat;
-@use "./_theme-colors.scss" as my-theme;
+@use "../_theme-colors.scss" as my-theme;
 
 // Taken from M2's deeppurple-amber theme
 $primary: #673ab7;
