@@ -7,7 +7,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { of } from 'rxjs';
-import { vi } from 'vitest';
 
 import { AppComponent } from './app.component';
 import { TermsService } from './services/terms.service';

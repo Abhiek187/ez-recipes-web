@@ -7,7 +7,7 @@ import {
   UrlTree,
 } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { vi, type Mock, type MockedObject } from 'vitest';
+import { type Mock, type MockedObject } from 'vitest';
 
 import { authGuard } from './auth.guard';
 import { ChefService } from '../services/chef.service';
@@ -79,7 +79,7 @@ describe('authGuard', () => {
       [`/${profileRoutes.login.path}`],
       {
         queryParams: { next: state.url },
-      }
+      },
     );
   });
 
@@ -96,7 +96,7 @@ describe('authGuard', () => {
         [`/${profileRoutes.login.path}`],
         {
           queryParams: { next: state.url },
-        }
+        },
       );
     });
   });
@@ -108,7 +108,7 @@ describe('authGuard', () => {
       of({
         ...mockChef,
         emailVerified: false,
-      })
+      }),
     );
     const guardResult = executeGuard(route, state) as Observable<UrlTree>;
 
@@ -119,7 +119,7 @@ describe('authGuard', () => {
         [`/${profileRoutes.login.path}`],
         {
           queryParams: { next: state.url },
-        }
+        },
       );
     });
   });

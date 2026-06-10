@@ -8,7 +8,6 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { expect, vi } from 'vitest';
 
 import { TermsService } from './terms.service';
 import Constants from '../constants/constants';

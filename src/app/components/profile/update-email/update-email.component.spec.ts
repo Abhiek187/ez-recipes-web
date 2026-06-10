@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { UpdateEmailComponent } from './update-email.component';
 import { ChefService } from 'src/app/services/chef.service';

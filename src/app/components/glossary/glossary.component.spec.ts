@@ -4,7 +4,6 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
 
 import { GlossaryComponent } from './glossary.component';
 import { TermsService } from 'src/app/services/terms.service';

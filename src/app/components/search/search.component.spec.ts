@@ -5,7 +5,6 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { vi } from 'vitest';
 
 import { SearchComponent } from './search.component';
 import Constants from 'src/app/constants/constants';

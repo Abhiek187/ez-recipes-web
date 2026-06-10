@@ -7,7 +7,7 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { of } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { RecipeCardComponent } from './recipe-card.component';
 import { mockRecipe, mockToken } from 'src/app/models/recipe.mock';

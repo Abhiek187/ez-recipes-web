@@ -8,7 +8,6 @@ import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { Observable as DObservable } from 'dexie';
 import { of } from 'rxjs';
-import { vi } from 'vitest';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HomeComponent } from './home.component';

@@ -5,7 +5,6 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { vi } from 'vitest';
 
 import { PasskeyButtonComponent } from './passkey-button.component';
 import { ChefService } from 'src/app/services/chef.service';

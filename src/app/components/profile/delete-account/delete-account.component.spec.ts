@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
 import { of } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { DeleteAccountComponent } from './delete-account.component';
 import { mockChef } from 'src/app/models/profile.mock';
