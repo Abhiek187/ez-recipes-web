@@ -1,12 +1,14 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+  email,
+  form,
+  FormField,
+  minLength,
+  required,
+  SchemaPathTree,
+  validate,
+} from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,45 +23,39 @@ import Constants from 'src/app/constants/constants';
 import { LoginCredentials } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
 
-const formControls = {
-  email: 'email',
-  password: 'password',
-  passwordConfirm: 'passwordConfirm',
-} as const;
-const formErrors = {
-  required: 'required',
-  emailInvalid: 'email',
-  passwordMinLength: 'minlength', // Validator errors are all lowercase
-  passwordMismatch: 'passwordMismatch',
-} as const;
-
 // Check if the passwords match
-const passwordsMatchValidator: ValidatorFn = (control) => {
-  const password = control.get(formControls.password);
-  const passwordConfirm = control.get(formControls.passwordConfirm);
-
-  const error =
-    password?.value !== null &&
-    passwordConfirm?.value !== null &&
-    password?.value !== passwordConfirm?.value
-      ? {
-          [formErrors.passwordMismatch]: true,
-        }
-      : null;
+const passwordsMatch = (
+  schema: SchemaPathTree<{
+    email: string;
+    password: string;
+    passwordConfirm: string;
+  }>,
+) => {
   // This is required to make mat-error visible under the confirm password field
-  passwordConfirm?.setErrors(error);
-  return error;
+  validate(schema.passwordConfirm, (context) => {
+    const password = context.valueOf(schema.password);
+    const passwordConfirm = context.value();
+
+    if (password !== passwordConfirm) {
+      return {
+        kind: 'passwordMismatch',
+        message: 'Error: Passwords do not match',
+      };
+    }
+
+    return null;
+  });
 };
 
 @Component({
   selector: 'app-sign-up',
   imports: [
+    FormField,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule,
     RouterModule,
   ],
   templateUrl: './sign-up.component.html',
@@ -76,31 +72,27 @@ export class SignUpComponent {
   showPassword = signal(false);
   showPasswordConfirm = signal(false);
   isLoading = signal(false);
+  private signUpModel = signal({
+    email: '',
+    password: '',
+    passwordConfirm: '',
+  });
 
-  formControls = formControls;
-  formErrors = formErrors;
-  formGroup = new FormGroup(
-    {
-      [formControls.email]: new FormControl('', [
-        Validators.required,
-        Validators.email, // more relaxed than the server's RFC 5322 validation check
-      ]),
-      [formControls.password]: new FormControl('', [
-        Validators.required,
-        Validators.minLength(Constants.passwordMinLength),
-      ]),
-      [formControls.passwordConfirm]: new FormControl('', [
-        Validators.required,
-      ]),
-    },
-    { validators: passwordsMatchValidator },
-  );
-  readonly errors = {
-    [formErrors.required]: (field: string) => `Error: ${field} is required`,
-    [formErrors.emailInvalid]: 'Error: Invalid email',
-    [formErrors.passwordMinLength]: `Error: Password must be at least ${Constants.passwordMinLength} characters long`,
-    [formErrors.passwordMismatch]: 'Error: Passwords do not match',
-  } as const;
+  signUpForm = form(this.signUpModel, (schemaPath) => {
+    const { email: _email, password, passwordConfirm } = schemaPath;
+    required(_email, { message: 'Error: email is required' });
+    email(_email, { message: 'Error: Invalid email' }); // more relaxed than the server's RFC 5322 validation check
+
+    required(password, { message: 'Error: password is required' });
+    minLength(password, Constants.passwordMinLength, {
+      message: `Error: Password must be at least ${Constants.passwordMinLength} characters long`,
+    });
+
+    required(passwordConfirm, {
+      message: 'Error: passwordConfirm is required',
+    });
+    passwordsMatch(schemaPath);
+  });
 
   togglePasswordVisibility(event: MouseEvent) {
     event.preventDefault();
@@ -112,12 +104,13 @@ export class SignUpComponent {
     this.showPasswordConfirm.set(!this.showPasswordConfirm());
   }
 
-  signUp() {
+  signUp(event: SubmitEvent) {
+    event.preventDefault();
     this.isLoading.set(true);
-    const { email, password } = this.formGroup.value;
+    const { email, password } = this.signUpForm().value();
     const loginCredentials: LoginCredentials = {
-      email: email ?? '',
-      password: password ?? '',
+      email,
+      password,
     };
 
     this.chefService

@@ -1,4 +1,4 @@
-<form class="signup-form" [formGroup]="formGroup" (ngSubmit)="signUp()">
+<form class="signup-form" (submit)="signUp($event)">
   <h1>Sign Up</h1>
   <span>
     <h2>
@@ -17,24 +17,28 @@
       <mat-label>Email</mat-label>
       <input
         matInput
-        [formControlName]="formControls.email"
+        [formField]="signUpForm.email"
         type="email"
         inputmode="email"
         autocapitalize="none"
         autocomplete="email"
         spellcheck="false"
       />
-      @if (formGroup.controls.email.hasError(formErrors.required)) {
-        <mat-error>{{ errors.required(formControls.email) }}</mat-error>
-      } @else if (formGroup.controls.email.hasError(formErrors.emailInvalid)) {
-        <mat-error>{{ errors.email }}</mat-error>
+      @if (signUpForm.email().getError("required") !== undefined) {
+        <mat-error>{{
+          signUpForm.email().getError("required")?.message
+        }}</mat-error>
+      } @else if (signUpForm.email().getError("email") !== undefined) {
+        <mat-error>{{
+          signUpForm.email().getError("email")?.message
+        }}</mat-error>
       }
     </mat-form-field>
     <mat-form-field>
       <mat-label>Password</mat-label>
       <input
         matInput
-        [formControlName]="formControls.password"
+        [formField]="signUpForm.password"
         [type]="showPassword() ? 'text' : 'password'"
         autocapitalize="none"
         autocomplete="new-password"
@@ -50,19 +54,21 @@
           [fontIcon]="showPassword() ? 'visibility_off' : 'visibility'"
         />
       </button>
-      @if (formGroup.controls.password.hasError(formErrors.required)) {
-        <mat-error>{{ errors.required(formControls.password) }}</mat-error>
-      } @else if (
-        formGroup.controls.password.hasError(formErrors.passwordMinLength)
-      ) {
-        <mat-error>{{ errors.minlength }}</mat-error>
+      @if (signUpForm.password().getError("required") !== undefined) {
+        <mat-error>{{
+          signUpForm.password().getError("required")?.message
+        }}</mat-error>
+      } @else if (signUpForm.password().getError("minLength") !== undefined) {
+        <mat-error>{{
+          signUpForm.password().getError("minLength")?.message
+        }}</mat-error>
       }
     </mat-form-field>
     <mat-form-field>
       <mat-label>Confirm Password</mat-label>
       <input
         matInput
-        [formControlName]="formControls.passwordConfirm"
+        [formField]="signUpForm.passwordConfirm"
         [type]="showPasswordConfirm() ? 'text' : 'password'"
         autocapitalize="none"
         autocomplete="new-password"
@@ -80,8 +86,12 @@
           [fontIcon]="showPasswordConfirm() ? 'visibility_off' : 'visibility'"
         />
       </button>
-      @if (formGroup.hasError(formErrors.passwordMismatch)) {
-        <mat-error>{{ errors.passwordMismatch }}</mat-error>
+      @if (
+        signUpForm.passwordConfirm().getError("passwordMismatch") !== undefined
+      ) {
+        <mat-error>{{
+          signUpForm.passwordConfirm().getError("passwordMismatch")?.message
+        }}</mat-error>
       } @else {
         <mat-hint>Password must be at least 8 characters long</mat-hint>
       }
@@ -92,7 +102,7 @@
     <button
       mat-raised-button
       type="submit"
-      [disabled]="!formGroup.valid || isLoading()"
+      [disabled]="signUpForm().invalid() || isLoading()"
     >
       Sign Up
     </button>

@@ -1,8 +1,4 @@
-<form
-  class="delete-account-form"
-  [formGroup]="formGroup"
-  (ngSubmit)="deleteAccount()"
->
+<form class="delete-account-form" (submit)="deleteAccount($event)">
   <h1>Are You Sure?</h1>
   <h2>You will lose access to your favorite recipes.</h2>
   <h3>Enter your username to confirm.</h3>
@@ -10,7 +6,7 @@
     <mat-label>Username</mat-label>
     <input
       matInput
-      [formControlName]="formControls.username"
+      [formField]="usernameForm"
       type="email"
       inputmode="email"
       autocapitalize="none"
@@ -24,7 +20,7 @@
       mat-raised-button
       class="btn-warn"
       type="submit"
-      [disabled]="!formGroup.valid || isLoading()"
+      [disabled]="usernameForm().invalid() || isLoading()"
     >
       Delete Account
     </button>

@@ -1,11 +1,6 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from '@angular/forms';
+import { email, form, FormField, required } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,12 +17,12 @@ import { ChefService } from 'src/app/services/chef.service';
 @Component({
   selector: 'app-forgot-password',
   imports: [
+    FormField,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule,
     RouterModule,
   ],
   templateUrl: './forgot-password.component.html',
@@ -41,32 +36,20 @@ export class ForgotPasswordComponent {
 
   isLoading = signal(false);
   emailSent = signal(false);
+  private email = signal('');
 
-  readonly formControls = {
-    email: 'email',
-  } as const;
-  readonly formErrors = {
-    required: 'required',
-    emailInvalid: 'email',
-  } as const;
-  formGroup = new FormGroup({
-    [this.formControls.email]: new FormControl('', [
-      Validators.required,
-      Validators.email,
-    ]),
+  emailForm = form(this.email, (_email) => {
+    required(_email, { message: `Error: ${_email} is required` });
+    email(_email, { message: 'Error: Invalid email' });
   });
-  readonly errors = {
-    [this.formErrors.required]: (field: string) =>
-      `Error: ${field} is required`,
-    [this.formErrors.emailInvalid]: 'Error: Invalid email',
-  } as const;
 
-  resetPassword() {
+  resetPassword(event: SubmitEvent) {
+    event.preventDefault();
     this.isLoading.set(true);
-    const { email } = this.formGroup.value;
+    const email = this.emailForm().value();
     const chefUpdate: ChefUpdate = {
       type: ChefUpdateType.Password,
-      email: email ?? '',
+      email,
     };
 
     this.chefService

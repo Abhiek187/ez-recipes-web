@@ -66,14 +66,12 @@ describe('UpdateEmailComponent', () => {
   });
 
   it("should show an error if the email isn't provided", () => {
-    const form = updateEmailComponent.formGroup;
-    form.controls.email.setValue(null);
+    const emailForm = updateEmailComponent.emailForm();
+    emailForm.value.set('');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
-    expect(
-      form.controls.email.hasError(updateEmailComponent.formErrors.required),
-    ).toBe(true);
+    expect(emailForm.invalid()).toBe(true);
+    expect(emailForm.getError('required')).not.toBeUndefined();
 
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -82,16 +80,12 @@ describe('UpdateEmailComponent', () => {
   });
 
   it("should show an error if the email isn't valid", () => {
-    const form = updateEmailComponent.formGroup;
-    form.controls.email.setValue('not an email');
+    const emailForm = updateEmailComponent.emailForm();
+    emailForm.value.set('not an email');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
-    expect(
-      form.controls.email.hasError(
-        updateEmailComponent.formErrors.emailInvalid,
-      ),
-    ).toBe(true);
+    expect(emailForm.invalid()).toBe(true);
+    expect(emailForm.getError('email')).not.toBeUndefined();
 
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -100,12 +94,12 @@ describe('UpdateEmailComponent', () => {
   });
 
   it('should enable the submit button if the email is valid', () => {
-    const form = updateEmailComponent.formGroup;
+    const emailForm = updateEmailComponent.emailForm();
     const mockEmail = 'test@example.com';
-    form.controls.email.setValue(mockEmail);
+    emailForm.value.set(mockEmail);
     fixture.detectChanges();
 
-    expect(form.valid).toBe(true);
+    expect(emailForm.valid()).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
@@ -125,12 +119,12 @@ describe('UpdateEmailComponent', () => {
   });
 
   it('should ask the user to login again if the credentials are too old', () => {
-    const form = updateEmailComponent.formGroup;
+    const emailForm = updateEmailComponent.emailForm();
     const mockEmail = 'test@example.com';
-    form.controls.email.setValue(mockEmail);
+    emailForm.value.set(mockEmail);
     fixture.detectChanges();
 
-    expect(form.valid).toBe(true);
+    expect(emailForm.valid()).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');

@@ -8,12 +8,12 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+  form,
+  FormField,
+  required,
+  SchemaPath,
+  validate,
+} from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -25,36 +25,32 @@ import { finalize } from 'rxjs';
 import { ChefService } from 'src/app/services/chef.service';
 import { routes } from 'src/app/app-routing.module';
 
-const formControls = {
-  username: 'username',
-} as const;
-const formErrors = {
-  required: 'required',
-  usernameMismatch: 'usernameMismatch',
-} as const;
+const usernamesMatch = (
+  schema: SchemaPath<string>,
+  chefUsername: Signal<string | null>,
+) => {
+  validate(schema, (context) => {
+    const username = context.value();
 
-const usernamesMatchValidator =
-  (chefUsername: Signal<string | null>): ValidatorFn =>
-  (control) => {
-    const username = control.value;
+    if (username !== chefUsername()) {
+      return {
+        kind: 'usernameMismatch',
+        message: '',
+      };
+    }
 
-    return username !== null &&
-      chefUsername() !== null &&
-      username !== chefUsername()
-      ? {
-          [formErrors.usernameMismatch]: true,
-        }
-      : null;
-  };
+    return null;
+  });
+};
 
 @Component({
   selector: 'app-delete-account',
   imports: [
+    FormField,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule,
   ],
   templateUrl: './delete-account.component.html',
   styleUrl: './delete-account.component.scss',
@@ -66,15 +62,12 @@ export class DeleteAccountComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   isLoading = signal(false);
+  private username = signal('');
   private chefUsername = signal<string | null>(null);
 
-  formControls = formControls;
-  formErrors = formErrors;
-  formGroup = new FormGroup({
-    [formControls.username]: new FormControl('', [
-      Validators.required,
-      usernamesMatchValidator(this.chefUsername),
-    ]),
+  usernameForm = form(this.username, (username) => {
+    required(username);
+    usernamesMatch(username, this.chefUsername);
   });
 
   ngOnInit(): void {
@@ -84,7 +77,8 @@ export class DeleteAccountComponent implements OnInit {
     }
   }
 
-  deleteAccount() {
+  deleteAccount(event: SubmitEvent) {
+    event.preventDefault();
     this.isLoading.set(true);
 
     this.chefService
