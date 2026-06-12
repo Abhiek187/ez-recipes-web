@@ -1,10 +1,10 @@
 <!-- Search form -->
-<form class="recipe-form" [formGroup]="filterFormGroup" (ngSubmit)="onSubmit()">
+<form class="recipe-form" (submit)="onSubmit($event)">
   <mat-form-field class="recipe-query">
     <mat-label>Query</mat-label>
     <input
       matInput
-      [formControlName]="filterFormNames.query"
+      [formField]="filterForm.query"
       placeholder="food"
       type="search"
       inputmode="search"
@@ -20,12 +20,9 @@
       <mat-form-field>
         <input
           matInput
-          [formControlName]="filterFormNames.minCals"
+          [formField]="filterForm.minCals"
           placeholder="0"
           type="number"
-          min="0"
-          max="2000"
-          pattern="\d*"
           inputmode="numeric"
         />
       </mat-form-field>
@@ -33,12 +30,9 @@
       <mat-form-field>
         <input
           matInput
-          [formControlName]="filterFormNames.maxCals"
+          [formField]="filterForm.maxCals"
           placeholder="2000"
           type="number"
-          min="0"
-          max="2000"
-          pattern="\d*"
           inputmode="numeric"
         />
       </mat-form-field>
@@ -48,39 +42,45 @@
     <div class="calorie-errors">
       <span
         [class.show]="
-          filterFormGroup.controls.minCals.hasError(filterFormErrorNames.min) ||
-          filterFormGroup.controls.maxCals.hasError(filterFormErrorNames.min)
+          filterForm.minCals().getError('min') !== undefined ||
+          filterForm.maxCals().getError('min') !== undefined
         "
       >
-        <mat-icon fontIcon="error" />{{ Errors.min }}
+        <mat-icon fontIcon="error" />{{
+          filterForm.minCals().getError("min")?.message ??
+            filterForm.maxCals().getError("min")?.message
+        }}
       </span>
       <span
         [class.show]="
-          filterFormGroup.controls.minCals.hasError(filterFormErrorNames.max) ||
-          filterFormGroup.controls.maxCals.hasError(filterFormErrorNames.max)
+          filterForm.minCals().getError('max') !== undefined ||
+          filterForm.maxCals().getError('max') !== undefined
         "
       >
-        <mat-icon fontIcon="error" />{{ Errors.max }}
+        <mat-icon fontIcon="error" />{{
+          filterForm.minCals().getError("max")?.message ??
+            filterForm.maxCals().getError("max")?.message
+        }}
       </span>
-      <span [class.show]="filterFormGroup.hasError(filterFormErrorNames.range)">
-        <mat-icon fontIcon="error" />{{ Errors.range }}
+      <span [class.show]="filterForm().getError('range') !== undefined">
+        <mat-icon fontIcon="error" />{{
+          filterForm().getError("range")?.message
+        }}
       </span>
     </div>
   </section>
 
   <section class="checkbox-row">
-    <mat-checkbox [formControlName]="filterFormNames.vegetarian">
+    <mat-checkbox [formField]="filterForm.vegetarian">
       Vegetarian
     </mat-checkbox>
-    <mat-checkbox [formControlName]="filterFormNames.vegan">Vegan</mat-checkbox>
-    <mat-checkbox [formControlName]="filterFormNames.glutenFree">
+    <mat-checkbox [formField]="filterForm.vegan">Vegan</mat-checkbox>
+    <mat-checkbox [formField]="filterForm.glutenFree">
       Gluten-Free
     </mat-checkbox>
-    <mat-checkbox [formControlName]="filterFormNames.healthy">
-      Healthy
-    </mat-checkbox>
-    <mat-checkbox [formControlName]="filterFormNames.cheap">Cheap</mat-checkbox>
-    <mat-checkbox [formControlName]="filterFormNames.sustainable">
+    <mat-checkbox [formField]="filterForm.healthy"> Healthy </mat-checkbox>
+    <mat-checkbox [formField]="filterForm.cheap">Cheap</mat-checkbox>
+    <mat-checkbox [formField]="filterForm.sustainable">
       Sustainable
     </mat-checkbox>
   </section>
@@ -89,7 +89,7 @@
     <mat-form-field>
       <mat-label>Rating</mat-label>
       <!-- Set the width to the longest option, instead of the dropdown itself -->
-      <mat-select [formControlName]="filterFormNames.rating" panelWidth="">
+      <mat-select [formField]="filterForm.rating" panelWidth="">
         <mat-option [value]="null">(none)</mat-option>
         @for (rating of RATINGS; track rating) {
           <mat-option [value]="rating">
@@ -103,7 +103,7 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Spice Level</mat-label>
-      <mat-select [formControlName]="filterFormNames.spiceLevel" multiple>
+      <mat-select [formField]="filterForm.spiceLevel" multiple>
         @for (spiceLevel of spiceLevels; track spiceLevel) {
           <mat-option [value]="spiceLevel">
             {{ spiceLevel }}
@@ -113,7 +113,7 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Meal Type</mat-label>
-      <mat-select [formControlName]="filterFormNames.type" multiple>
+      <mat-select [formField]="filterForm.type" multiple>
         @for (mealType of mealTypes; track mealType) {
           <mat-option [value]="mealType">
             {{ mealType }}
@@ -123,7 +123,7 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Cuisine</mat-label>
-      <mat-select [formControlName]="filterFormNames.culture" multiple>
+      <mat-select [formField]="filterForm.culture" multiple>
         @for (cuisine of cuisines; track cuisine) {
           <mat-option [value]="cuisine">
             {{ cuisine }}
@@ -140,7 +140,7 @@
         mat-raised-button
         type="submit"
         class="submit-button"
-        [disabled]="!filterFormGroup.valid || isLoading()"
+        [disabled]="filterForm().invalid() || isLoading()"
       >
         Apply
       </button>
@@ -151,8 +151,8 @@
     <span class="sort-container">
       <mat-form-field class="sort-field">
         <mat-label> <mat-icon fontIcon="sort" /> Sort </mat-label>
-        <mat-select [formControlName]="filterFormNames.sort">
-          <mat-option [value]="null">(none)</mat-option>
+        <mat-select [formField]="filterForm.sort">
+          <mat-option [value]="">(none)</mat-option>
           @for (sortField of SORT_FIELDS; track sortField) {
             <mat-option [value]="sortField">
               {{ sortField | label }}
@@ -164,7 +164,7 @@
         mat-icon-button
         class="sort-direction-button"
         [attr.aria-label]="
-          filterFormGroup.value[filterFormNames.asc]
+          filterForm.asc().value()
             ? 'Sort in descending order'
             : 'Sort in ascending order'
         "
@@ -172,9 +172,7 @@
       >
         <mat-icon
           [fontIcon]="
-            filterFormGroup.value[filterFormNames.asc]
-              ? 'arrow_upward'
-              : 'arrow_downward'
+            filterForm.asc().value() ? 'arrow_upward' : 'arrow_downward'
           "
         />
       </button>
@@ -185,7 +183,7 @@
   }
   @if (noRecipesFound()) {
     <p class="no-results-error">
-      <mat-icon fontIcon="error" />{{ Errors.noResults }}
+      <mat-icon fontIcon="error" />No recipes found
     </p>
   }
 </form>
