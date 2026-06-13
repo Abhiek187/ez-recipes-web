@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { of } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { ForgotPasswordComponent } from './forgot-password.component';
 import { ChefService } from 'src/app/services/chef.service';
@@ -65,40 +65,34 @@ describe('ForgotPasswordComponent', () => {
   });
 
   it("should show an error if the email isn't provided", () => {
-    const form = forgotPasswordComponent.formGroup;
-    form.controls.email.setValue(null);
+    const emailForm = forgotPasswordComponent.emailForm();
+    emailForm.value.set('');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
-    expect(
-      form.controls.email.hasError(forgotPasswordComponent.formErrors.required),
-    ).toBe(true);
+    expect(emailForm.invalid()).toBe(true);
+    expect(emailForm.getError('required')).not.toBeUndefined();
     const submitButton = rootElement.querySelector('button');
     expect(submitButton?.disabled).toBe(true);
   });
 
   it("should show an error if the email isn't valid", () => {
-    const form = forgotPasswordComponent.formGroup;
-    form.controls.email.setValue('not an email');
+    const emailForm = forgotPasswordComponent.emailForm();
+    emailForm.value.set('not an email');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
-    expect(
-      form.controls.email.hasError(
-        forgotPasswordComponent.formErrors.emailInvalid,
-      ),
-    ).toBe(true);
+    expect(emailForm.invalid()).toBe(true);
+    expect(emailForm.getError('email')).not.toBeUndefined();
     const submitButton = rootElement.querySelector('button');
     expect(submitButton?.disabled).toBe(true);
   });
 
   it('should enable the submit button if all fields are valid', () => {
-    const form = forgotPasswordComponent.formGroup;
+    const emailForm = forgotPasswordComponent.emailForm();
     const mockEmail = 'test@example.com';
-    form.controls.email.setValue(mockEmail);
+    emailForm.value.set(mockEmail);
     fixture.detectChanges();
 
-    expect(form.valid).toBe(true);
+    expect(emailForm.valid()).toBe(true);
     const submitButton = rootElement.querySelector('button');
     expect(submitButton?.disabled).toBe(false);
 

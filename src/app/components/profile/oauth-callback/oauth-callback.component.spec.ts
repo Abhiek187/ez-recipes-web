@@ -6,7 +6,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { vi } from 'vitest';
 
 import { OauthCallbackComponent } from './oauth-callback.component';
 import { OAuthResponse } from 'src/app/models/profile.model';
@@ -86,7 +85,7 @@ describe('OauthCallbackComponent', () => {
     expect(rootElement.querySelector('.progress-spinner')).toBeTruthy();
     expect(mockPostMessage).toHaveBeenCalledWith(
       queryParams,
-      window.location.origin
+      window.location.origin,
     );
     expect(mockWindowClose).toHaveBeenCalled();
   });

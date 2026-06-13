@@ -1,12 +1,13 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-  ValidatorFn,
-} from '@angular/forms';
+  form,
+  FormField,
+  minLength,
+  required,
+  SchemaPathTree,
+  validate,
+} from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,41 +22,36 @@ import { ChefUpdate, ChefUpdateType } from 'src/app/models/profile.model';
 import { ChefService } from 'src/app/services/chef.service';
 import { profileRoutes } from 'src/app/app-routing.module';
 
-const formControls = {
-  password: 'password',
-  passwordConfirm: 'passwordConfirm',
-} as const;
-const formErrors = {
-  required: 'required',
-  passwordMinLength: 'minlength',
-  passwordMismatch: 'passwordMismatch',
-} as const;
+const passwordsMatch = (
+  schema: SchemaPathTree<{
+    password: string;
+    passwordConfirm: string;
+  }>,
+) => {
+  validate(schema.passwordConfirm, (context) => {
+    const password = context.valueOf(schema.password);
+    const passwordConfirm = context.value();
 
-const passwordsMatchValidator: ValidatorFn = (control) => {
-  const password = control.get(formControls.password);
-  const passwordConfirm = control.get(formControls.passwordConfirm);
+    if (password !== passwordConfirm) {
+      return {
+        kind: 'passwordMismatch',
+        message: 'Error: Passwords do not match',
+      };
+    }
 
-  const error =
-    password?.value !== null &&
-    passwordConfirm?.value !== null &&
-    password?.value !== passwordConfirm?.value
-      ? {
-          [formErrors.passwordMismatch]: true,
-        }
-      : null;
-  passwordConfirm?.setErrors(error);
-  return error;
+    return null;
+  });
 };
 
 @Component({
   selector: 'app-update-password',
   imports: [
+    FormField,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule,
   ],
   templateUrl: './update-password.component.html',
   styleUrl: './update-password.component.scss',
@@ -70,26 +66,23 @@ export class UpdatePasswordComponent implements OnInit {
   showPasswordConfirm = signal(false);
   isLoading = signal(false);
   private chefEmail = signal('');
+  private updatePasswordModel = signal({
+    password: '',
+    passwordConfirm: '',
+  });
 
-  formControls = formControls;
-  formErrors = formErrors;
-  formGroup = new FormGroup(
-    {
-      [formControls.password]: new FormControl('', [
-        Validators.required,
-        Validators.minLength(Constants.passwordMinLength),
-      ]),
-      [formControls.passwordConfirm]: new FormControl('', [
-        Validators.required,
-      ]),
-    },
-    { validators: passwordsMatchValidator }
-  );
-  readonly errors = {
-    [formErrors.required]: 'Error: password is required',
-    [formErrors.passwordMinLength]: `Error: Password must be at least ${Constants.passwordMinLength} characters long`,
-    [formErrors.passwordMismatch]: 'Error: Passwords do not match',
-  } as const;
+  updatePasswordForm = form(this.updatePasswordModel, (schemaPath) => {
+    const { password, passwordConfirm } = schemaPath;
+    required(password, { message: 'Error: password is required' });
+    minLength(password, Constants.passwordMinLength, {
+      message: `Error: Password must be at least ${Constants.passwordMinLength} characters long`,
+    });
+
+    required(passwordConfirm, {
+      message: 'Error: passwordConfirm is required',
+    });
+    passwordsMatch(schemaPath);
+  });
 
   ngOnInit(): void {
     const email = this.router.lastSuccessfulNavigation()?.extras?.state?.email;
@@ -108,9 +101,10 @@ export class UpdatePasswordComponent implements OnInit {
     this.showPasswordConfirm.set(!this.showPasswordConfirm());
   }
 
-  updatePassword() {
+  updatePassword(event: SubmitEvent) {
+    event.preventDefault();
     this.isLoading.set(true);
-    const { password } = this.formGroup.value;
+    const { password } = this.updatePasswordForm().value();
     const fields: ChefUpdate = {
       type: ChefUpdateType.Password,
       email: this.chefEmail(),
@@ -123,13 +117,13 @@ export class UpdatePasswordComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: () => {
           this.snackBar.open(
             'Password updated successfully! Please sign in again.',
-            'Dismiss'
+            'Dismiss',
           );
           this.router.navigate([profileRoutes.login.path]);
         },

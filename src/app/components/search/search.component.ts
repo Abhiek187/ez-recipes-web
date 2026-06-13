@@ -4,19 +4,19 @@ import {
   DestroyRef,
   OnDestroy,
   OnInit,
+  effect,
   inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+  form,
+  FormField,
+  max,
+  min,
+  SchemaPathTree,
+  validate,
+} from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
@@ -35,7 +35,6 @@ import { getRandomElement, toArray } from 'src/app/helpers/array';
 import RecipeFilter, {
   isValidSortField,
   RECIPE_SORT_FIELDS,
-  RecipeSortField,
 } from 'src/app/models/recipe-filter.model';
 import Recipe, {
   CUISINES,
@@ -53,53 +52,32 @@ import { RecipeCardComponent } from '../utils/recipe-card/recipe-card.component'
 import { isNumeric } from 'src/app/helpers/string';
 import { LabelPipe } from '../../pipes/label.pipe';
 
-// Add null & undefined to all the object's values
-type PartialNull<T> = {
-  [P in keyof T]?: T[P] | null;
+// Form fields should be non-nullable
+type RecipeFilterForm = Omit<Required<RecipeFilter>, 'token' | 'sort'> & {
+  sort: NonNullable<RecipeFilter['sort']> | '';
 };
 
-// FormControl names will need to be referenced in the component, template, and test
-const FilterForm = {
-  query: 'query',
-  minCals: 'minCals',
-  maxCals: 'maxCals',
-  vegetarian: 'vegetarian',
-  vegan: 'vegan',
-  glutenFree: 'glutenFree',
-  healthy: 'healthy',
-  cheap: 'cheap',
-  sustainable: 'sustainable',
-  rating: 'rating',
-  spiceLevel: 'spiceLevel',
-  type: 'type',
-  culture: 'culture',
-  sort: 'sort',
-  asc: 'asc',
-} as const;
-const FilterFormError = {
-  min: 'min',
-  max: 'max',
-  range: 'range',
-  noResults: 'noResults',
-} as const;
-
 // Check that minCals doesn't exceed maxCals
-const calorieRangeValidator: ValidatorFn = (
-  control: AbstractControl
-): ValidationErrors | null => {
-  const minCals = control.get(FilterForm.minCals);
-  const maxCals = control.get(FilterForm.maxCals);
+const calorieRange = (schema: SchemaPathTree<RecipeFilterForm>) => {
+  validate(schema, (context) => {
+    const minCals = context.valueOf(schema.minCals);
+    const maxCals = context.valueOf(schema.maxCals);
 
-  return minCals?.value !== null &&
-    maxCals?.value !== null &&
-    minCals?.value > maxCals?.value
-    ? { [FilterFormError.range]: true }
-    : null;
+    if (minCals > maxCals) {
+      return {
+        kind: 'range',
+        message: 'Max calories cannot exceed min calories',
+      };
+    }
+
+    return null;
+  });
 };
 
 @Component({
   selector: 'app-search',
   imports: [
+    FormField,
     LabelPipe,
     MatButtonModule,
     MatCheckboxModule,
@@ -110,7 +88,6 @@ const calorieRangeValidator: ValidatorFn = (
     MatOptionModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    ReactiveFormsModule,
     RecipeCardComponent,
   ],
   templateUrl: './search.component.html',
@@ -124,56 +101,48 @@ export class SearchComponent implements OnInit, OnDestroy {
   private location = inject(Location);
   private destroyRef = inject(DestroyRef);
 
-  filterFormNames = FilterForm;
-  filterFormErrorNames = FilterFormError;
-  filterFormGroup = new FormGroup(
-    {
-      [FilterForm.query]: new FormControl(''),
-      [FilterForm.minCals]: new FormControl<number | null>(null, [
-        Validators.min(0),
-        Validators.max(2000),
-      ]),
-      [FilterForm.maxCals]: new FormControl<number | null>(null, [
-        Validators.min(0),
-        Validators.max(2000),
-      ]),
-      [FilterForm.vegetarian]: new FormControl(false),
-      [FilterForm.vegan]: new FormControl(false),
-      [FilterForm.glutenFree]: new FormControl(false),
-      [FilterForm.healthy]: new FormControl(false),
-      [FilterForm.cheap]: new FormControl(false),
-      [FilterForm.sustainable]: new FormControl(false),
-      [FilterForm.rating]: new FormControl<number | null>(null, [
-        Validators.min(1),
-        Validators.max(5),
-      ]),
-      [FilterForm.spiceLevel]: new FormControl<SpiceLevel[]>([]),
-      [FilterForm.type]: new FormControl<MealType[]>([]),
-      [FilterForm.culture]: new FormControl<Cuisine[]>([]),
-      [FilterForm.sort]: new FormControl<RecipeSortField | null>(null),
-      [FilterForm.asc]: new FormControl(false),
-    },
-    { validators: calorieRangeValidator }
-  );
-  readonly Errors = {
-    [FilterFormError.min]: 'Calories must be ≥ 0',
-    [FilterFormError.max]: 'Calories must be ≤ 2000',
-    [FilterFormError.range]: 'Max calories cannot exceed min calories',
-    [FilterFormError.noResults]: 'No recipes found',
-  };
-  readonly scrollListener = this.onScroll.bind(this);
-
   isLoading = signal(false);
   private readonly defaultLoadingMessage = '';
   loadingMessage = signal(this.defaultLoadingMessage);
   noRecipesFound = signal(false);
   recipes = signal<Recipe[]>([]);
   lastToken = signal<string | null>(null);
+  private filterModel = signal<RecipeFilterForm>({
+    query: '',
+    minCals: NaN,
+    maxCals: NaN,
+    vegetarian: false,
+    vegan: false,
+    glutenFree: false,
+    healthy: false,
+    cheap: false,
+    sustainable: false,
+    rating: NaN,
+    spiceLevel: [],
+    type: [],
+    culture: [],
+    sort: '',
+    asc: false,
+  });
+
+  filterForm = form(this.filterModel, (schemaPath) => {
+    const { minCals, maxCals, rating } = schemaPath;
+
+    min(minCals, 0, { message: 'Calories must be ≥ 0' });
+    max(minCals, 2000, { message: 'Calories must be ≤ 2000' });
+    min(maxCals, 0, { message: 'Calories must be ≥ 0' });
+    max(maxCals, 2000, { message: 'Calories must be ≤ 2000' });
+    calorieRange(schemaPath);
+
+    min(rating, 1);
+    max(rating, 5);
+  });
+  readonly scrollListener = this.onScroll.bind(this);
 
   readonly RATINGS = Array.from({ length: 5 }, (_, i) => i + 1);
   // Exclude unknown cases and sort for ease of reference
   readonly spiceLevels = SPICE_LEVELS.filter(
-    (spiceLevel) => spiceLevel !== 'unknown'
+    (spiceLevel) => spiceLevel !== 'unknown',
   );
   readonly mealTypes = [...MEAL_TYPES].sort();
   readonly cuisines = [...CUISINES].sort();
@@ -182,60 +151,55 @@ export class SearchComponent implements OnInit, OnDestroy {
   constructor() {
     // Initialize the form based on the query parameters
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe((params) => {
-      this.filterFormGroup.patchValue({
+      this.filterForm().value.set({
         ...params,
+        query: params.query ?? '',
         // Parse all non-string values
-        [FilterForm.minCals]: isNumeric(params.minCals)
-          ? Number(params.minCals)
-          : null,
-        [FilterForm.maxCals]: isNumeric(params.maxCals)
-          ? Number(params.maxCals)
-          : null,
-        [FilterForm.vegetarian]: params.vegetarian === 'true',
-        [FilterForm.vegan]: params.vegan === 'true',
-        [FilterForm.glutenFree]: params.glutenFree === 'true',
-        [FilterForm.healthy]: params.healthy === 'true',
-        [FilterForm.cheap]: params.cheap === 'true',
-        [FilterForm.sustainable]: params.sustainable === 'true',
-        [FilterForm.rating]:
+        minCals: isNumeric(params.minCals) ? Number(params.minCals) : NaN,
+        maxCals: isNumeric(params.maxCals) ? Number(params.maxCals) : NaN,
+        vegetarian: params.vegetarian === 'true',
+        vegan: params.vegan === 'true',
+        glutenFree: params.glutenFree === 'true',
+        healthy: params.healthy === 'true',
+        cheap: params.cheap === 'true',
+        sustainable: params.sustainable === 'true',
+        rating:
           isNumeric(params.rating) &&
           Number(params.rating) >= 1 &&
           Number(params.rating) <= 5
             ? Number(params.rating)
-            : null,
+            : NaN,
         // 0 = undefined, 1 = string, 2+ = array
-        [FilterForm.spiceLevel]: toArray(params.spiceLevel).filter(
+        spiceLevel: toArray(params.spiceLevel).filter(
           (spiceLevel): spiceLevel is SpiceLevel =>
-            isValidSpiceLevel(spiceLevel)
+            isValidSpiceLevel(spiceLevel),
         ),
-        [FilterForm.type]: toArray(params.type).filter(
-          (spiceLevel): spiceLevel is MealType => isValidMealType(spiceLevel)
+        type: toArray(params.type).filter(
+          (spiceLevel): spiceLevel is MealType => isValidMealType(spiceLevel),
         ),
-        [FilterForm.culture]: toArray(params.culture).filter(
-          (spiceLevel): spiceLevel is Cuisine => isValidCuisine(spiceLevel)
+        culture: toArray(params.culture).filter(
+          (spiceLevel): spiceLevel is Cuisine => isValidCuisine(spiceLevel),
         ),
-        [FilterForm.sort]: isValidSortField(params.sort) ? params.sort : null,
-        [FilterForm.asc]: params.asc === 'true',
+        sort: isValidSortField(params.sort) ? params.sort : '',
+        asc: params.asc === 'true',
       });
     });
 
-    this.filterFormGroup.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((filter) => {
-        // Update the query params with the selected filters
-        const urlTreePath = this.router
-          .createUrlTree([], {
-            queryParams: filter,
-          })
-          .toString();
+    effect(() => {
+      // Update the query params with the selected filters
+      const urlTreePath = this.router
+        .createUrlTree([], {
+          queryParams: this.filterForm().value(),
+        })
+        .toString();
 
-        if (this.location.path() === urlTreePath) {
-          // Don't add duplicate items to the browser's history
-          this.location.replaceState(urlTreePath);
-        } else {
-          this.location.go(urlTreePath);
-        }
-      });
+      if (this.location.path() === urlTreePath) {
+        // Don't add duplicate items to the browser's history
+        this.location.replaceState(urlTreePath);
+      } else {
+        this.location.go(urlTreePath);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -250,18 +214,16 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   toggleSortDirection(event: MouseEvent) {
     // Don't submit the form if the sort field isn't specified
-    if (this.filterFormGroup.value[this.filterFormNames.sort] === null) {
+    if (this.filterForm.sort().value().length === 0) {
       event.preventDefault();
     }
 
-    this.filterFormGroup.controls[this.filterFormNames.asc].setValue(
-      !this.filterFormGroup.value[this.filterFormNames.asc]
-    );
+    this.filterForm.asc().value.update((asc) => !asc);
   }
 
   private searchRecipes(paginate: boolean) {
-    const recipeFilter = this.removeNullValues({
-      ...this.filterFormGroup.value,
+    const recipeFilter = this.removeDefaultValues({
+      ...this.filterForm().value(),
       ...(paginate && { token: this.lastToken() }),
     });
     this.isLoading.set(true);
@@ -274,7 +236,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.isLoading.set(false);
           clearInterval(timer);
-        })
+        }),
       )
       .subscribe({
         next: (recipes: Recipe[]) => {
@@ -297,16 +259,21 @@ export class SearchComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSubmit() {
+  onSubmit(event: SubmitEvent) {
+    event.preventDefault();
     this.searchRecipes(false);
   }
 
-  /* FormControls use null for missing values, but HttpParams doesn't accept null values.
-   * So, convert all null values to undefined (aka remove them).
-   */
-  removeNullValues(filter: PartialNull<RecipeFilter>): RecipeFilter {
+  // Convert all default values to undefined (aka remove them)
+  removeDefaultValues(filter: RecipeFilterForm): RecipeFilter {
     return Object.fromEntries(
-      Object.entries(filter).filter(([, value]) => value !== null)
+      Object.entries(filter).filter(
+        ([, value]) =>
+          (typeof value === 'boolean' && value) ||
+          (typeof value === 'number' && !Number.isNaN(value)) ||
+          ((typeof value === 'string' || Array.isArray(value)) &&
+            value.length > 0),
+      ),
     );
   }
 

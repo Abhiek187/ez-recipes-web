@@ -1,30 +1,26 @@
 @if (emailSent()) {
   <h3 class="update-email-confirm">
-    We sent an email to <b>{{ formGroup.controls.email.value }}</b
+    We sent an email to <b>{{ emailForm().value() }}</b
     >. Follow the instructions to change your email.
   </h3>
 } @else {
-  <form
-    class="update-email-form"
-    [formGroup]="formGroup"
-    (ngSubmit)="updateEmail()"
-  >
+  <form class="update-email-form" (submit)="updateEmail($event)">
     <h1>Change Email</h1>
     <mat-form-field>
       <mat-label>New Email</mat-label>
       <input
         matInput
-        [formControlName]="formControls.email"
+        [formField]="emailForm"
         type="email"
         inputmode="email"
         autocapitalize="none"
         autocomplete="email"
         spellcheck="false"
       />
-      @if (formGroup.controls.email.hasError(formErrors.required)) {
-        <mat-error>{{ errors.required }}</mat-error>
-      } @else if (formGroup.controls.email.hasError(formErrors.emailInvalid)) {
-        <mat-error>{{ errors.email }}</mat-error>
+      @if (emailForm().getError("required") !== undefined) {
+        <mat-error>{{ emailForm().getError("required")?.message }}</mat-error>
+      } @else if (emailForm().getError("email") !== undefined) {
+        <mat-error>{{ emailForm().getError("email")?.message }}</mat-error>
       }
     </mat-form-field>
 
@@ -32,7 +28,7 @@
       <button
         mat-raised-button
         type="submit"
-        [disabled]="!formGroup.valid || isLoading()"
+        [disabled]="emailForm().invalid() || isLoading()"
       >
         Submit
       </button>

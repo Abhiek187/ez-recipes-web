@@ -62,14 +62,14 @@ export class NavbarComponent {
   isFavorite = computed(() =>
     this.recipe() === null
       ? false
-      : this.chef()?.favoriteRecipes?.includes(this.recipe()!.id.toString()) ??
-        false
+      : (this.chef()?.favoriteRecipes?.includes(this.recipe()!.id.toString()) ??
+        false),
   );
   // If the theme isn't set, check the OS's preference
   isDarkMode = signal(
     localStorage.getItem(Constants.LocalStorage.theme) === null
       ? window.matchMedia('(prefers-color-scheme: dark)').matches
-      : localStorage.getItem(Constants.LocalStorage.theme) === Theme.Dark
+      : localStorage.getItem(Constants.LocalStorage.theme) === Theme.Dark,
   );
 
   constructor() {
@@ -78,7 +78,7 @@ export class NavbarComponent {
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
         this.isSmallScreen.set(
-          this.breakpointObserver.isMatched(Breakpoints.XSmall)
+          this.breakpointObserver.isMatched(Breakpoints.XSmall),
         );
       });
 
@@ -113,7 +113,7 @@ export class NavbarComponent {
       next: () => {
         const newFavoriteRecipes = this.isFavorite()
           ? this.chef()?.favoriteRecipes?.filter(
-              (id) => id !== recipeId.toString()
+              (id) => id !== recipeId.toString(),
             )
           : this.chef()?.favoriteRecipes?.concat([recipeId.toString()]);
         this.chef.update(
@@ -121,7 +121,7 @@ export class NavbarComponent {
             chef && {
               ...chef,
               favoriteRecipes: newFavoriteRecipes ?? [],
-            }
+            },
         );
 
         this.recipeService
@@ -129,7 +129,7 @@ export class NavbarComponent {
           .catch((error) => {
             console.error(
               'Failed to toggle isFavorite for recent recipe:',
-              error.message
+              error.message,
             );
           });
       },
@@ -161,7 +161,7 @@ export class NavbarComponent {
           undefined,
           {
             duration: 2000,
-          }
+          },
         );
       } catch (error) {
         console.error('Error copying to clipboard:', error);

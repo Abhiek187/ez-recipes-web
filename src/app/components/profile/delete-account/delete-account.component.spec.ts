@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
 import { of } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { DeleteAccountComponent } from './delete-account.component';
 import { mockChef } from 'src/app/models/profile.mock';
@@ -51,7 +51,7 @@ describe('DeleteAccountComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
     vi.spyOn(localStorageProto, 'setItem').mockImplementation(() => undefined);
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     router.lastSuccessfulNavigation.mockReturnValue({
@@ -82,16 +82,12 @@ describe('DeleteAccountComponent', () => {
   });
 
   it("should disable account deletion if the username isn't provided", () => {
-    const form = deleteAccountComponent.formGroup;
-    form.controls.username.setValue(null);
+    const usernameForm = deleteAccountComponent.usernameForm();
+    usernameForm.value.set('');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
-    expect(
-      form.controls.username.hasError(
-        deleteAccountComponent.formErrors.required
-      )
-    ).toBe(true);
+    expect(usernameForm.invalid()).toBe(true);
+    expect(usernameForm.getError('required')).not.toBeUndefined();
 
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -100,16 +96,12 @@ describe('DeleteAccountComponent', () => {
   });
 
   it("should disable account deletion if the username doesn't match", () => {
-    const form = deleteAccountComponent.formGroup;
-    form.controls.username.setValue('mock chef');
+    const usernameForm = deleteAccountComponent.usernameForm();
+    usernameForm.value.set('mock chef');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
-    expect(
-      form.controls.username.hasError(
-        deleteAccountComponent.formErrors.usernameMismatch
-      )
-    ).toBe(true);
+    expect(usernameForm.invalid()).toBe(true);
+    expect(usernameForm.getError('usernameMismatch')).not.toBeUndefined();
 
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -118,11 +110,11 @@ describe('DeleteAccountComponent', () => {
   });
 
   it('should enable account deletion if the username matches', () => {
-    const form = deleteAccountComponent.formGroup;
-    form.controls.username.setValue(mockChef.email);
+    const usernameForm = deleteAccountComponent.usernameForm();
+    usernameForm.value.set(mockChef.email);
     fixture.detectChanges();
 
-    expect(form.valid).toBe(true);
+    expect(usernameForm.valid()).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');

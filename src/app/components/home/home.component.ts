@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit {
         .pipe(
           finalize(() => {
             this.isLoadingChef.set(false);
-          })
+          }),
         )
         // subscribe is required to call the API without getting the result
         .subscribe();
@@ -109,7 +109,7 @@ export class HomeComponent implements OnInit {
         finalize(() => {
           this.isLoadingRecipe.set(false);
           clearInterval(timer);
-        })
+        }),
       )
       .subscribe({
         next: (recipe: Recipe) => {
@@ -144,8 +144,8 @@ export class HomeComponent implements OnInit {
       // forkJoin == Promise.all, zip+materialize == Promise.allSettled
       zip(
         recipeIds.map((recipeId) =>
-          this.recipeService.getRecipeById(recipeId).pipe(materialize())
-        )
+          this.recipeService.getRecipeById(recipeId).pipe(materialize()),
+        ),
       )
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
@@ -162,14 +162,14 @@ export class HomeComponent implements OnInit {
               } else if (kind === 'E') {
                 console.warn(
                   `Failed to get recipe ${recipeIds[index]}:`,
-                  error.message
+                  error.message,
                 );
               }
             }
 
             // Remove all recipes that failed to load
             this.favoriteRecipes.set(
-              newFavoriteRecipes.filter((recipe) => recipe !== undefined)
+              newFavoriteRecipes.filter((recipe) => recipe !== undefined),
             );
           },
           error: (error) => {
@@ -192,8 +192,8 @@ export class HomeComponent implements OnInit {
 
       zip(
         recipeIds.map((recipeId) =>
-          this.recipeService.getRecipeById(recipeId).pipe(materialize())
-        )
+          this.recipeService.getRecipeById(recipeId).pipe(materialize()),
+        ),
       )
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
@@ -209,13 +209,13 @@ export class HomeComponent implements OnInit {
               } else if (kind === 'E') {
                 console.warn(
                   `Failed to get recipe ${recipeIds[index]}:`,
-                  error.message
+                  error.message,
                 );
               }
             }
 
             this.recentRecipesRemote.set(
-              newRecentRecipes.filter((recipe) => recipe !== undefined)
+              newRecentRecipes.filter((recipe) => recipe !== undefined),
             );
           },
           error: (error) => {
@@ -235,8 +235,8 @@ export class HomeComponent implements OnInit {
 
       zip(
         recipeIds.map((recipeId) =>
-          this.recipeService.getRecipeById(recipeId).pipe(materialize())
-        )
+          this.recipeService.getRecipeById(recipeId).pipe(materialize()),
+        ),
       )
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
@@ -252,13 +252,13 @@ export class HomeComponent implements OnInit {
               } else if (kind === 'E') {
                 console.warn(
                   `Failed to get recipe ${recipeIds[index]}:`,
-                  error.message
+                  error.message,
                 );
               }
             }
 
             this.ratedRecipes.set(
-              newRatedRecipes.filter((recipe) => recipe !== undefined)
+              newRatedRecipes.filter((recipe) => recipe !== undefined),
             );
           },
           error: (error) => {

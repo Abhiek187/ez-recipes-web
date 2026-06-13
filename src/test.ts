@@ -22,7 +22,19 @@ globalThis.PublicKeyCredential = class {
     clientDataJSON: new ArrayBuffer(),
   };
   getClientExtensionResults = () => ({});
-  toJSON = () => ({});
+  // toJSON = () => ({}) as RegistrationResponseJSON | AuthenticationResponseJSON;
+  toJSON = () => ({
+    authenticatorAttachment: '',
+    clientExtensionResults: {},
+    id: '',
+    rawId: '',
+    response: {
+      authenticatorData: '',
+      clientDataJSON: '',
+      signature: '',
+    },
+    type: '',
+  });
   id = '';
   type = '';
 
@@ -85,6 +97,18 @@ globalThis.PublicKeyCredential = class {
       ],
       timeout: 60_000,
     };
+  }
+
+  static async signalAllAcceptedCredentials() {
+    /* empty */
+  }
+
+  static async signalCurrentUserDetails() {
+    /* empty */
+  }
+
+  static async signalUnknownCredential() {
+    /* empty */
   }
 };
 

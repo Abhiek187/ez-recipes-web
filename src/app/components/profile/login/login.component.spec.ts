@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { of } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { LoginComponent } from './login.component';
 import { ChefService } from 'src/app/services/chef.service';
@@ -87,14 +87,20 @@ describe('LoginComponent', () => {
   });
 
   it("should show an error if the username or password isn't provided", async () => {
-    const form = loginComponent.formGroup;
-    form.controls.username.setValue(null);
-    form.controls.password.setValue(null);
+    const loginForm = loginComponent.loginForm();
+    loginForm.value.set({
+      username: '',
+      password: '',
+    });
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
-    expect(form.controls.username.hasError('required')).toBe(true);
-    expect(form.controls.password.hasError('required')).toBe(true);
+    expect(loginForm.invalid()).toBe(true);
+    expect(
+      loginComponent.loginForm.username().getError('required'),
+    ).not.toBeUndefined();
+    expect(
+      loginComponent.loginForm.password().getError('required'),
+    ).not.toBeUndefined();
 
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -103,14 +109,16 @@ describe('LoginComponent', () => {
   });
 
   it('should enable the submit button if all fields are valid', async () => {
-    const form = loginComponent.formGroup;
+    const loginForm = loginComponent.loginForm();
     const mockEmail = 'test@example.com';
     const mockPassword = 'password123';
-    form.controls.username.setValue(mockEmail);
-    form.controls.password.setValue(mockPassword);
+    loginForm.value.set({
+      username: mockEmail,
+      password: mockPassword,
+    });
     fixture.detectChanges();
 
-    expect(form.valid).toBe(true);
+    expect(loginForm.valid()).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');

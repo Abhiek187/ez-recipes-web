@@ -1,11 +1,6 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +19,7 @@ import { PasskeyButtonComponent } from '../../utils/passkey-button/passkey-butto
 @Component({
   selector: 'app-login',
   imports: [
+    FormField,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
@@ -31,7 +27,6 @@ import { PasskeyButtonComponent } from '../../utils/passkey-button/passkey-butto
     MatProgressSpinnerModule,
     OauthButtonComponent,
     PasskeyButtonComponent,
-    ReactiveFormsModule,
     RouterModule,
   ],
   templateUrl: './login.component.html',
@@ -51,18 +46,15 @@ export class LoginComponent implements OnInit {
   isLoading = signal(false);
   isStepUp = signal(false);
   authUrls = signal<Partial<Record<Provider, string>>>({});
-
-  readonly formControls = {
-    username: 'username',
-    password: 'password',
-  } as const;
-  formGroup = new FormGroup({
-    [this.formControls.username]: new FormControl('', [Validators.required]),
-    [this.formControls.password]: new FormControl('', [Validators.required]),
+  private loginModel = signal({
+    username: '',
+    password: '',
   });
-  readonly errors = {
-    required: (field: string) => `Error: ${field} is required`,
-  } as const;
+
+  loginForm = form(this.loginModel, ({ username, password }) => {
+    required(username, { message: `Error: username is required` });
+    required(password, { message: `Error: password is required` });
+  });
 
   ngOnInit(): void {
     const isStepUp =
@@ -94,12 +86,13 @@ export class LoginComponent implements OnInit {
     this.showPassword.set(!this.showPassword());
   }
 
-  login() {
+  login(event: SubmitEvent) {
+    event.preventDefault();
     this.isLoading.set(true);
-    const { username, password } = this.formGroup.value;
+    const { username, password } = this.loginForm().value();
     const loginCredentials: LoginCredentials = {
-      email: username ?? '',
-      password: password ?? '',
+      email: username,
+      password,
     };
 
     this.chefService

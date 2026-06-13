@@ -7,7 +7,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { of } from 'rxjs';
-import { vi } from 'vitest';
 
 import { AppComponent } from './app.component';
 import { TermsService } from './services/terms.service';
@@ -39,7 +38,7 @@ describe('AppComponent', () => {
   it('should create the app', () => {
     // Check that the component can render
     vi.spyOn(TermsService.prototype, 'getCachedTerms').mockReturnValue(
-      mockTerms
+      mockTerms,
     );
     // Re-render the component after setting up mocks
     fixture.detectChanges();

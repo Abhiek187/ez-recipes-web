@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
 import { of } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { UpdatePasswordComponent } from './update-password.component';
 import { mockChef, mockChefEmailResponse } from 'src/app/models/profile.mock';
@@ -107,16 +107,14 @@ describe('UpdatePasswordComponent', () => {
   });
 
   it("should show an error if the password isn't provided", () => {
-    const form = updatePasswordComponent.formGroup;
-    form.controls.password.setValue(null);
+    const updatePasswordForm = updatePasswordComponent.updatePasswordForm;
+    updatePasswordForm.password().value.set('');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
+    expect(updatePasswordForm().invalid()).toBe(true);
     expect(
-      form.controls.password.hasError(
-        updatePasswordComponent.formErrors.required,
-      ),
-    ).toBe(true);
+      updatePasswordForm.password().getError('required'),
+    ).not.toBeUndefined();
 
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -125,16 +123,14 @@ describe('UpdatePasswordComponent', () => {
   });
 
   it('should show an error if the password is too short', () => {
-    const form = updatePasswordComponent.formGroup;
-    form.controls.password.setValue('123');
+    const updatePasswordForm = updatePasswordComponent.updatePasswordForm;
+    updatePasswordForm.password().value.set('123');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
+    expect(updatePasswordForm().invalid()).toBe(true);
     expect(
-      form.controls.password.hasError(
-        updatePasswordComponent.formErrors.passwordMinLength,
-      ),
-    ).toBe(true);
+      updatePasswordForm.password().getError('minLength'),
+    ).not.toBeUndefined();
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
@@ -142,15 +138,17 @@ describe('UpdatePasswordComponent', () => {
   });
 
   it("should show an error if the passwords don't match", () => {
-    const form = updatePasswordComponent.formGroup;
-    form.controls.password.setValue('password1');
-    form.controls.passwordConfirm.setValue('password2');
+    const updatePasswordForm = updatePasswordComponent.updatePasswordForm;
+    updatePasswordForm().value.set({
+      password: 'password1',
+      passwordConfirm: 'password2',
+    });
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
+    expect(updatePasswordForm().invalid()).toBe(true);
     expect(
-      form.hasError(updatePasswordComponent.formErrors.passwordMismatch),
-    ).toBe(true);
+      updatePasswordForm.passwordConfirm().getError('passwordMismatch'),
+    ).not.toBeUndefined();
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
@@ -158,13 +156,15 @@ describe('UpdatePasswordComponent', () => {
   });
 
   it('should enable the submit button if the email is valid', () => {
-    const form = updatePasswordComponent.formGroup;
+    const updatePasswordForm = updatePasswordComponent.updatePasswordForm();
     const mockPassword = 'password123';
-    form.controls.password.setValue(mockPassword);
-    form.controls.passwordConfirm.setValue(mockPassword);
+    updatePasswordForm.value.set({
+      password: mockPassword,
+      passwordConfirm: mockPassword,
+    });
     fixture.detectChanges();
 
-    expect(form.valid).toBe(true);
+    expect(updatePasswordForm.valid()).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');

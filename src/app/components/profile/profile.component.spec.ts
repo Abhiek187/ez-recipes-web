@@ -7,7 +7,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter, Router, RouterLink } from '@angular/router';
-import { it, vi } from 'vitest';
 
 import { ProfileComponent } from './profile.component';
 import { AuthState } from 'src/app/models/profile.model';

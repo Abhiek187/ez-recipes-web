@@ -31,13 +31,13 @@ export class RecipeCardComponent {
 
   readonly recipe = input.required<Recipe>();
   readonly calories = computed(() =>
-    this.recipe().nutrients.find((nutrient) => nutrient.name === 'Calories')
+    this.recipe().nutrients.find((nutrient) => nutrient.name === 'Calories'),
   );
   chef = this.chefService.chef;
   isFavorite = computed(
     () =>
       this.chef()?.favoriteRecipes?.includes(this.recipe().id.toString()) ??
-      false
+      false,
   );
 
   toggleFavoriteRecipe(event: MouseEvent) {
@@ -52,7 +52,7 @@ export class RecipeCardComponent {
       next: () => {
         const newFavoriteRecipes = this.isFavorite()
           ? this.chef()?.favoriteRecipes?.filter(
-              (recipeId) => recipeId !== this.recipe().id.toString()
+              (recipeId) => recipeId !== this.recipe().id.toString(),
             )
           : this.chef()?.favoriteRecipes?.concat([this.recipe().id.toString()]);
         this.chef.update(
@@ -60,7 +60,7 @@ export class RecipeCardComponent {
             chef && {
               ...chef,
               favoriteRecipes: newFavoriteRecipes ?? [],
-            }
+            },
         );
       },
       error: (error) => {
@@ -78,7 +78,7 @@ export class RecipeCardComponent {
     if (this.chef() === undefined) {
       this.snackBar.open(
         'You must be signed in to rate this recipe',
-        'Dismiss'
+        'Dismiss',
       );
       return;
     }
@@ -93,7 +93,7 @@ export class RecipeCardComponent {
                 ...chef?.ratings,
                 [recipeId]: rating,
               },
-            }
+            },
         );
 
         this.recipeService
@@ -101,7 +101,7 @@ export class RecipeCardComponent {
           .catch((error) => {
             console.error(
               'Failed to toggle isFavorite for recent recipe:',
-              error.message
+              error.message,
             );
           });
       },

@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { of } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { SignUpComponent } from './sign-up.component';
 import { ChefService } from 'src/app/services/chef.service';
@@ -89,24 +89,24 @@ describe('SignUpComponent', () => {
   });
 
   it("should show an error if any field isn't provided", () => {
-    const form = signUpComponent.formGroup;
-    form.controls.email.setValue(null);
-    form.controls.password.setValue(null);
-    form.controls.passwordConfirm.setValue(null);
+    const signUpForm = signUpComponent.signUpForm();
+    signUpForm.value.set({
+      email: '',
+      password: '',
+      passwordConfirm: '',
+    });
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
+    expect(signUpForm.invalid()).toBe(true);
     expect(
-      form.controls.email.hasError(signUpComponent.formErrors.required),
-    ).toBe(true);
+      signUpComponent.signUpForm.email().getError('required'),
+    ).not.toBeUndefined();
     expect(
-      form.controls.password.hasError(signUpComponent.formErrors.required),
-    ).toBe(true);
+      signUpComponent.signUpForm.password().getError('required'),
+    ).not.toBeUndefined();
     expect(
-      form.controls.passwordConfirm.hasError(
-        signUpComponent.formErrors.required,
-      ),
-    ).toBe(false);
+      signUpComponent.signUpForm.passwordConfirm().getError('required'),
+    ).not.toBeUndefined();
 
     const submitButton = rootElement
       .querySelector('.submit-row')
@@ -115,14 +115,14 @@ describe('SignUpComponent', () => {
   });
 
   it("should show an error if the email isn't valid", () => {
-    const form = signUpComponent.formGroup;
-    form.controls.email.setValue('not an email');
+    const signUpForm = signUpComponent.signUpForm;
+    signUpForm.email().value.set('not an email');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
+    expect(signUpForm().invalid()).toBe(true);
     expect(
-      form.controls.email.hasError(signUpComponent.formErrors.emailInvalid),
-    ).toBe(true);
+      signUpComponent.signUpForm.email().getError('email'),
+    ).not.toBeUndefined();
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
@@ -130,16 +130,14 @@ describe('SignUpComponent', () => {
   });
 
   it('should show an error if the password is too short', () => {
-    const form = signUpComponent.formGroup;
-    form.controls.password.setValue('123');
+    const signUpForm = signUpComponent.signUpForm;
+    signUpForm.password().value.set('123');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
+    expect(signUpForm().invalid()).toBe(true);
     expect(
-      form.controls.password.hasError(
-        signUpComponent.formErrors.passwordMinLength,
-      ),
-    ).toBe(true);
+      signUpComponent.signUpForm.password().getError('minLength'),
+    ).not.toBeUndefined();
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
@@ -147,15 +145,15 @@ describe('SignUpComponent', () => {
   });
 
   it("should show an error if the passwords don't match", () => {
-    const form = signUpComponent.formGroup;
-    form.controls.password.setValue('password1');
-    form.controls.passwordConfirm.setValue('password2');
+    const signUpForm = signUpComponent.signUpForm;
+    signUpForm.password().value.set('password1');
+    signUpForm.passwordConfirm().value.set('password2');
     fixture.detectChanges();
 
-    expect(form.valid).toBe(false);
-    expect(form.hasError(signUpComponent.formErrors.passwordMismatch)).toBe(
-      true,
-    );
+    expect(signUpForm().invalid()).toBe(true);
+    expect(
+      signUpForm.passwordConfirm().getError('passwordMismatch'),
+    ).not.toBeUndefined();
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');
@@ -163,15 +161,17 @@ describe('SignUpComponent', () => {
   });
 
   it('should enable the submit button if all fields are valid', () => {
-    const form = signUpComponent.formGroup;
+    const signUpForm = signUpComponent.signUpForm();
     const mockEmail = 'test@example.com';
     const mockPassword = 'password123';
-    form.controls.email.setValue(mockEmail);
-    form.controls.password.setValue(mockPassword);
-    form.controls.passwordConfirm.setValue(mockPassword);
+    signUpForm.value.set({
+      email: mockEmail,
+      password: mockPassword,
+      passwordConfirm: mockPassword,
+    });
     fixture.detectChanges();
 
-    expect(form.valid).toBe(true);
+    expect(signUpForm.valid()).toBe(true);
     const submitButton = rootElement
       .querySelector('.submit-row')
       ?.querySelector('button');

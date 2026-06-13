@@ -6,7 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { of } from 'rxjs';
-import { vi, type MockedObject } from 'vitest';
+import { type MockedObject } from 'vitest';
 
 import { NavbarComponent } from './navbar.component';
 import { mockChef } from 'src/app/models/profile.mock';
@@ -49,7 +49,7 @@ describe('NavbarComponent', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(mockChef.token);
     setItemSpy = vi.spyOn(localStorageProto, 'setItem');
     vi.spyOn(localStorageProto, 'removeItem').mockImplementation(
-      () => undefined
+      () => undefined,
     );
 
     fixture = TestBed.createComponent(NavbarComponent);
@@ -142,7 +142,7 @@ describe('NavbarComponent', () => {
     expect(navbarComponent.isDarkMode()).toBe(true);
     expect(setItemSpy).toHaveBeenCalledWith(
       Constants.LocalStorage.theme,
-      Theme.Dark
+      Theme.Dark,
     );
     expect(document.body.style.colorScheme).toBe(Theme.Dark);
     expect(themeIcon?.ariaLabel).toBe('Switch to light mode');
@@ -152,7 +152,7 @@ describe('NavbarComponent', () => {
     expect(navbarComponent.isDarkMode()).toBe(false);
     expect(setItemSpy).toHaveBeenCalledWith(
       Constants.LocalStorage.theme,
-      Theme.Light
+      Theme.Light,
     );
     expect(document.body.style.colorScheme).toBe(Theme.Light);
     expect(themeIcon?.ariaLabel).toBe('Switch to dark mode');
@@ -191,7 +191,7 @@ describe('NavbarComponent', () => {
       isFavorite: true,
     });
     expect(navbarComponent.chef()?.favoriteRecipes).toContain(
-      mockRecipe.id.toString()
+      mockRecipe.id.toString(),
     );
     expect(navbarComponent.isFavorite()).toBe(true);
     expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite');
@@ -203,7 +203,7 @@ describe('NavbarComponent', () => {
       isFavorite: false,
     });
     expect(navbarComponent.chef()?.favoriteRecipes).not.toContain(
-      mockRecipe.id.toString()
+      mockRecipe.id.toString(),
     );
     expect(navbarComponent.isFavorite()).toBe(false);
     expect(favoriteIcon?.getAttribute('fonticon')).toBe('favorite_border');

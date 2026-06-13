@@ -8,7 +8,6 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { expect, vi } from 'vitest';
 
 import { TermsService } from './terms.service';
 import Constants from '../constants/constants';
@@ -90,7 +89,7 @@ describe('TermsService', () => {
 
   it('should return null if the terms have expired', () => {
     vi.spyOn(localStorageProto, 'getItem').mockReturnValue(
-      mockTermStoreStr(Date.now() - 1)
+      mockTermStoreStr(Date.now() - 1),
     );
     expect(termsService.getCachedTerms()).toBeNull();
   });
@@ -105,7 +104,7 @@ describe('TermsService', () => {
     termsService.saveTerms(mockTerms);
     expect(localStorageProto.setItem).toHaveBeenCalledWith(
       Constants.LocalStorage.terms,
-      mockTermStoreStr()
+      mockTermStoreStr(),
     );
   });
 });

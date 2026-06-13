@@ -34,7 +34,7 @@ export class OauthCallbackComponent {
     } else {
       this.snackBar.open(
         'Invalid OAuth callback. Please try signing in again.',
-        'Dismiss'
+        'Dismiss',
       );
     }
   }

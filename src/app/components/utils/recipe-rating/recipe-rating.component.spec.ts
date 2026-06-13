@@ -1,6 +1,5 @@
 import { ComponentRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
 
 import { RecipeRatingComponent } from './recipe-rating.component';
 
@@ -60,7 +59,7 @@ describe('RecipeRatingComponent', () => {
     expect(recipeRatingComponent.starIcon(5)).toBe('star_outlined');
 
     expect(recipeRatingComponent.ratingLabel()).toBe(
-      'Average rating: 4 out of 5 stars'
+      'Average rating: 4 out of 5 stars',
     );
   });
 
@@ -79,7 +78,7 @@ describe('RecipeRatingComponent', () => {
     expect(recipeRatingComponent.starIcon(5)).toBe('star_outlined');
 
     expect(recipeRatingComponent.ratingLabel()).toBe(
-      'Average rating: 2.5 out of 5 stars'
+      'Average rating: 2.5 out of 5 stars',
     );
   });
 
@@ -97,7 +96,7 @@ describe('RecipeRatingComponent', () => {
     expect(recipeRatingComponent.starIcon(5)).toBe('star_outlined');
 
     expect(recipeRatingComponent.ratingLabel()).toBe(
-      'Average rating: 4.333333333333333 out of 5 stars'
+      'Average rating: 4.333333333333333 out of 5 stars',
     );
   });
 
@@ -115,7 +114,7 @@ describe('RecipeRatingComponent', () => {
     expect(recipeRatingComponent.starIcon(5)).toBe('star_half');
 
     expect(recipeRatingComponent.ratingLabel()).toBe(
-      'Average rating: 4.666666666666667 out of 5 stars'
+      'Average rating: 4.666666666666667 out of 5 stars',
     );
   });
 
@@ -149,7 +148,7 @@ describe('RecipeRatingComponent', () => {
     });
 
     expect(recipeRatingComponent.ratingLabel()).toBe(
-      'Your rating: 1 out of 5 stars'
+      'Your rating: 1 out of 5 stars',
     );
   });
 
@@ -170,7 +169,7 @@ describe('RecipeRatingComponent', () => {
     });
 
     expect(recipeRatingComponent.ratingLabel()).toBe(
-      'Average rating: 3.5 out of 5 stars'
+      'Average rating: 3.5 out of 5 stars',
     );
   });
 

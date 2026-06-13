@@ -1,11 +1,6 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { email, form, FormField, required } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -22,11 +17,11 @@ import { profileRoutes } from 'src/app/app-routing.module';
 @Component({
   selector: 'app-update-email',
   imports: [
+    FormField,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule,
   ],
   templateUrl: './update-email.component.html',
   styleUrl: './update-email.component.scss',
@@ -39,31 +34,20 @@ export class UpdateEmailComponent {
 
   isLoading = signal(false);
   emailSent = signal(false);
+  private email = signal('');
 
-  readonly formControls = {
-    email: 'email',
-  } as const;
-  readonly formErrors = {
-    required: 'required',
-    emailInvalid: 'email',
-  } as const;
-  formGroup = new FormGroup({
-    [this.formControls.email]: new FormControl('', [
-      Validators.required,
-      Validators.email,
-    ]),
+  emailForm = form(this.email, (_email) => {
+    required(_email, { message: 'Error: email is required' });
+    email(_email, { message: 'Error: Invalid email' });
   });
-  readonly errors = {
-    [this.formErrors.required]: 'Error: email is required',
-    [this.formErrors.emailInvalid]: 'Error: Invalid email',
-  } as const;
 
-  updateEmail() {
+  updateEmail(event: SubmitEvent) {
+    event.preventDefault();
     this.isLoading.set(true);
-    const { email } = this.formGroup.value;
+    const email = this.emailForm().value();
     const fields: ChefUpdate = {
       type: ChefUpdateType.Email,
-      email: email ?? '',
+      email,
     };
 
     this.chefService
@@ -72,7 +56,7 @@ export class UpdateEmailComponent {
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: () => {

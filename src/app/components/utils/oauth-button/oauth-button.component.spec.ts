@@ -5,7 +5,6 @@ import {
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { vi } from 'vitest';
 
 import { OauthButtonComponent } from './oauth-button.component';
 import { Provider } from 'src/app/models/profile.model';
