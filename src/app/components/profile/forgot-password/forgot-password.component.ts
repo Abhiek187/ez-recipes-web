@@ -39,7 +39,7 @@ export class ForgotPasswordComponent {
   private email = signal('');
 
   emailForm = form(this.email, (_email) => {
-    required(_email, { message: `Error: ${_email} is required` });
+    required(_email, { message: `Error: email is required` });
     email(_email, { message: 'Error: Invalid email' });
   });
 

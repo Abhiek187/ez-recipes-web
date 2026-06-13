@@ -106,7 +106,7 @@ describe('SignUpComponent', () => {
     ).not.toBeUndefined();
     expect(
       signUpComponent.signUpForm.passwordConfirm().getError('required'),
-    ).toBeUndefined();
+    ).not.toBeUndefined();
 
     const submitButton = rootElement
       .querySelector('.submit-row')

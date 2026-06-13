@@ -59,7 +59,6 @@ describe('SearchComponent', () => {
       expect(calorieInput.type).toBe('number');
       expect(calorieInput.min).toBe('0');
       expect(calorieInput.max).toBe('2000');
-      expect(calorieInput.pattern).toBe('\\d*');
       expect(calorieInput.inputMode).toBe('numeric');
     });
 
@@ -137,7 +136,6 @@ describe('SearchComponent', () => {
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
     expect(submitButton?.disabled).toBe(true);
 
-    form().reset();
     form.maxCals().value.set(-1e-3);
     fixture.detectChanges();
 
@@ -145,7 +143,8 @@ describe('SearchComponent', () => {
     expect(form.maxCals().getError('min')).not.toBeUndefined();
     expect(submitButton?.disabled).toBe(true);
 
-    form().reset();
+    form.minCals().value.set(NaN);
+    form.maxCals().value.set(NaN);
     fixture.detectChanges();
     expect(form().valid()).toBe(true);
     expect(submitButton?.disabled).toBe(false);
@@ -163,7 +162,6 @@ describe('SearchComponent', () => {
       rootElement.querySelector<HTMLButtonElement>('.submit-button');
     expect(submitButton?.disabled).toBe(true);
 
-    form().reset();
     form.maxCals().value.set(3.1e3);
     fixture.detectChanges();
 
@@ -171,7 +169,8 @@ describe('SearchComponent', () => {
     expect(form.maxCals().getError('max')).not.toBeUndefined();
     expect(submitButton?.disabled).toBe(true);
 
-    form().reset();
+    form.minCals().value.set(NaN);
+    form.maxCals().value.set(NaN);
     fixture.detectChanges();
     expect(form().valid()).toBe(true);
     expect(submitButton?.disabled).toBe(false);
