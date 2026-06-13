@@ -5,7 +5,7 @@ import {
 import {
   enableProdMode,
   importProvidersFrom,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -20,7 +20,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection(),
+    provideZonelessChangeDetection(),
     importProvidersFrom(
       BrowserModule,
       AppRoutingModule,
