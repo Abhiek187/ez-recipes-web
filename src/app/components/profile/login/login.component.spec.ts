@@ -91,6 +91,7 @@ describe('LoginComponent', () => {
     loginForm.value.set({
       username: '',
       password: '',
+      rememberMe: false,
     });
     fixture.detectChanges();
 
@@ -115,6 +116,7 @@ describe('LoginComponent', () => {
     loginForm.value.set({
       username: mockEmail,
       password: mockPassword,
+      rememberMe: true,
     });
     fixture.detectChanges();
 
