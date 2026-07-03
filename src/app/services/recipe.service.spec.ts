@@ -128,7 +128,7 @@ describe('RecipeService', () => {
     // Respond with mock error
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(recipeService.recipe()).toBeNull();
   });
 
@@ -158,7 +158,7 @@ describe('RecipeService', () => {
     });
     req.error(mockError);
 
-    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrow(mockErrorMessage);
     expect(recipeService.recipe()).toBeNull();
   });
 
@@ -221,7 +221,7 @@ describe('RecipeService', () => {
     });
     req.error(mockError);
 
-    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should update a recipe', async () => {
@@ -293,7 +293,7 @@ describe('RecipeService', () => {
     expect(req.request.body).toBe(fields);
     req.error(mockError);
 
-    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should generate a PDF', async () => {
@@ -320,7 +320,7 @@ describe('RecipeService', () => {
     });
     req.error(mockError);
 
-    await expect(recipePromise).rejects.toThrowError(mockErrorMessage);
+    await expect(recipePromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should return a mock recipe', async () => {

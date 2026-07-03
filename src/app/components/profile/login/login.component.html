@@ -62,7 +62,9 @@
     </mat-form-field>
   </div>
 
-  <mat-checkbox [formField]="loginForm.rememberMe">Remember Me</mat-checkbox>
+  <mat-checkbox [formField]="loginForm.rememberMe" class="remember-me-toggle">
+    Remember Me
+  </mat-checkbox>
 
   @if (!isStepUp()) {
     <h3>

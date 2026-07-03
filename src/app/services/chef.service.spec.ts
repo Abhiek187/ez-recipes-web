@@ -27,6 +27,7 @@ import {
   Provider,
 } from '../models/profile.model';
 import { mockToken } from '../models/recipe.mock';
+import { mockDate } from '../models/term-store.mock';
 
 describe('ChefService', () => {
   let chefService: ChefService;
@@ -58,10 +59,14 @@ describe('ChefService', () => {
 
     chefService = TestBed.inject(ChefService);
     httpTestingController = TestBed.inject(HttpTestingController);
+
+    vi.useFakeTimers();
+    vi.setSystemTime(mockDate);
   });
 
   afterEach(() => {
     httpTestingController.verify();
+    vi.useRealTimers();
   });
 
   it('should be created', () => {
@@ -95,7 +100,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -144,7 +149,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -203,7 +208,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should delete a chef', async () => {
@@ -233,7 +238,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -264,7 +269,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should login', async () => {
@@ -312,7 +317,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -344,7 +349,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -371,7 +376,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should login with an OAuth provider without a token', async () => {
@@ -398,7 +403,7 @@ describe('ChefService', () => {
     oauthReq.flush(loginResponse);
 
     // Since localStorage is mocked to not have a token, GET chef fails in this case
-    await expect(chefPromise).rejects.toThrowError(Constants.noTokenFound);
+    await expect(chefPromise).rejects.toThrow(Constants.noTokenFound);
   });
 
   it('should link an OAuth provider with a token', async () => {
@@ -456,7 +461,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should unlink an OAuth provider', async () => {
@@ -501,7 +506,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -531,7 +536,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should get an existing passkey challenge', async () => {
@@ -561,7 +566,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should validate a new passkey', async () => {
@@ -643,7 +648,7 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
   });
 
@@ -685,7 +690,32 @@ describe('ChefService', () => {
     });
     req.error(mockError);
 
-    await expect(chefPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
     expect(chefService.chef()).toBeUndefined();
+  });
+
+  it('should get the saved username if not expired', async () => {
+    mockLocalStorage(
+      JSON.stringify({
+        username: mockChef.email,
+        expireAt: mockDate.getTime() * 2,
+      }),
+    );
+    expect(chefService.getUsername()).toBe(mockChef.email);
+  });
+
+  it('should return null if no username is saved', async () => {
+    mockLocalStorage(null);
+    expect(chefService.getUsername()).toBeNull();
+  });
+
+  it('should return null if the username has expired', async () => {
+    mockLocalStorage(
+      JSON.stringify({
+        username: mockChef.email,
+        expireAt: mockDate.getTime() / 2,
+      }),
+    );
+    expect(chefService.getUsername()).toBe(null);
   });
 });

@@ -79,7 +79,7 @@ describe('TermsService', () => {
     });
     req.error(mockError);
 
-    await expect(termsPromise).rejects.toThrowError(mockErrorMessage);
+    await expect(termsPromise).rejects.toThrow(mockErrorMessage);
   });
 
   it('should return null if no terms are stored in localStorage', () => {
