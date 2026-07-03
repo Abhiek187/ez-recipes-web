@@ -62,6 +62,10 @@
     </mat-form-field>
   </div>
 
+  <mat-checkbox [formField]="loginForm.rememberMe" class="remember-me-toggle">
+    Remember Me
+  </mat-checkbox>
+
   @if (!isStepUp()) {
     <h3>
       <a [routerLink]="'/' + profileRoutes.forgotPassword.path">
@@ -69,6 +73,7 @@
       </a>
     </h3>
   }
+  <mat-divider class="login-divider" />
 
   <h2>Or sign in using:</h2>
   <div class="oauth-button-container">

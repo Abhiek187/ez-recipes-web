@@ -58,6 +58,7 @@ abstract class Constants {
     static readonly terms = 'terms';
     static readonly token = 'token';
     static readonly theme = 'theme';
+    static readonly rememberMe = 'rememberMe';
   };
 
   // IndexedDB

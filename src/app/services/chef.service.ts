@@ -12,6 +12,7 @@ import {
   LoginResponse,
   OAuthRequest,
   Provider,
+  RememberMe,
 } from '../models/profile.model';
 import { environment } from 'src/environments/environment';
 import Constants from '../constants/constants';
@@ -450,6 +451,48 @@ export class ChefService {
         }),
         catchError(handleError),
       );
+  }
+
+  // localStorage methods
+  getUsername(): string | null {
+    const rememberMeStr = localStorage.getItem(
+      Constants.LocalStorage.rememberMe,
+    );
+    if (rememberMeStr === null) return null;
+    const rememberMe: RememberMe = JSON.parse(rememberMeStr);
+
+    // Delete the username if it's expired
+    if (Date.now() >= rememberMe.expireAt) {
+      localStorage.removeItem(Constants.LocalStorage.rememberMe);
+      return null;
+    }
+
+    return rememberMe.username;
+  }
+
+  saveUsername(username?: string) {
+    let newUsername: string;
+
+    if (username !== undefined) {
+      newUsername = username;
+    } else {
+      // If no username is provided, use the existing username saved
+      const existingUsername = this.getUsername();
+
+      if (existingUsername !== null) {
+        newUsername = existingUsername;
+      } else {
+        // If no username is saved, don't do anything
+        return;
+      }
+    }
+
+    const rememberMe: RememberMe = {
+      username: newUsername,
+      expireAt: Date.now() + 30 * 24 * 60 * 60 * 1000, // 1 month
+    };
+    const rememberMeStr = JSON.stringify(rememberMe);
+    localStorage.setItem(Constants.LocalStorage.rememberMe, rememberMeStr);
   }
 
   // Helpers

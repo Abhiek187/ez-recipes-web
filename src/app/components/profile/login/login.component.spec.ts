@@ -32,6 +32,10 @@ describe('LoginComponent', () => {
         .fn()
         .mockName('ChefService.getAuthUrls')
         .mockReturnValue(of(mockAuthUrls)),
+      getUsername: vi
+        .fn()
+        .mockName('ChefService.getUsername')
+        .mockReturnValue(null),
     } as unknown as ChefService);
 
     await TestBed.configureTestingModule({
@@ -80,6 +84,9 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
     expect(passwordField.type).toBe('password');
 
+    const rememberMeToggle = rootElement.querySelector('.remember-me-toggle');
+    expect(rememberMeToggle).toBeDefined();
+    expect(rememberMeToggle?.textContent).toContain('Remember Me');
     expect(rootElement.querySelectorAll('.oauth-button').length).toBe(
       mockAuthUrls.length,
     );
@@ -91,6 +98,7 @@ describe('LoginComponent', () => {
     loginForm.value.set({
       username: '',
       password: '',
+      rememberMe: false,
     });
     fixture.detectChanges();
 
@@ -115,6 +123,7 @@ describe('LoginComponent', () => {
     loginForm.value.set({
       username: mockEmail,
       password: mockPassword,
+      rememberMe: true,
     });
     fixture.detectChanges();
 

@@ -4,6 +4,11 @@ export enum AuthState {
   Loading,
 }
 
+export interface RememberMe {
+  username: string;
+  expireAt: number;
+}
+
 export interface Chef {
   uid: string;
   email: string;

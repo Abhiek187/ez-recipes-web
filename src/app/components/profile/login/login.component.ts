@@ -2,6 +2,8 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { form, FormField, required } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -21,6 +23,8 @@ import { PasskeyButtonComponent } from '../../utils/passkey-button/passkey-butto
   imports: [
     FormField,
     MatButtonModule,
+    MatCheckboxModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -47,8 +51,9 @@ export class LoginComponent implements OnInit {
   isStepUp = signal(false);
   authUrls = signal<Partial<Record<Provider, string>>>({});
   private loginModel = signal({
-    username: '',
+    username: this.chefService.getUsername() ?? '',
     password: '',
+    rememberMe: false,
   });
 
   loginForm = form(this.loginModel, ({ username, password }) => {
@@ -122,6 +127,11 @@ export class LoginComponent implements OnInit {
         state: { email },
       });
     } else {
+      if (email !== null && this.loginForm().value().rememberMe) {
+        // Autofill the username to make it easier to login in the future
+        this.chefService.saveUsername(email);
+      }
+
       // If a redirect URL is present in the query params, navigate to it
       // Otherwise, navigate to the profile page
       const redirectUrl = this.route.snapshot.queryParamMap.get('next');
