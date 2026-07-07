@@ -35,7 +35,7 @@
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^29.1.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.62.0",
+    "typescript-eslint": "^8.62.1",
     "vitest": "^4.1.8"
   }
 }
