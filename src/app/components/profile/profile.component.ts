@@ -28,7 +28,11 @@ import { profileRoutes } from 'src/app/app-routing.module';
 import Constants from 'src/app/constants/constants';
 import { ChefService } from 'src/app/services/chef.service';
 import { OauthButtonComponent } from '../utils/oauth-button/oauth-button.component';
-import { DialogComponent, DialogData } from '../utils/dialog/dialog.component';
+import {
+  DialogComponent,
+  DialogData,
+  DialogResult,
+} from '../utils/dialog/dialog.component';
 import Theme from 'src/app/models/theme.model';
 import { PasskeyButtonComponent } from '../utils/passkey-button/passkey-button.component';
 import { base64URLEncode } from 'src/app/helpers/string';
@@ -170,8 +174,7 @@ export class ProfileComponent implements OnInit {
     // Sync passkeys and the username with all authenticators
     try {
       if (Object.hasOwn(PublicKeyCredential, 'signalAllAcceptedCredentials')) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (PublicKeyCredential as any).signalAllAcceptedCredentials({
+        await PublicKeyCredential.signalAllAcceptedCredentials({
           rpId: location.hostname,
           userId: base64URLEncode(chef.uid),
           allAcceptedCredentialIds: chef.passkeys.map(
@@ -187,8 +190,7 @@ export class ProfileComponent implements OnInit {
         );
       }
       if (Object.hasOwn(PublicKeyCredential, 'signalCurrentUserDetails')) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (PublicKeyCredential as any).signalCurrentUserDetails({
+        await PublicKeyCredential.signalCurrentUserDetails({
           rpId: location.hostname,
           userId: base64URLEncode(chef.uid),
           name: chef.email,
@@ -243,20 +245,21 @@ export class ProfileComponent implements OnInit {
 
   openUnlinkAlert(provider: Provider) {
     // Confirm before unlinking
-    const dialogRef = this.dialog.open<DialogComponent, DialogData>(
+    const dialogRef = this.dialog.open<
       DialogComponent,
-      {
-        data: {
-          message: `Are you sure you want to unlink ${provider}?`,
-          dismissText: 'No',
-          confirmText: 'Yes',
-          isConfirmDestructive: true,
-        },
+      DialogData,
+      DialogResult
+    >(DialogComponent, {
+      data: {
+        message: `Are you sure you want to unlink ${provider}?`,
+        dismissText: 'No',
+        confirmText: 'Yes',
+        isConfirmDestructive: true,
       },
-    );
+    });
 
-    dialogRef.afterClosed().subscribe((didConfirm: boolean) => {
-      if (!didConfirm) return;
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result?.didConfirm) return;
       this.isLoading.set(true);
       this.selectedProvider.set(provider);
 
@@ -279,22 +282,58 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  renamePasskey(passkey: Passkey) {
+    const dialogRef = this.dialog.open<
+      DialogComponent,
+      DialogData,
+      DialogResult
+    >(DialogComponent, {
+      data: {
+        inputLabel: 'Rename Passkey',
+        input: passkey.name,
+        dismissText: 'Cancel',
+        confirmText: 'OK',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result?.didConfirm || !result?.input) return;
+      this.isLoading.set(true);
+
+      this.chefService
+        .updatePasskeyName(passkey.id, result.input)
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          finalize(() => {
+            this.isLoading.set(false);
+          }),
+        )
+        .subscribe({
+          // Visual confirmation should be sufficient
+          error: (error) => {
+            this.snackBar.open(error.message, 'Dismiss');
+          },
+        });
+    });
+  }
+
   deletePasskey(passkey: Passkey) {
     // Confirm before deleting a passkey
-    const dialogRef = this.dialog.open<DialogComponent, DialogData>(
+    const dialogRef = this.dialog.open<
       DialogComponent,
-      {
-        data: {
-          message: `Are you sure you want to delete this passkey? ${passkey.name}`,
-          dismissText: 'No',
-          confirmText: 'Yes',
-          isConfirmDestructive: true,
-        },
+      DialogData,
+      DialogResult
+    >(DialogComponent, {
+      data: {
+        message: `Are you sure you want to delete this passkey? ${passkey.name}`,
+        dismissText: 'No',
+        confirmText: 'Yes',
+        isConfirmDestructive: true,
       },
-    );
+    });
 
-    dialogRef.afterClosed().subscribe((didConfirm: boolean) => {
-      if (!didConfirm) return;
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result?.didConfirm) return;
       this.isLoading.set(true);
 
       this.chefService
@@ -309,8 +348,7 @@ export class ProfileComponent implements OnInit {
           next: async () => {
             // Signal all authenticators to delete the passkey
             if (Object.hasOwn(PublicKeyCredential, 'signalUnknownCredential')) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              await (PublicKeyCredential as any).signalUnknownCredential({
+              await PublicKeyCredential.signalUnknownCredential({
                 rpId: location.hostname,
                 credentialId: passkey.id,
               });

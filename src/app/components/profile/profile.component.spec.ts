@@ -154,9 +154,11 @@ describe('ProfileComponent', () => {
         '.profile-passkey-container',
       )?.[passkeyI];
       expect(passkeyContainer?.textContent).toContain(passkey.name);
-      const deletePasskeyButton =
-        passkeyContainer?.querySelector<HTMLButtonElement>('button');
-      expect(deletePasskeyButton?.ariaLabel).toBe('Delete passkey');
+      const passkeyButtons =
+        passkeyContainer?.querySelectorAll<HTMLButtonElement>('button');
+      expect(passkeyButtons?.length).toBe(2);
+      expect(passkeyButtons?.[0].ariaLabel).toBe('Rename passkey');
+      expect(passkeyButtons?.[1].ariaLabel).toBe('Delete passkey');
       expect(passkeyContainer?.textContent).toContain('Last used');
     }
 

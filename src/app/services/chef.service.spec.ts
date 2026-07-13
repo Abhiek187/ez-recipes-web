@@ -652,6 +652,51 @@ describe('ChefService', () => {
     expect(chefService.chef()).toBeUndefined();
   });
 
+  it("should update the passkey's name", async () => {
+    const id = 'abc123';
+    const name = 'new passkey';
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.updatePasskeyName(id, name));
+
+    const patchReq = httpTestingController.expectOne({
+      method: 'PATCH',
+      url: `${baseUrl}/passkey`,
+    });
+    expect(patchReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    expect(patchReq.request.body).toStrictEqual({ id, name });
+    patchReq.flush(mockToken);
+
+    const chefReq = httpTestingController.expectOne({
+      method: 'GET',
+      url: baseUrl,
+    });
+    expect(chefReq.request.headers.get('Authorization')).toBe(
+      `Bearer ${mockChef.token}`,
+    );
+    chefReq.flush(mockChef);
+
+    await expect(chefPromise).resolves.toBe(mockChef);
+    expect(chefService.chef()).toBe(mockChef);
+  });
+
+  it('should return an error if the update passkey API fails', async () => {
+    const id = 'abc123';
+    const name = 'new passkey';
+    mockLocalStorage();
+    const chefPromise = firstValueFrom(chefService.updatePasskeyName(id, name));
+
+    const req = httpTestingController.expectOne({
+      method: 'PATCH',
+      url: `${baseUrl}/passkey`,
+    });
+    req.error(mockError);
+
+    await expect(chefPromise).rejects.toThrow(mockErrorMessage);
+    expect(chefService.chef()).toBeUndefined();
+  });
+
   it('should delete a passkey', async () => {
     const id = 'abc123';
     mockLocalStorage();
