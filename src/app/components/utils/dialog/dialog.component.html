@@ -4,16 +4,28 @@
 <mat-dialog-content>
   <p>{{ message }}</p>
 </mat-dialog-content>
+@if (input !== undefined) {
+  <mat-form-field class="dialog-form-field">
+    @if (inputLabel !== undefined) {
+      <mat-label>{{ inputLabel }}</mat-label>
+    }
+    <input matInput [formField]="inputForm" />
+    @if (inputForm().getError("required") !== undefined) {
+      <mat-error>{{ inputForm().getError("required")?.message }}</mat-error>
+    }
+  </mat-form-field>
+}
 <mat-dialog-actions>
   @if (dismissText !== undefined) {
-    <button mat-raised-button [mat-dialog-close]="false">
+    <button mat-raised-button [mat-dialog-close]="{ didConfirm: false }">
       {{ dismissText }}
     </button>
   }
   <button
     mat-raised-button
-    [mat-dialog-close]="true"
+    [mat-dialog-close]="{ didConfirm: true, input: inputForm().value() }"
     [class.btn-warn]="isConfirmDestructive"
+    [disabled]="inputForm().invalid()"
   >
     {{ confirmText }}
   </button>

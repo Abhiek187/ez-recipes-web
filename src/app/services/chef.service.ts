@@ -420,6 +420,40 @@ export class ChefService {
       );
   }
 
+  updatePasskeyName(id: string, name: string): Observable<Chef> {
+    if (this.isMocking) {
+      return of(mockChef);
+    }
+
+    const token = localStorage.getItem(Constants.LocalStorage.token);
+    if (token === null) {
+      return this.noTokenFound();
+    }
+
+    return this.http
+      .patch<Token>(
+        `${environment.serverBaseUrl}${Constants.chefsPath}/passkey`,
+        {
+          id,
+          name,
+        },
+        {
+          headers: this.authHeader(token),
+        },
+      )
+      .pipe(
+        switchMap(({ token }) => {
+          if (token !== undefined) {
+            localStorage.setItem(Constants.LocalStorage.token, token);
+          }
+
+          // Get the chef's updated passkeys
+          return this.getChef();
+        }),
+        catchError(handleError),
+      );
+  }
+
   deletePasskey(id: string): Observable<Chef> {
     if (this.isMocking) {
       return of(mockChef);

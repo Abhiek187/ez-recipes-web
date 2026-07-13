@@ -126,11 +126,11 @@ export class PasskeyButtonComponent {
       if (
         passkeyCredential !== null &&
         options !== null &&
+        options.rp.id !== undefined &&
         Object.hasOwn(PublicKeyCredential, 'signalUnknownCredential')
       ) {
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (PublicKeyCredential as any).signalUnknownCredential({
+          await PublicKeyCredential.signalUnknownCredential({
             rpId: options.rp.id,
             credentialId: passkeyCredential.id,
           });
