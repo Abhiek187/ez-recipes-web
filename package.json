@@ -29,12 +29,12 @@
     "@angular/cli": "~22.1.4",
     "@angular/compiler-cli": "^22.1.2",
     "@eslint/js": "^10.0.1",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.11",
     "angular-eslint": "22.1.0",
-    "eslint": "^10.8.1",
+    "eslint": "^10.9.0",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.0.1",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.10"
   }
