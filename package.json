@@ -29,13 +29,13 @@
     "@angular/cli": "~22.1.7",
     "@angular/compiler-cli": "^22.1.5",
     "@eslint/js": "^10.0.1",
-    "@vitest/coverage-v8": "^4.1.11",
-    "angular-eslint": "22.1.0",
-    "eslint": "^10.9.1",
+    "@vitest/coverage-v8": "^5.0.0",
+    "angular-eslint": "22.2.0",
+    "eslint": "^10.10.0",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.0.1",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.68.0",
-    "vitest": "^4.1.10"
+    "typescript": "^7.0.2",
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^5.0.0"
   }
 }
