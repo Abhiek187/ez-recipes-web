@@ -1,6 +1,8 @@
-@if (terms() !== undefined) {
+@if (isLoading()) {
+  <mat-spinner diameter="40" class="progress-spinner" />
+} @else {
   <mat-list>
-    @for (term of terms(); track term._id) {
+    @for (term of sortedTerms(); track term._id) {
       <mat-list-item class="term-list">
         <span class="term-line">
           <b>{{ term.word }}</b> — {{ term.definition }}

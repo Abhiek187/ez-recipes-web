@@ -34,7 +34,7 @@ describe('GlossaryComponent', () => {
 
   it('should show all the terms', () => {
     expect(glossaryComponent).toBeTruthy();
-    expect(glossaryComponent.terms()).not.toBeNull();
+    expect(glossaryComponent.sortedTerms()).not.toBeNull();
 
     for (const term of mockTerms) {
       expect(rootElement.textContent).toContain(term.word);
