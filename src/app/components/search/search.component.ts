@@ -26,6 +26,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavContent } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -100,6 +101,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private location = inject(Location);
   private destroyRef = inject(DestroyRef);
+  private sidenavContent = inject(MatSidenavContent);
 
   isLoading = signal(false);
   private readonly defaultLoadingMessage = '';
@@ -287,7 +289,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   onScroll(event: Event) {
     const target = event.target as HTMLElement | null;
-    if (target === null) return;
+    const sidenavElement = this.sidenavContent.getElementRef().nativeElement;
+    if (target !== sidenavElement) return;
 
     // Check if the user scrolled to the bottom and try loading additional results
     // Prevent multiple requests from running at once

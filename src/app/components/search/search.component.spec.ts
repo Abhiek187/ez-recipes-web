@@ -4,6 +4,7 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSidenavContent } from '@angular/material/sidenav';
 import { RouterModule } from '@angular/router';
 
 import { SearchComponent } from './search.component';
@@ -21,6 +22,10 @@ describe('SearchComponent', () => {
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
+        {
+          provide: MatSidenavContent,
+          useValue: {},
+        },
       ],
     }).compileComponents();
 
