@@ -1,4 +1,4 @@
-<mat-toolbar class="toolbar">
+<mat-toolbar class="toolbar" role="navigation">
   @if (isSmallScreen()) {
     <!-- Show a hamburger menu on small screens -->
     <!-- All material icons are found at: https://fonts.google.com/icons -->
@@ -71,6 +71,7 @@
     [mode]="isSmallScreen() ? 'over' : 'side'"
     [fixedInViewport]="true"
     fixedTopGap="56"
+    role="navigation"
   >
     <mat-nav-list>
       @for (nav of navItems; track nav.path) {
@@ -81,7 +82,7 @@
     </mat-nav-list>
   </mat-sidenav>
 
-  <mat-sidenav-content class="sidenav-content">
+  <mat-sidenav-content class="sidenav-content" role="main">
     <router-outlet (activate)="onRouterOutletActivate($event)" />
   </mat-sidenav-content>
 </mat-sidenav-container>
