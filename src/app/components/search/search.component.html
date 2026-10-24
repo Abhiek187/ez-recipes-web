@@ -152,7 +152,7 @@
       <mat-form-field class="sort-field">
         <mat-label> <mat-icon fontIcon="sort" /> Sort </mat-label>
         <mat-select [formField]="filterForm.sort">
-          <mat-option [value]="">(none)</mat-option>
+          <mat-option [value]="''">(none)</mat-option>
           @for (sortField of SORT_FIELDS; track sortField) {
             <mat-option [value]="sortField">
               {{ sortField | label }}
