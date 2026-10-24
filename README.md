@@ -6,7 +6,7 @@
 <div>
     <img src="src/assets/screenshots/wide/home.png" alt="Home screen" width="600">
     <img src="src/assets/screenshots/wide/recipe-1.png" alt="Pasta With Italian Sausage, recipe heading" width="600">
-    <img src="src/assets/screenshots/wide/recipe-3.png" alt="Pasta With Italian Sausage, instructions" width="600">
+    <img src="src/assets/screenshots/wide/recipe-2.png" alt="Pasta With Italian Sausage, instructions" width="600">
     <img src="src/assets/screenshots/wide/search-2.png" alt="Searching for pasta with chicken" width="600">
     <img src="src/assets/screenshots/wide/profile.png" alt="Profile screen" width="600">
 </div>
